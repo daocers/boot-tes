@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @RestController
 @RequestMapping("/rolePermission/api")
@@ -36,7 +36,7 @@ public class RolePermissionApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<RolePermission>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody RolePermission rolePermission) {
@@ -64,7 +64,7 @@ public class RolePermissionApi {
      * @param rolePermission
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveRolePermission(@RequestBody RolePermission rolePermission) {
@@ -92,7 +92,7 @@ public class RolePermissionApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.rolePermission.domain.RolePermission>
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findById")
     public RespDto<RolePermission> findById(Long id) {
@@ -112,7 +112,7 @@ public class RolePermissionApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

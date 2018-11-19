@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @Service
 public class UserRoleXServiceImpl implements IUserRoleXService {
@@ -95,7 +95,7 @@ public class UserRoleXServiceImpl implements IUserRoleXService {
         userRoleX.setId(userRoleXId);
         userRoleX.setIsDel(DelFlagEnum.YES.getCode());
         userRoleX.setUpdateTime(new Date());
-        userRoleX.setUpdateUserRoleXId(operatorId);
+        userRoleX.setUpdateUserId(operatorId);
         int num = userRoleXDao.updateById(userRoleX);
 
         logger.debug("将 {} 条 数据删除", num);

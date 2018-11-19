@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:52
+ * @create 2018-11-19 19:29
  */
 @Service
 public class PermissionServiceImpl implements IPermissionService {
@@ -95,7 +95,7 @@ public class PermissionServiceImpl implements IPermissionService {
         permission.setId(permissionId);
         permission.setIsDel(DelFlagEnum.YES.getCode());
         permission.setUpdateTime(new Date());
-        permission.setUpdatePermissionId(operatorId);
+        permission.setUpdateUserId(operatorId);
         int num = permissionDao.updateById(permission);
 
         logger.debug("将 {} 条 数据删除", num);

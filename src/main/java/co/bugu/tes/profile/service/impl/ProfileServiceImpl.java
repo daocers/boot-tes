@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:52
+ * @create 2018-11-19 19:29
  */
 @Service
 public class ProfileServiceImpl implements IProfileService {
@@ -95,7 +95,7 @@ public class ProfileServiceImpl implements IProfileService {
         profile.setId(profileId);
         profile.setIsDel(DelFlagEnum.YES.getCode());
         profile.setUpdateTime(new Date());
-        profile.setUpdateProfileId(operatorId);
+        profile.setUpdateUserId(operatorId);
         int num = profileDao.updateById(profile);
 
         logger.debug("将 {} 条 数据删除", num);

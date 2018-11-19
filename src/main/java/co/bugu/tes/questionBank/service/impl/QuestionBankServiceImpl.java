@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:52
+ * @create 2018-11-19 19:29
  */
 @Service
 public class QuestionBankServiceImpl implements IQuestionBankService {
@@ -95,7 +95,7 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
         questionBank.setId(questionBankId);
         questionBank.setIsDel(DelFlagEnum.YES.getCode());
         questionBank.setUpdateTime(new Date());
-        questionBank.setUpdateQuestionBankId(operatorId);
+        questionBank.setUpdateUserId(operatorId);
         int num = questionBankDao.updateById(questionBank);
 
         logger.debug("将 {} 条 数据删除", num);

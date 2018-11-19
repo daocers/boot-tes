@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @Service
 public class BranchServiceImpl implements IBranchService {
@@ -95,7 +95,7 @@ public class BranchServiceImpl implements IBranchService {
         branch.setId(branchId);
         branch.setIsDel(DelFlagEnum.YES.getCode());
         branch.setUpdateTime(new Date());
-        branch.setUpdateBranchId(operatorId);
+        branch.setUpdateUserId(operatorId);
         int num = branchDao.updateById(branch);
 
         logger.debug("将 {} 条 数据删除", num);

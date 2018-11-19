@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 17:52
+ * @create 2018-11-19 19:29
  */
 @RestController
 @RequestMapping("/profile/api")
@@ -36,7 +36,7 @@ public class ProfileApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<Profile>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Profile profile) {
@@ -64,7 +64,7 @@ public class ProfileApi {
      * @param profile
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveProfile(@RequestBody Profile profile) {
@@ -92,7 +92,7 @@ public class ProfileApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.profile.domain.Profile>
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findById")
     public RespDto<Profile> findById(Long id) {
@@ -112,7 +112,7 @@ public class ProfileApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

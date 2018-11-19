@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 17:52
+ * @create 2018-11-19 19:29
  */
 @RestController
 @RequestMapping("/questionBank/api")
@@ -36,7 +36,7 @@ public class QuestionBankApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<QuestionBank>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody QuestionBank questionBank) {
@@ -64,7 +64,7 @@ public class QuestionBankApi {
      * @param questionBank
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveQuestionBank(@RequestBody QuestionBank questionBank) {
@@ -92,7 +92,7 @@ public class QuestionBankApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.questionBank.domain.QuestionBank>
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findById")
     public RespDto<QuestionBank> findById(Long id) {
@@ -112,7 +112,7 @@ public class QuestionBankApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:52
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

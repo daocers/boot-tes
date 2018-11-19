@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @Service
 public class RoleServiceImpl implements IRoleService {
@@ -95,7 +95,7 @@ public class RoleServiceImpl implements IRoleService {
         role.setId(roleId);
         role.setIsDel(DelFlagEnum.YES.getCode());
         role.setUpdateTime(new Date());
-        role.setUpdateRoleId(operatorId);
+        role.setUpdateUserId(operatorId);
         int num = roleDao.updateById(role);
 
         logger.debug("将 {} 条 数据删除", num);

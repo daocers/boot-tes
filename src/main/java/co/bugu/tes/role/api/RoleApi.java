@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @RestController
 @RequestMapping("/role/api")
@@ -30,40 +30,13 @@ public class RoleApi {
     @Autowired
     IRoleService roleService;
 
-
-    /**
-     * 登录，成功后返回用户token
-     *
-     * @param
-     * @return
-     * @auther daocers
-     * @date 2018/11/19 17:54
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public RespDto<String> login(String username, String password){
-        return RespDto.success("");
-    }
-
-    /**
-     * 退出登录，退出成功前端跳回首页
-     *
-     * @param
-     * @return
-     * @auther daocers
-     * @date 2018/11/19 17:55
-     */
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public RespDto<Boolean> logout(Long id, String token){
-        return RespDto.success(true);
-    }
-
     /**
      * 条件查询
      *
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<Role>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Role role) {
@@ -91,7 +64,7 @@ public class RoleApi {
      * @param role
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveRole(@RequestBody Role role) {
@@ -119,7 +92,7 @@ public class RoleApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.role.domain.Role>
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/findById")
     public RespDto<Role> findById(Long id) {
@@ -139,7 +112,7 @@ public class RoleApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 17:51
+     * @date 2018-11-19 19:29
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

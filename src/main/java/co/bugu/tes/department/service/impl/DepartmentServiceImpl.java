@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @Service
 public class DepartmentServiceImpl implements IDepartmentService {
@@ -95,7 +95,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         department.setId(departmentId);
         department.setIsDel(DelFlagEnum.YES.getCode());
         department.setUpdateTime(new Date());
-        department.setUpdateDepartmentId(operatorId);
+        department.setUpdateUserId(operatorId);
         int num = departmentDao.updateById(department);
 
         logger.debug("将 {} 条 数据删除", num);

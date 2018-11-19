@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @Service
 public class RolePermissionServiceImpl implements IRolePermissionService {
@@ -95,7 +95,7 @@ public class RolePermissionServiceImpl implements IRolePermissionService {
         rolePermission.setId(rolePermissionId);
         rolePermission.setIsDel(DelFlagEnum.YES.getCode());
         rolePermission.setUpdateTime(new Date());
-        rolePermission.setUpdateRolePermissionId(operatorId);
+        rolePermission.setUpdateUserId(operatorId);
         int num = rolePermissionDao.updateById(rolePermission);
 
         logger.debug("将 {} 条 数据删除", num);

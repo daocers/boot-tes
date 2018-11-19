@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:51
+ * @create 2018-11-19 19:29
  */
 @Service
 public class StationServiceImpl implements IStationService {
@@ -95,7 +95,7 @@ public class StationServiceImpl implements IStationService {
         station.setId(stationId);
         station.setIsDel(DelFlagEnum.YES.getCode());
         station.setUpdateTime(new Date());
-        station.setUpdateStationId(operatorId);
+        station.setUpdateUserId(operatorId);
         int num = stationDao.updateById(station);
 
         logger.debug("将 {} 条 数据删除", num);

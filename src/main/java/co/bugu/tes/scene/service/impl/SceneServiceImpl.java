@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author daocers
- * @create 2018-11-19 17:52
+ * @create 2018-11-19 19:29
  */
 @Service
 public class SceneServiceImpl implements ISceneService {
@@ -95,7 +95,7 @@ public class SceneServiceImpl implements ISceneService {
         scene.setId(sceneId);
         scene.setIsDel(DelFlagEnum.YES.getCode());
         scene.setUpdateTime(new Date());
-        scene.setUpdateSceneId(operatorId);
+        scene.setUpdateUserId(operatorId);
         int num = sceneDao.updateById(scene);
 
         logger.debug("将 {} 条 数据删除", num);
