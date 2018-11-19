@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.scene.dao.SceneDao">
+  <update id="updateById" parameterType="co.bugu.tes.scene.domain.Scene">
+    update tes_scene
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerType != null">
+        owner_type = #{ownerType,jdbcType=INTEGER},
+      </if>
+      <if test="ownerId != null">
+        owner_id = #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="authCode != null">
+        auth_code = #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="changePaper != null">
+        change_paper = #{changePaper,jdbcType=INTEGER},
+      </if>
+      <if test="delayTime != null">
+        delay_time = #{delayTime,jdbcType=INTEGER},
+      </if>
+      <if test="duration != null">
+        duration = #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="paperPolicyId != null">
+        paper_policy_id = #{paperPolicyId,jdbcType=BIGINT},
+      </if>
+      <if test="cancelReason != null">
+        cancel_reason = #{cancelReason,jdbcType=VARCHAR},
+      </if>
+      <if test="paperGenerateType != null">
+        paper_generate_type = #{paperGenerateType,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="questionBankId != null">
+        question_bank_id = #{questionBankId,jdbcType=BIGINT},
+      </if>
+      <if test="userChoiceType != null">
+        user_choice_type = #{userChoiceType,jdbcType=INTEGER},
+      </if>
+      <if test="totalScore != null">
+        total_score = #{totalScore,jdbcType=DOUBLE},
+      </if>
+      <if test="percentable != null">
+        percentable = #{percentable,jdbcType=INTEGER},
+      </if>
+      <if test="metaScoreInfo != null">
+        meta_score_info = #{metaScoreInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="openTime != null">
+        open_time = #{openTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="closeTime != null">
+        close_time = #{closeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from tes_scene
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="co.bugu.tes.scene.domain.Scene" useGeneratedKeys="true">
+    insert into tes_scene
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="code != null">
+        code,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="ownerType != null">
+        owner_type,
+      </if>
+      <if test="ownerId != null">
+        owner_id,
+      </if>
+      <if test="authCode != null">
+        auth_code,
+      </if>
+      <if test="changePaper != null">
+        change_paper,
+      </if>
+      <if test="delayTime != null">
+        delay_time,
+      </if>
+      <if test="duration != null">
+        duration,
+      </if>
+      <if test="paperPolicyId != null">
+        paper_policy_id,
+      </if>
+      <if test="cancelReason != null">
+        cancel_reason,
+      </if>
+      <if test="paperGenerateType != null">
+        paper_generate_type,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="questionBankId != null">
+        question_bank_id,
+      </if>
+      <if test="userChoiceType != null">
+        user_choice_type,
+      </if>
+      <if test="totalScore != null">
+        total_score,
+      </if>
+      <if test="percentable != null">
+        percentable,
+      </if>
+      <if test="metaScoreInfo != null">
+        meta_score_info,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="openTime != null">
+        open_time,
+      </if>
+      <if test="closeTime != null">
+        close_time,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerType != null">
+        #{ownerType,jdbcType=INTEGER},
+      </if>
+      <if test="ownerId != null">
+        #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="authCode != null">
+        #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="changePaper != null">
+        #{changePaper,jdbcType=INTEGER},
+      </if>
+      <if test="delayTime != null">
+        #{delayTime,jdbcType=INTEGER},
+      </if>
+      <if test="duration != null">
+        #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="paperPolicyId != null">
+        #{paperPolicyId,jdbcType=BIGINT},
+      </if>
+      <if test="cancelReason != null">
+        #{cancelReason,jdbcType=VARCHAR},
+      </if>
+      <if test="paperGenerateType != null">
+        #{paperGenerateType,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="questionBankId != null">
+        #{questionBankId,jdbcType=BIGINT},
+      </if>
+      <if test="userChoiceType != null">
+        #{userChoiceType,jdbcType=INTEGER},
+      </if>
+      <if test="totalScore != null">
+        #{totalScore,jdbcType=DOUBLE},
+      </if>
+      <if test="percentable != null">
+        #{percentable,jdbcType=INTEGER},
+      </if>
+      <if test="metaScoreInfo != null">
+        #{metaScoreInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="openTime != null">
+        #{openTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="closeTime != null">
+        #{closeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.scene.dao.SceneDao">
+    <resultMap id="BaseResultMap" type="co.bugu.tes.scene.domain.Scene">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="owner_type" jdbcType="INTEGER" property="ownerType" />
+    <result column="owner_id" jdbcType="BIGINT" property="ownerId" />
+    <result column="auth_code" jdbcType="VARCHAR" property="authCode" />
+    <result column="change_paper" jdbcType="INTEGER" property="changePaper" />
+    <result column="delay_time" jdbcType="INTEGER" property="delayTime" />
+    <result column="duration" jdbcType="INTEGER" property="duration" />
+    <result column="paper_policy_id" jdbcType="BIGINT" property="paperPolicyId" />
+    <result column="cancel_reason" jdbcType="VARCHAR" property="cancelReason" />
+    <result column="paper_generate_type" jdbcType="INTEGER" property="paperGenerateType" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="question_bank_id" jdbcType="BIGINT" property="questionBankId" />
+    <result column="user_choice_type" jdbcType="INTEGER" property="userChoiceType" />
+    <result column="total_score" jdbcType="DOUBLE" property="totalScore" />
+    <result column="percentable" jdbcType="INTEGER" property="percentable" />
+    <result column="meta_score_info" jdbcType="VARCHAR" property="metaScoreInfo" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="open_time" jdbcType="TIMESTAMP" property="openTime" />
+    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
+    <result column="is_del" jdbcType="INTEGER" property="isDel" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
+  </resultMap>
+    <sql id="Base_Column_List">
+    id, code, name, owner_type, owner_id, auth_code, change_paper, delay_time, duration, 
+    paper_policy_id, cancel_reason, paper_generate_type, remark, question_bank_id, user_choice_type, 
+    total_score, percentable, meta_score_info, status, open_time, close_time, is_del, 
+    create_time, create_user_id, update_time, update_user_id
+  </sql>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tes_scene
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="findByObject" parameterType="co.bugu.tes.scene.domain.Scene" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tes_scene
+      </select>
+</mapper>
