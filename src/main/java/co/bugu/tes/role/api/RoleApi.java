@@ -30,6 +30,21 @@ public class RoleApi {
     @Autowired
     IRoleService roleService;
 
+
+    /**
+     * 查找全部用户信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/20 13:45
+     */
+    @RequestMapping(value = "/findByUserId")
+    public RespDto<List<Role>> findByUserId(Long userId){
+        List<Role> roles = roleService.findByUserId(userId);
+        return RespDto.success(roles);
+    }
+
     /**
      * 条件查询
      *

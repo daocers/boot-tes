@@ -2,29 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="co.bugu.tes.rolePermission.dao.RolePermissionDao">
     <resultMap id="BaseResultMap" type="co.bugu.tes.rolePermission.domain.RolePermission">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="role_id" jdbcType="BIGINT" property="roleId" />
-    <result column="permission_id" jdbcType="BIGINT" property="permissionId" />
-    <result column="no" jdbcType="INTEGER" property="no" />
-    <result column="is_del" jdbcType="INTEGER" property="isDel" />
-    <result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <result column="permission_id" jdbcType="BIGINT" property="permissionId"/>
+        <result column="no" jdbcType="INTEGER" property="no"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="create_user_id" jdbcType="BIGINT" property="createUserId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
     <sql id="Base_Column_List">
     id, role_id, permission_id, no, is_del, create_user_id, create_time, update_user_id, 
     update_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tes_role_permission_x
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-    <select id="findByObject" parameterType="co.bugu.tes.rolePermission.domain.RolePermission" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tes_role_permission_x
-      </select>
+        select
+        <include refid="Base_Column_List"/>
+        from tes_role_permission_x
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="findByObject" parameterType="co.bugu.tes.rolePermission.domain.RolePermission"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tes_role_permission_x
+        <where>
+            is_del = 1
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+
+        </where>
+    </select>
 </mapper>

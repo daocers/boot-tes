@@ -4,6 +4,8 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.role.dao.RoleDao;
 import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.role.service.IRoleService;
+import co.bugu.tes.userRoleX.dao.UserRoleXDao;
+import co.bugu.tes.userRoleX.domain.UserRoleX;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +27,8 @@ import java.util.List;
 public class RoleServiceImpl implements IRoleService {
     @Autowired
     RoleDao roleDao;
+    @Autowired
+    UserRoleXDao userRoleXDao;
 
     private Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
 
@@ -100,6 +105,21 @@ public class RoleServiceImpl implements IRoleService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    public List<Role> findByUserId(Long userId) {
+        UserRoleX query = new UserRoleX();
+        query.setUserId(userId);
+        List<UserRoleX> xList = userRoleXDao.findByObject(query);
+        List<Role> list = new ArrayList<>(xList.size());
+
+        for (UserRoleX x : xList) {
+            Long roleId = x.getRoleId();
+            Role role = roleDao.selectById(roleId);
+            list.add(role);
+        }
+        return list;
     }
 
 }

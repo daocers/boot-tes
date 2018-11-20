@@ -73,4 +73,13 @@ public interface IRoleService {
      */
     int deleteById(Long roleId, Long operatorId);
 
+    /**
+     * 查找指定用户的所有角色
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/20 13:46
+     */
+    List<Role> findByUserId(Long userId);
 }
