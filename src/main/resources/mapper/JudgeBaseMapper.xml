@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.judge.dao.JudgeDao">
+  <update id="updateById" parameterType="co.bugu.tes.judge.domain.Judge">
+    update tes_judge
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="answer != null">
+        answer = #{answer,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="extraInfo != null">
+        extra_info = #{extraInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null">
+        bank_id = #{bankId,jdbcType=BIGINT},
+      </if>
+      <if test="branchId != null">
+        branch_id = #{branchId,jdbcType=BIGINT},
+      </if>
+      <if test="departmentId != null">
+        department_id = #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null">
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="ownerId != null">
+        owner_id = #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="publicFlag != null">
+        public_flag = #{publicFlag,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="attr1 != null">
+        attr_1 = #{attr1,jdbcType=INTEGER},
+      </if>
+      <if test="attr2 != null">
+        attr_2 = #{attr2,jdbcType=INTEGER},
+      </if>
+      <if test="attr3 != null">
+        attr_3 = #{attr3,jdbcType=INTEGER},
+      </if>
+      <if test="attr4 != null">
+        attr_4 = #{attr4,jdbcType=INTEGER},
+      </if>
+      <if test="attr5 != null">
+        attr_5 = #{attr5,jdbcType=INTEGER},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from tes_judge
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="co.bugu.tes.judge.domain.Judge" useGeneratedKeys="true">
+    insert into tes_judge
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="title != null">
+        title,
+      </if>
+      <if test="answer != null">
+        answer,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="extraInfo != null">
+        extra_info,
+      </if>
+      <if test="bankId != null">
+        bank_id,
+      </if>
+      <if test="branchId != null">
+        branch_id,
+      </if>
+      <if test="departmentId != null">
+        department_id,
+      </if>
+      <if test="stationId != null">
+        station_id,
+      </if>
+      <if test="ownerId != null">
+        owner_id,
+      </if>
+      <if test="publicFlag != null">
+        public_flag,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="attr1 != null">
+        attr_1,
+      </if>
+      <if test="attr2 != null">
+        attr_2,
+      </if>
+      <if test="attr3 != null">
+        attr_3,
+      </if>
+      <if test="attr4 != null">
+        attr_4,
+      </if>
+      <if test="attr5 != null">
+        attr_5,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="answer != null">
+        #{answer,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="extraInfo != null">
+        #{extraInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null">
+        #{bankId,jdbcType=BIGINT},
+      </if>
+      <if test="branchId != null">
+        #{branchId,jdbcType=BIGINT},
+      </if>
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null">
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="ownerId != null">
+        #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="publicFlag != null">
+        #{publicFlag,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="attr1 != null">
+        #{attr1,jdbcType=INTEGER},
+      </if>
+      <if test="attr2 != null">
+        #{attr2,jdbcType=INTEGER},
+      </if>
+      <if test="attr3 != null">
+        #{attr3,jdbcType=INTEGER},
+      </if>
+      <if test="attr4 != null">
+        #{attr4,jdbcType=INTEGER},
+      </if>
+      <if test="attr5 != null">
+        #{attr5,jdbcType=INTEGER},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

@@ -9,21 +9,35 @@ public class Scene {
 
     private String name;
 
-    private Integer ownerType;
+    private Long branchId;
 
-    private Long ownerId;
+    private Long departmentId;
+
+    private Long stationId;
 
     private String authCode;
 
     private Integer changePaper;
 
-    private Integer delayTime;
+    private Integer delayMinute;
 
     private Integer duration;
 
-    private Long paperPolicyId;
-
     private String cancelReason;
+
+    private Integer singleCount;
+
+    private Double singleScore;
+
+    private Integer multiCount;
+
+    private Double multiScore;
+
+    private Integer judgeCount;
+
+    private Double judgeScore;
+
+    private Long paperPolicyId;
 
     private Integer paperGenerateType;
 
@@ -79,20 +93,28 @@ public class Scene {
         this.name = name;
     }
 
-    public Integer getOwnerType() {
-        return ownerType;
+    public Long getBranchId() {
+        return branchId;
     }
 
-    public void setOwnerType(Integer ownerType) {
-        this.ownerType = ownerType;
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
     }
 
-    public Long getOwnerId() {
-        return ownerId;
+    public Long getDepartmentId() {
+        return departmentId;
     }
 
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public Long getStationId() {
+        return stationId;
+    }
+
+    public void setStationId(Long stationId) {
+        this.stationId = stationId;
     }
 
     public String getAuthCode() {
@@ -111,12 +133,12 @@ public class Scene {
         this.changePaper = changePaper;
     }
 
-    public Integer getDelayTime() {
-        return delayTime;
+    public Integer getDelayMinute() {
+        return delayMinute;
     }
 
-    public void setDelayTime(Integer delayTime) {
-        this.delayTime = delayTime;
+    public void setDelayMinute(Integer delayMinute) {
+        this.delayMinute = delayMinute;
     }
 
     public Integer getDuration() {
@@ -127,20 +149,68 @@ public class Scene {
         this.duration = duration;
     }
 
-    public Long getPaperPolicyId() {
-        return paperPolicyId;
-    }
-
-    public void setPaperPolicyId(Long paperPolicyId) {
-        this.paperPolicyId = paperPolicyId;
-    }
-
     public String getCancelReason() {
         return cancelReason;
     }
 
     public void setCancelReason(String cancelReason) {
         this.cancelReason = cancelReason;
+    }
+
+    public Integer getSingleCount() {
+        return singleCount;
+    }
+
+    public void setSingleCount(Integer singleCount) {
+        this.singleCount = singleCount;
+    }
+
+    public Double getSingleScore() {
+        return singleScore;
+    }
+
+    public void setSingleScore(Double singleScore) {
+        this.singleScore = singleScore;
+    }
+
+    public Integer getMultiCount() {
+        return multiCount;
+    }
+
+    public void setMultiCount(Integer multiCount) {
+        this.multiCount = multiCount;
+    }
+
+    public Double getMultiScore() {
+        return multiScore;
+    }
+
+    public void setMultiScore(Double multiScore) {
+        this.multiScore = multiScore;
+    }
+
+    public Integer getJudgeCount() {
+        return judgeCount;
+    }
+
+    public void setJudgeCount(Integer judgeCount) {
+        this.judgeCount = judgeCount;
+    }
+
+    public Double getJudgeScore() {
+        return judgeScore;
+    }
+
+    public void setJudgeScore(Double judgeScore) {
+        this.judgeScore = judgeScore;
+    }
+
+    public Long getPaperPolicyId() {
+        return paperPolicyId;
+    }
+
+    public void setPaperPolicyId(Long paperPolicyId) {
+        this.paperPolicyId = paperPolicyId;
     }
 
     public Integer getPaperGenerateType() {

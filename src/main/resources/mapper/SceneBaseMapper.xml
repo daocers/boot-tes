@@ -10,11 +10,14 @@
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="ownerType != null">
-        owner_type = #{ownerType,jdbcType=INTEGER},
+      <if test="branchId != null">
+        branch_id = #{branchId,jdbcType=BIGINT},
       </if>
-      <if test="ownerId != null">
-        owner_id = #{ownerId,jdbcType=BIGINT},
+      <if test="departmentId != null">
+        department_id = #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null">
+        station_id = #{stationId,jdbcType=BIGINT},
       </if>
       <if test="authCode != null">
         auth_code = #{authCode,jdbcType=VARCHAR},
@@ -22,17 +25,35 @@
       <if test="changePaper != null">
         change_paper = #{changePaper,jdbcType=INTEGER},
       </if>
-      <if test="delayTime != null">
-        delay_time = #{delayTime,jdbcType=INTEGER},
+      <if test="delayMinute != null">
+        delay_minute = #{delayMinute,jdbcType=INTEGER},
       </if>
       <if test="duration != null">
         duration = #{duration,jdbcType=INTEGER},
       </if>
-      <if test="paperPolicyId != null">
-        paper_policy_id = #{paperPolicyId,jdbcType=BIGINT},
-      </if>
       <if test="cancelReason != null">
         cancel_reason = #{cancelReason,jdbcType=VARCHAR},
+      </if>
+      <if test="singleCount != null">
+        single_count = #{singleCount,jdbcType=INTEGER},
+      </if>
+      <if test="singleScore != null">
+        single_score = #{singleScore,jdbcType=DOUBLE},
+      </if>
+      <if test="multiCount != null">
+        multi_count = #{multiCount,jdbcType=INTEGER},
+      </if>
+      <if test="multiScore != null">
+        multi_score = #{multiScore,jdbcType=DOUBLE},
+      </if>
+      <if test="judgeCount != null">
+        judge_count = #{judgeCount,jdbcType=INTEGER},
+      </if>
+      <if test="judgeScore != null">
+        judge_score = #{judgeScore,jdbcType=DOUBLE},
+      </if>
+      <if test="paperPolicyId != null">
+        paper_policy_id = #{paperPolicyId,jdbcType=BIGINT},
       </if>
       <if test="paperGenerateType != null">
         paper_generate_type = #{paperGenerateType,jdbcType=INTEGER},
@@ -95,11 +116,14 @@
       <if test="name != null">
         name,
       </if>
-      <if test="ownerType != null">
-        owner_type,
+      <if test="branchId != null">
+        branch_id,
       </if>
-      <if test="ownerId != null">
-        owner_id,
+      <if test="departmentId != null">
+        department_id,
+      </if>
+      <if test="stationId != null">
+        station_id,
       </if>
       <if test="authCode != null">
         auth_code,
@@ -107,17 +131,35 @@
       <if test="changePaper != null">
         change_paper,
       </if>
-      <if test="delayTime != null">
-        delay_time,
+      <if test="delayMinute != null">
+        delay_minute,
       </if>
       <if test="duration != null">
         duration,
       </if>
-      <if test="paperPolicyId != null">
-        paper_policy_id,
-      </if>
       <if test="cancelReason != null">
         cancel_reason,
+      </if>
+      <if test="singleCount != null">
+        single_count,
+      </if>
+      <if test="singleScore != null">
+        single_score,
+      </if>
+      <if test="multiCount != null">
+        multi_count,
+      </if>
+      <if test="multiScore != null">
+        multi_score,
+      </if>
+      <if test="judgeCount != null">
+        judge_count,
+      </if>
+      <if test="judgeScore != null">
+        judge_score,
+      </if>
+      <if test="paperPolicyId != null">
+        paper_policy_id,
       </if>
       <if test="paperGenerateType != null">
         paper_generate_type,
@@ -172,11 +214,14 @@
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="ownerType != null">
-        #{ownerType,jdbcType=INTEGER},
+      <if test="branchId != null">
+        #{branchId,jdbcType=BIGINT},
       </if>
-      <if test="ownerId != null">
-        #{ownerId,jdbcType=BIGINT},
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null">
+        #{stationId,jdbcType=BIGINT},
       </if>
       <if test="authCode != null">
         #{authCode,jdbcType=VARCHAR},
@@ -184,17 +229,35 @@
       <if test="changePaper != null">
         #{changePaper,jdbcType=INTEGER},
       </if>
-      <if test="delayTime != null">
-        #{delayTime,jdbcType=INTEGER},
+      <if test="delayMinute != null">
+        #{delayMinute,jdbcType=INTEGER},
       </if>
       <if test="duration != null">
         #{duration,jdbcType=INTEGER},
       </if>
-      <if test="paperPolicyId != null">
-        #{paperPolicyId,jdbcType=BIGINT},
-      </if>
       <if test="cancelReason != null">
         #{cancelReason,jdbcType=VARCHAR},
+      </if>
+      <if test="singleCount != null">
+        #{singleCount,jdbcType=INTEGER},
+      </if>
+      <if test="singleScore != null">
+        #{singleScore,jdbcType=DOUBLE},
+      </if>
+      <if test="multiCount != null">
+        #{multiCount,jdbcType=INTEGER},
+      </if>
+      <if test="multiScore != null">
+        #{multiScore,jdbcType=DOUBLE},
+      </if>
+      <if test="judgeCount != null">
+        #{judgeCount,jdbcType=INTEGER},
+      </if>
+      <if test="judgeScore != null">
+        #{judgeScore,jdbcType=DOUBLE},
+      </if>
+      <if test="paperPolicyId != null">
+        #{paperPolicyId,jdbcType=BIGINT},
       </if>
       <if test="paperGenerateType != null">
         #{paperGenerateType,jdbcType=INTEGER},

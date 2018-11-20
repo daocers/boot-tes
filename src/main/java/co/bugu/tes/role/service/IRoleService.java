@@ -9,7 +9,7 @@ import java.util.List;
  * service接口
  *
  * @author daocers
- * @create 2018-11-19 19:29
+ * @create 2018-11-20 17:15
  */
 public interface IRoleService {
 
@@ -73,13 +73,4 @@ public interface IRoleService {
      */
     int deleteById(Long roleId, Long operatorId);
 
-    /**
-     * 查找指定用户的所有角色
-     *
-     * @param
-     * @return
-     * @auther daocers
-     * @date 2018/11/20 13:46
-     */
-    List<Role> findByUserId(Long userId);
 }

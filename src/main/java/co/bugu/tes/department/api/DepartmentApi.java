@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 19:29
+ * @create 2018-11-20 17:15
  */
 @RestController
 @RequestMapping("/department/api")
@@ -36,7 +36,7 @@ public class DepartmentApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<Department>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Department department) {
@@ -64,7 +64,7 @@ public class DepartmentApi {
      * @param department
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveDepartment(@RequestBody Department department) {
@@ -92,7 +92,7 @@ public class DepartmentApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.department.domain.Department>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findById")
     public RespDto<Department> findById(Long id) {
@@ -112,7 +112,7 @@ public class DepartmentApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

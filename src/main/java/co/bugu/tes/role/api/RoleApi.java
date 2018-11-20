@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 19:29
+ * @create 2018-11-20 17:15
  */
 @RestController
 @RequestMapping("/role/api")
@@ -30,28 +30,13 @@ public class RoleApi {
     @Autowired
     IRoleService roleService;
 
-
-    /**
-     * 查找全部用户信息
-     *
-     * @param
-     * @return
-     * @auther daocers
-     * @date 2018/11/20 13:45
-     */
-    @RequestMapping(value = "/findByUserId")
-    public RespDto<List<Role>> findByUserId(Long userId){
-        List<Role> roles = roleService.findByUserId(userId);
-        return RespDto.success(roles);
-    }
-
     /**
      * 条件查询
      *
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<Role>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Role role) {
@@ -79,7 +64,7 @@ public class RoleApi {
      * @param role
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveRole(@RequestBody Role role) {
@@ -107,7 +92,7 @@ public class RoleApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.role.domain.Role>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findById")
     public RespDto<Role> findById(Long id) {
@@ -127,7 +112,7 @@ public class RoleApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

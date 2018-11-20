@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 19:29
+ * @create 2018-11-20 17:15
  */
 @RestController
 @RequestMapping("/permission/api")
@@ -36,7 +36,7 @@ public class PermissionApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<Permission>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Permission permission) {
@@ -64,7 +64,7 @@ public class PermissionApi {
      * @param permission
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> savePermission(@RequestBody Permission permission) {
@@ -92,7 +92,7 @@ public class PermissionApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.permission.domain.Permission>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findById")
     public RespDto<Permission> findById(Long id) {
@@ -112,7 +112,7 @@ public class PermissionApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

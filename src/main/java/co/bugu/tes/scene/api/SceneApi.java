@@ -20,7 +20,7 @@ import java.util.List;
  * 数据api
  *
  * @author daocers
- * @create 2018-11-19 19:29
+ * @create 2018-11-20 17:15
  */
 @RestController
 @RequestMapping("/scene/api")
@@ -36,7 +36,7 @@ public class SceneApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
     public RespDto<PageInfo<Scene>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Scene scene) {
@@ -64,7 +64,7 @@ public class SceneApi {
      * @param scene
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveScene(@RequestBody Scene scene) {
@@ -92,7 +92,7 @@ public class SceneApi {
      * @param id
      * @return co.bugu.common.RespDto<co.bugu.tes.scene.domain.Scene>
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findById")
     public RespDto<Scene> findById(Long id) {
@@ -112,7 +112,7 @@ public class SceneApi {
      * @param
      * @return
      * @author daocers
-     * @date 2018-11-19 19:29
+     * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public RespDto<Boolean> delete(Long id, Long operatorId) {

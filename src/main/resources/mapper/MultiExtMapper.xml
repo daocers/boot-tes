@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.multi.dao.MultiDao">
+    <resultMap id="BaseResultMap" type="co.bugu.tes.multi.domain.Multi">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="answer" jdbcType="VARCHAR" property="answer" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="extra_info" jdbcType="VARCHAR" property="extraInfo" />
+    <result column="bank_id" jdbcType="BIGINT" property="bankId" />
+    <result column="branch_id" jdbcType="BIGINT" property="branchId" />
+    <result column="department_id" jdbcType="BIGINT" property="departmentId" />
+    <result column="station_id" jdbcType="BIGINT" property="stationId" />
+    <result column="owner_id" jdbcType="BIGINT" property="ownerId" />
+    <result column="public_flag" jdbcType="INTEGER" property="publicFlag" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="attr_1" jdbcType="INTEGER" property="attr1" />
+    <result column="attr_2" jdbcType="INTEGER" property="attr2" />
+    <result column="attr_3" jdbcType="INTEGER" property="attr3" />
+    <result column="attr_4" jdbcType="INTEGER" property="attr4" />
+    <result column="attr_5" jdbcType="INTEGER" property="attr5" />
+    <result column="is_del" jdbcType="INTEGER" property="isDel" />
+    <result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+    <sql id="Base_Column_List">
+    id, title, answer, content, extra_info, bank_id, branch_id, department_id, station_id, 
+    owner_id, public_flag, status, attr_1, attr_2, attr_3, attr_4, attr_5, is_del, create_user_id, 
+    create_time, update_user_id, update_time
+  </sql>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tes_multi
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="findByObject" parameterType="co.bugu.tes.multi.domain.Multi" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tes_multi
+      </select>
+</mapper>
