@@ -73,4 +73,14 @@ public interface IJudgeService {
      */
     int deleteById(Long judgeId, Long operatorId);
 
+
+    /**
+     * 批量添加判断题
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/21 17:34
+     */
+    List<Judge> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
 }

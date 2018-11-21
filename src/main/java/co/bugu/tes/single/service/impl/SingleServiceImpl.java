@@ -1,6 +1,7 @@
 package co.bugu.tes.single.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.single.PublicFlagEnum;
 import co.bugu.tes.single.dao.SingleDao;
 import co.bugu.tes.single.domain.Single;
 import co.bugu.tes.single.service.ISingleService;
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Signature;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -100,6 +103,49 @@ public class SingleServiceImpl implements ISingleService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    public List<Single> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) {
+//        todo  校验数据完整性
+        Date now = new Date();
+        List<Single> singles = new ArrayList<>(data.size());
+        for(List<String> list: data){
+            Single single = new Single();
+            single.setIsDel(DelFlagEnum.NO.getCode());
+            single.setUpdateTime(now);
+            single.setCreateTime(now);
+            single.setCreateUserId(userId);
+            single.setUpdateUserId(userId);
+            single.setTitle(list.get(0));
+            single.setBankId(bankId);
+            single.setStationId(stationId);
+            single.setBranchId(branchId);
+            single.setDepartmentId(departmentId);
+            single.setStatus(1);
+            single.setPublicFlag(publicFlag);
+            List<String> content = new ArrayList<>();
+            content.add(list.get(1));
+            content.add(list.get(2));
+            content.add(list.get(3));
+            content.add(list.get(4));
+            content.add(list.get(5));
+            single.setContent(JSON.toJSONString(content, true));
+            single.setAnswer(list.get(6));
+            single.setExtraInfo(list.get(7));
+//            todo 处理属性值
+
+            single.setAttr1(1);
+            single.setAttr2(1);
+            single.setAttr3(1);
+            single.setAttr4(1);
+            single.setAttr5(1);
+            singles.add(single);
+
+        }
+
+        singleDao.batchAdd(singles);
+        return singles;
     }
 
 }

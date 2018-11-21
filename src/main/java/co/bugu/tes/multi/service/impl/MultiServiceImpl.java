@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -100,6 +101,50 @@ public class MultiServiceImpl implements IMultiService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    public List<Multi> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) {
+
+//        todo  校验数据完整性
+        Date now = new Date();
+        List<Multi> multis = new ArrayList<>(data.size());
+        for(List<String> list: data){
+            Multi multi = new Multi();
+            multi.setIsDel(DelFlagEnum.NO.getCode());
+            multi.setUpdateTime(now);
+            multi.setCreateTime(now);
+            multi.setCreateUserId(userId);
+            multi.setUpdateUserId(userId);
+            multi.setTitle(list.get(0));
+            multi.setBankId(bankId);
+            multi.setStationId(stationId);
+            multi.setBranchId(branchId);
+            multi.setDepartmentId(departmentId);
+            multi.setStatus(1);
+            multi.setPublicFlag(publicFlag);
+            List<String> content = new ArrayList<>();
+            content.add(list.get(1));
+            content.add(list.get(2));
+            content.add(list.get(3));
+            content.add(list.get(4));
+            content.add(list.get(5));
+            multi.setContent(JSON.toJSONString(content, true));
+            multi.setAnswer(list.get(6));
+            multi.setExtraInfo(list.get(7));
+//            todo 处理属性值
+
+            multi.setAttr1(1);
+            multi.setAttr2(1);
+            multi.setAttr3(1);
+            multi.setAttr4(1);
+            multi.setAttr5(1);
+            multis.add(multi);
+
+        }
+
+        multiDao.batchAdd(multis);
+        return multis;
     }
 
 }

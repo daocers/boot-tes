@@ -3,6 +3,8 @@ package co.bugu.tes.multi.api;
 import co.bugu.common.RespDto;
 import co.bugu.tes.multi.domain.Multi;
 import co.bugu.tes.multi.service.IMultiService;
+import co.bugu.tes.single.api.SingleApi;
+import co.bugu.util.ExcelUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -13,7 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -126,6 +135,64 @@ public class MultiApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+
+
+    /**
+     * 下载多选题模板
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/21 9:56
+     */
+    @RequestMapping(value = "/downloadModel")
+    public void downloadModel(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" + new String(("多选题模板.xlsx").getBytes(), "iso-8859-1"));
+            OutputStream os = response.getOutputStream();
+            String rootPath = request.getServletContext().getRealPath("/");
+
+            InputStream is = new BufferedInputStream(SingleApi.class.getClassLoader().getResourceAsStream("models/多选题模板.xlsx"));
+            byte[] buffer = new byte[1024];
+
+            while (is.read(buffer) != -1) {
+                os.write(buffer);
+            }
+            os.close();
+            is.close();
+        } catch (Exception e) {
+            logger.error("下载多选题模板失败", e);
+        }
+    }
+
+
+    /**
+     * 批量添加试题
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/21 11:39
+     */
+    @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
+    public RespDto batchAdd(MultipartFile file, Long questionBankId) {
+//        String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
+        File target = new File("e:/test.xlsx");
+        try {
+            file.transferTo(target);
+            List<List<String>> data = ExcelUtil.getData(target);
+            logger.info("批量导入试题，", JSON.toJSONString(data, true));
+            data.remove(0);
+            List<Multi> multis = multiService.batchAdd(data, 1L, questionBankId, 1L, 1L, 1L, 1);
+            return RespDto.success();
+        } catch (Exception e) {
+            logger.error("批量添加多选题失败", e);
+            return RespDto.fail("批量添加多选题失败");
+        }
+
     }
 }
 

@@ -73,4 +73,15 @@ public interface ISingleService {
      */
     int deleteById(Long singleId, Long operatorId);
 
+
+    /**
+     * 批量添加
+     *
+     * @param publicFlag  是否公开 1 公开， 2 私有
+     * @param userId   操作的用户id
+     * @return
+     * @auther daocers
+     * @date 2018/11/21 11:41
+     */
+    List<Single> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
 }

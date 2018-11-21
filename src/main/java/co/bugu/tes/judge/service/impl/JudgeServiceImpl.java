@@ -4,6 +4,8 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.judge.dao.JudgeDao;
 import co.bugu.tes.judge.domain.Judge;
 import co.bugu.tes.judge.service.IJudgeService;
+import co.bugu.tes.multi.domain.Multi;
+import co.bugu.tes.single.domain.Single;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -100,6 +103,43 @@ public class JudgeServiceImpl implements IJudgeService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    public List<Judge> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) {
+
+//        todo  校验数据完整性
+        Date now = new Date();
+        List<Judge> judges = new ArrayList<>(data.size());
+        for(List<String> list: data){
+            Judge judge = new Judge();
+            judge.setIsDel(DelFlagEnum.NO.getCode());
+            judge.setUpdateTime(now);
+            judge.setCreateTime(now);
+            judge.setCreateUserId(userId);
+            judge.setUpdateUserId(userId);
+            judge.setTitle(list.get(0));
+            judge.setBankId(bankId);
+            judge.setStationId(stationId);
+            judge.setBranchId(branchId);
+            judge.setDepartmentId(departmentId);
+            judge.setStatus(1);
+            judge.setPublicFlag(publicFlag);
+            judge.setAnswer(list.get(1));
+            judge.setExtraInfo(list.get(2));
+//            todo 处理属性值
+
+            judge.setAttr1(1);
+            judge.setAttr2(1);
+            judge.setAttr3(1);
+            judge.setAttr4(1);
+            judge.setAttr5(1);
+            judges.add(judge);
+
+        }
+
+        judgeDao.batchAdd(judges);
+        return judges;
     }
 
 }

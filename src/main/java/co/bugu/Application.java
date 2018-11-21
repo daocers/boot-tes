@@ -23,11 +23,18 @@ public class Application {
 
 
     @Bean
-    public FilterRegistrationBean filterRegistrationBean(){
+    public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(new CORSFilter());
         bean.setName("cors");
         bean.addUrlPatterns("/*");
         return bean;
     }
+
+
+//    @Bean
+//    public ApplicationContextUtil applicationContextUtil() {
+//        return new ApplicationContextUtil();
+//    }
+
 }

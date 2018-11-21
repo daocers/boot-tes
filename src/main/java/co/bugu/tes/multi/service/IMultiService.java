@@ -73,4 +73,13 @@ public interface IMultiService {
      */
     int deleteById(Long multiId, Long operatorId);
 
+    /**
+     * 批量添加多选题
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/21 17:33
+     */
+    List<Multi> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
 }

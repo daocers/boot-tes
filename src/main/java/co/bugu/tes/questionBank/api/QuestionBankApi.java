@@ -3,6 +3,8 @@ package co.bugu.tes.questionBank.api;
 import co.bugu.common.RespDto;
 import co.bugu.tes.questionBank.domain.QuestionBank;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -29,6 +31,16 @@ public class QuestionBankApi {
 
     @Autowired
     IQuestionBankService questionBankService;
+
+    @RequestMapping(value = "/findAll")
+    public RespDto<List<QuestionBank>> findAll(){
+//        todo 获取用户信息
+        User user = UserUtil.getCurrentUser();
+        QuestionBank query = new QuestionBank();
+//        todo 筛选权限
+        List<QuestionBank> banks = questionBankService.findByCondition(query);
+        return RespDto.success(banks);
+    }
 
     /**
      * 条件查询
