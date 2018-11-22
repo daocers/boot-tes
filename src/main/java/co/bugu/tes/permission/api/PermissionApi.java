@@ -1,7 +1,9 @@
 package co.bugu.tes.permission.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.tes.permission.agent.PermissionAgent;
 import co.bugu.tes.permission.domain.Permission;
+import co.bugu.tes.permission.dto.PermissionTreeDto;
 import co.bugu.tes.permission.service.IPermissionService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
@@ -29,6 +31,9 @@ public class PermissionApi {
 
     @Autowired
     IPermissionService permissionService;
+
+    @Autowired
+    PermissionAgent permissionAgent;
 
     /**
      * 条件查询
@@ -67,18 +72,18 @@ public class PermissionApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public RespDto<Boolean> savePermission(@RequestBody Permission permission) {
+    public RespDto<Long> savePermission(@RequestBody Permission permission) {
         try {
             Long permissionId = permission.getId();
-            if(null == permissionId){
+            if (null == permissionId) {
                 logger.debug("保存， savePermission, 参数： {}", JSON.toJSONString(permission, true));
                 permissionId = permissionService.add(permission);
                 logger.info("新增 成功， id: {}", permissionId);
-            }else{
+            } else {
                 permissionService.updateById(permission);
                 logger.debug("更新成功", JSON.toJSONString(permission, true));
             }
-            return RespDto.success(permissionId != null);
+            return RespDto.success(permissionId);
         } catch (Exception e) {
             logger.error("保存 permission 失败", e);
             return RespDto.fail();
@@ -126,6 +131,21 @@ public class PermissionApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+
+    /**
+     * 权限树
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/22 18:04
+     */
+    @RequestMapping(value = "/getPermissionTree")
+    public RespDto<List<PermissionTreeDto>> getPermissionTree() {
+        List<PermissionTreeDto> list = permissionAgent.getPermissionTree();
+        return RespDto.success(list);
     }
 }
 

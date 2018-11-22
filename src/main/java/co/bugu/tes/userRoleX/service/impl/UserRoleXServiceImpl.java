@@ -102,4 +102,15 @@ public class UserRoleXServiceImpl implements IUserRoleXService {
         return num;
     }
 
+    @Override
+    public void deleteByUserId(Long userId) {
+        userRoleXDao.deleteByUserId(userId);
+    }
+
+    @Override
+    public List<UserRoleX> batchAdd(List<UserRoleX> xList) {
+        userRoleXDao.batchAdd(xList);
+        return xList;
+    }
+
 }

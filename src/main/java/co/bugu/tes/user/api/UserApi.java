@@ -1,9 +1,13 @@
 package co.bugu.tes.user.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
+import co.bugu.tes.userRoleX.domain.UserRoleX;
+import co.bugu.tes.userRoleX.service.IUserRoleXService;
 import co.bugu.util.TokenUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +38,9 @@ public class UserApi {
 
     @Autowired
     IUserService userService;
+
+    @Autowired
+    IUserRoleXService userRoleXService;
 
 
 
@@ -186,6 +194,50 @@ public class UserApi {
             return RespDto.success(count == 1);
         } catch (Exception e) {
             logger.error("删除 失败", e);
+            return RespDto.fail();
+        }
+    }
+
+
+
+    /***
+     * 分配角色
+     * @author daocers
+     * @date 2017/12/8 9:29
+     * @param userId
+     * @param roleIdList
+     * @return co.bugu.common.RespDto<java.lang.Boolean>
+     */
+    @RequestMapping(value = "/assignRole", method = RequestMethod.POST)
+    public RespDto<Boolean> assignRole(Long userId, @RequestBody List<Long> roleIdList) {
+        try {
+            Preconditions.checkArgument(null != userId);
+            Preconditions.checkArgument(CollectionUtils.isNotEmpty(roleIdList));
+            Long currentUserId = UserUtil.getCurrentUser().getId();
+
+            UserRoleX delete = new UserRoleX();
+            delete.setUpdateUserId(currentUserId);
+            delete.setUserId(userId);
+
+            List<UserRoleX> xList = new ArrayList<>();
+            int index = 0;
+            for (Long roleId : roleIdList) {
+                UserRoleX x = new UserRoleX();
+                x.setUserId(userId);
+                x.setIsDel(DelFlagEnum.NO.getCode());
+                x.setNo(index++);
+                x.setRoleId(roleId);
+                x.setCreateUserId(currentUserId);
+                x.setUpdateUserId(currentUserId);
+                xList.add(x);
+            }
+//            boolean result = userRoleXService.assignRole(delete, xList);
+            userRoleXService.deleteByUserId(userId);
+            userRoleXService.batchAdd(xList);
+            return RespDto.success(true);
+
+        } catch (Exception e) {
+            logger.error("分配角色失败", e);
             return RespDto.fail();
         }
     }

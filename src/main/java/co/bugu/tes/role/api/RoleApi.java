@@ -1,18 +1,21 @@
 package co.bugu.tes.role.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.role.service.IRoleService;
+import co.bugu.tes.userRoleX.domain.UserRoleX;
+import co.bugu.tes.userRoleX.service.IUserRoleXService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +32,8 @@ public class RoleApi {
 
     @Autowired
     IRoleService roleService;
+    @Autowired
+    IUserRoleXService userRoleXService;
 
     /**
      * 条件查询
@@ -56,6 +61,31 @@ public class RoleApi {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();
         }
+    }
+
+
+    /**
+     * 查找指定用户的角色id列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/22 20:01
+     */
+    @RequestMapping(value = "/findByUserId")
+    public RespDto<List<Long>> findByUserId(Long userId){
+        UserRoleX query = new UserRoleX();
+        query.setUserId(userId);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        List<UserRoleX> roles = userRoleXService.findByCondition(query);
+        List<Long> ids = Lists.transform(roles, new Function<UserRoleX, Long>() {
+            @Override
+            public Long apply(@Nullable UserRoleX userRoleX) {
+                return userRoleX.getRoleId();
+            }
+        });
+        return RespDto.success(ids);
+
     }
 
     /**
@@ -125,6 +155,18 @@ public class RoleApi {
         } catch (Exception e) {
             logger.error("删除 失败", e);
             return RespDto.fail();
+        }
+    }
+
+
+    @RequestMapping(value = "/findAll")
+    public RespDto<List<Role>> findAll(){
+        try{
+            List<Role> roles = roleService.findByCondition(null);
+            return RespDto.success(roles);
+        }catch (Exception e){
+            logger.info("查询全部角色失败", e);
+            return RespDto.fail("查询全部角色失败");
         }
     }
 }

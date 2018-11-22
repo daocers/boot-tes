@@ -73,4 +73,23 @@ public interface IUserRoleXService {
      */
     int deleteById(Long userRoleXId, Long operatorId);
 
+    /**
+     * 删除用户的角色关联信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/22 19:20
+     */
+    void deleteByUserId(Long userId);
+
+    /**
+     * 批量添加用户角色信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/22 19:20
+     */
+    List<UserRoleX> batchAdd(List<UserRoleX> xList);
 }
