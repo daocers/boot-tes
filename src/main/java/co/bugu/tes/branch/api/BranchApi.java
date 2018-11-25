@@ -1,7 +1,9 @@
 package co.bugu.tes.branch.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.tes.branch.agent.BranchAgent;
 import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.dto.BranchTreeDto;
 import co.bugu.tes.branch.service.IBranchService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
@@ -29,6 +31,28 @@ public class BranchApi {
 
     @Autowired
     IBranchService branchService;
+
+    @Autowired
+    BranchAgent branchAgent;
+
+
+
+    /***
+     * 获取机构树 数据
+     * @Time 2017/11/25 17:53
+     * @Author daocers
+     * @return co.bugu.common.RespDto<java.util.List<co.bugu.tes.branch.BranchTreeVo>>
+     */
+    @RequestMapping(value = "/getBranchTree")
+    public RespDto<List<BranchTreeDto>> getBranchTree() {
+        try {
+            List<BranchTreeDto> treeDtos = branchAgent.getBranchTree();
+            return RespDto.success(treeDtos);
+        } catch (Exception e) {
+            logger.error("获取机构树失败", e);
+            return RespDto.fail();
+        }
+    }
 
     /**
      * 条件查询
@@ -67,7 +91,7 @@ public class BranchApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public RespDto<Boolean> saveBranch(@RequestBody Branch branch) {
+    public RespDto<Long> saveBranch(@RequestBody Branch branch) {
         try {
             Long branchId = branch.getId();
             if(null == branchId){
@@ -78,7 +102,7 @@ public class BranchApi {
                 branchService.updateById(branch);
                 logger.debug("更新成功", JSON.toJSONString(branch, true));
             }
-            return RespDto.success(branchId != null);
+            return RespDto.success(branchId);
         } catch (Exception e) {
             logger.error("保存 branch 失败", e);
             return RespDto.fail();

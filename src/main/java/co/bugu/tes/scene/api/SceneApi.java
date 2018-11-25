@@ -1,8 +1,11 @@
 package co.bugu.tes.scene.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.service.ISceneService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -29,6 +32,22 @@ public class SceneApi {
 
     @Autowired
     ISceneService sceneService;
+
+    @RequestMapping("/myOpen")
+    public RespDto<PageInfo<Scene>> findMyOpen(Integer pageNum, Integer pageSize) {
+        try {
+            User user = UserUtil.getCurrentUser();
+            Long userId = user.getId();
+            Scene query = new Scene();
+            query.setCreateUserId(userId);
+            query.setIsDel(DelFlagEnum.NO.getCode());
+            PageInfo<Scene> pageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
+            return RespDto.success(pageInfo);
+        } catch (Exception e) {
+            logger.error("获取我开场的信息失败", e);
+            return RespDto.fail("获取场次信息失败");
+        }
+    }
 
     /**
      * 条件查询
@@ -70,11 +89,11 @@ public class SceneApi {
     public RespDto<Boolean> saveScene(@RequestBody Scene scene) {
         try {
             Long sceneId = scene.getId();
-            if(null == sceneId){
+            if (null == sceneId) {
                 logger.debug("保存， saveScene, 参数： {}", JSON.toJSONString(scene, true));
                 sceneId = sceneService.add(scene);
                 logger.info("新增 成功， id: {}", sceneId);
-            }else{
+            } else {
                 sceneService.updateById(scene);
                 logger.debug("更新成功", JSON.toJSONString(scene, true));
             }
