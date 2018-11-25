@@ -83,4 +83,14 @@ public interface IJudgeService {
      * @date 2018/11/21 17:34
      */
     List<Judge> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
+
+    /**
+     * 获取指定题型的id列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/25 21:55
+     */
+    List<Long> getAllIds(Judge judge);
 }

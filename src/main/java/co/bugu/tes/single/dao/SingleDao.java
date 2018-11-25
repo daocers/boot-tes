@@ -15,4 +15,6 @@ public interface SingleDao extends BaseDao<Single>{
      * @date 2018/11/21 14:25
      */
     void batchAdd(List<Single> singles);
+
+    List<Long> getAllIds(Single single);
 }

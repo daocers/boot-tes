@@ -84,4 +84,14 @@ public interface ISingleService {
      * @date 2018/11/21 11:41
      */
     List<Single> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
+
+    /**
+     * 
+     *
+     * @param 
+     * @return 
+     * @auther daocers
+     * @date 2018/11/25 22:06
+     */
+    List<Long> getAllIds(Single single);
 }

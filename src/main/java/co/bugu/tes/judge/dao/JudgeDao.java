@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface JudgeDao extends BaseDao<Judge>{
     void batchAdd(List<Judge> judges);
+
+    List<Long> getAllIds(Judge judge);
 }

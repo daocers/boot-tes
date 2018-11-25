@@ -147,4 +147,9 @@ public class MultiServiceImpl implements IMultiService {
         return multis;
     }
 
+    @Override
+    public List<Long> getAllIds(Multi multi) {
+        return multiDao.getAllIds(multi);
+    }
+
 }

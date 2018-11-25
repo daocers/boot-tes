@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MultiDao extends BaseDao<Multi>{
     void batchAdd(List<Multi> multis);
+
+    List<Long> getAllIds(Multi multi);
 }

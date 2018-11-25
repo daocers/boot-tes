@@ -148,4 +148,9 @@ public class SingleServiceImpl implements ISingleService {
         return singles;
     }
 
+    @Override
+    public List<Long> getAllIds(Single single) {
+        return singleDao.getAllIds(single);
+    }
+
 }

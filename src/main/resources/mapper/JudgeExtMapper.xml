@@ -53,4 +53,30 @@
             #{item.attr4}, #{item.attr5}, 1, #{item.createUserId}, #{item.updateUserId})
         </foreach>
     </insert>
+
+
+    <select id="getAllIds" parameterType="co.bugu.tes.judge.domain.Judge" resultType="long">
+        select id from tes_judge
+        <where>
+            is_del = 1
+            <if test="bankId != null">
+                and bank_id = #{bankId}
+            </if>
+            <if test="param1 != null">
+                and param1 = #{param1}
+            </if>
+            <if test="param2 != null">
+                and param2 = #{param2}
+            </if>
+            <if test="param3 != null">
+                and param3 = #{param3}
+            </if>
+            <if test="param4 != null">
+                and param4 = #{param4}
+            </if>
+            <if test="param5 != null">
+                and param5 = #{param5}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -3,6 +3,7 @@ package co.bugu.tes.paper.service.impl;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.paper.dao.PaperDao;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -100,6 +102,23 @@ public class PaperServiceImpl implements IPaperService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, timeout = 3000)
+    public Long createPaper(Long sceneId, Long userId, List<Long> ids) {
+        Date now = new Date();
+        Paper paper = new Paper();
+        paper.setSceneId(sceneId);
+        paper.setUserId(userId);
+        paper.setCreateTime(now);
+        paper.setUpdateTime(now);
+        paper.setIsDel(DelFlagEnum.NO.getCode());
+        paper.setStatus(PaperStatusEnum.OK.getCode());
+        paper.setCreateUserId(userId);
+        paper.setUpdateUserId(userId);
+//        todo
+        return null;
     }
 
 }

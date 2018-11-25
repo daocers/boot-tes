@@ -82,4 +82,14 @@ public interface IMultiService {
      * @date 2018/11/21 17:33
      */
     List<Multi> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
+
+    /**
+     * 
+     *
+     * @param 
+     * @return 
+     * @auther daocers
+     * @date 2018/11/25 22:05
+     */
+    List<Long> getAllIds(Multi multi);
 }

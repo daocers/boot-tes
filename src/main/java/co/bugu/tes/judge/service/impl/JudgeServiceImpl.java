@@ -142,4 +142,9 @@ public class JudgeServiceImpl implements IJudgeService {
         return judges;
     }
 
+    @Override
+    public List<Long> getAllIds(Judge judge) {
+        return judgeDao.getAllIds(judge);
+    }
+
 }

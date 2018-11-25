@@ -73,4 +73,13 @@ public interface IPaperService {
      */
     int deleteById(Long paperId, Long operatorId);
 
+    /**
+     * 
+     *
+     * @param 
+     * @return 
+     * @auther daocers
+     * @date 2018/11/25 22:11
+     */
+    Long createPaper(Long sceneId, Long userId, List<Long> ids);
 }
