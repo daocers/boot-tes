@@ -1,4 +1,4 @@
-package co.bugu.tes.paper.agnet;
+package co.bugu.tes.paper.agent;
 
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.exam.dto.QuestionDto;
@@ -17,7 +17,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,15 +53,20 @@ public class PaperAgent {
         Long questionId = answer.getQuestionId();
         Integer questionType = answer.getQuestionType();
         QuestionDto dto = new QuestionDto();
+        dto.setQuestionType(questionType);
+        dto.setAnswerId(answer.getId());
         if (QuestionTypeEnum.SINGLE.getCode() == questionType) {
             Single single = singleService.findById(questionId);
             BeanUtils.copyProperties(single, dto);
+//            dto.setRealAnswer(single.getAnswer());
         } else if (QuestionTypeEnum.MULTI.getCode() == questionType) {
             Multi multi = multiService.findById(questionId);
             BeanUtils.copyProperties(multi, dto);
+//            dto.setRealAnswer(multi.getAnswer());
         } else if (QuestionTypeEnum.JUDGE.getCode() == questionType) {
             Judge judge = judgeService.findById(questionId);
             BeanUtils.copyProperties(judge, dto);
+//            dto.setRealAnswer(judge.getAnswer());
         }
         return dto;
     }
@@ -71,11 +75,11 @@ public class PaperAgent {
      * 生成个人试卷
      *
      * @param
-     * @return
+     * @return 试卷id
      * @auther daocers
      * @date 2018/11/25 21:06
      */
-    public Boolean generatePaper(Long sceneId, Long userId) throws Exception {
+    public Long generatePaper(Long sceneId, Long userId) throws Exception {
         Preconditions.checkArgument(null != sceneId);
         Preconditions.checkArgument(null != userId);
         Scene scene = sceneService.findById(sceneId);
@@ -89,17 +93,24 @@ public class PaperAgent {
         Long paperPolicyId = scene.getPaperPolicyId();
         Integer paperGenerateType = scene.getPaperGenerateType();
 
-        List<Long> ids = null;
+        List<Long> sIds = null;
+        List<Long> mIds = null;
+        List<Long> jIds = null;
         if (paperPolicyId > 0) {
 //            策略出题
-            ids = getQuestionIdListByPolicy(paperPolicyId, paperGenerateType, bankId, singleCount, multiCount, judgeCount);
+            sIds = getQuestionIdListByPolicy(paperPolicyId, paperGenerateType, bankId, QuestionTypeEnum.SINGLE.getCode(), singleCount);
+            mIds = getQuestionIdListByPolicy(paperPolicyId, paperGenerateType, bankId, QuestionTypeEnum.MULTI.getCode(), multiCount);
+            jIds = getQuestionIdListByPolicy(paperPolicyId, paperGenerateType, bankId, QuestionTypeEnum.JUDGE.getCode(), judgeCount);
         } else {
 //            简单出题
 
-            ids = getQuestionIdListInSimple(paperGenerateType, bankId, singleCount, multiCount, judgeCount);
+            sIds = getQuestionIdListInSimple(paperGenerateType, bankId, QuestionTypeEnum.SINGLE.getCode(), singleCount);
+            mIds = getQuestionIdListInSimple(paperGenerateType, bankId, QuestionTypeEnum.MULTI.getCode(), multiCount);
+            jIds = getQuestionIdListInSimple(paperGenerateType, bankId, QuestionTypeEnum.JUDGE.getCode(), judgeCount);
         }
 
-        paperService.createPaper(sceneId, userId, ids);
+        Long paperId = paperService.createPaper(sceneId, userId, sIds, mIds, jIds);
+        return paperId;
 
     }
 
@@ -111,40 +122,30 @@ public class PaperAgent {
      * @auther daocers
      * @date 2018/11/25 21:36
      */
-    private List<Long> getQuestionIdListInSimple(Integer paperGenerateType, Long bankId, Integer singleCount, Integer multiCount, Integer judgeCount) throws Exception {
+    private List<Long> getQuestionIdListInSimple(Integer paperGenerateType, Long bankId, Integer questionType, Integer count) throws Exception {
 //      TODO  出卷方式待完善   1 随机， 2 统一，3 统一乱序
-        Single single = new Single();
-        single.setBankId(bankId);
-        Multi multi = new Multi();
-        multi.setBankId(bankId);
-        Judge judge = new Judge();
-        judge.setBankId(bankId);
-        List<Long> singleIds = singleService.getAllIds(single);
-        List<Long> multiIds = multiService.getAllIds(multi);
-        List<Long> judgeIds = judgeService.getAllIds(judge);
-        if (singleIds.size() < singleCount) {
-            throw new Exception("单选题数量不足");
-        }
-        if (multiIds.size() < multiCount) {
-            throw new Exception("多选题数量不足");
-        }
-
-        if (judgeIds.size() < judgeCount) {
-            throw new Exception("判断题数量不足");
+        List<Long> ids = null;
+        if (questionType == QuestionTypeEnum.SINGLE.getCode()) {
+            Single single = new Single();
+            single.setBankId(bankId);
+            ids = singleService.getAllIds(single);
+        } else if (questionType == QuestionTypeEnum.MULTI.getCode()) {
+            Multi multi = new Multi();
+            multi.setBankId(bankId);
+            ids = multiService.getAllIds(multi);
+        } else if (questionType == QuestionTypeEnum.JUDGE.getCode()) {
+            Judge judge = new Judge();
+            judge.setBankId(bankId);
+            ids = judgeService.getAllIds(judge);
         }
 
-        List<Long> res = new ArrayList<>();
-        Collections.shuffle(singleIds);
-        List<Long> sIds = singleIds.subList(0, singleCount);
-        Collections.shuffle(multiIds);
-        List<Long> mIds = multiIds.subList(0, multiCount);
-        Collections.shuffle(judgeIds);
-        List<Long> jIds = judgeIds.subList(0, judgeCount);
-        res.addAll(sIds);
-        res.addAll(mIds);
-        res.addAll(jIds);
+        if (ids.size() < count) {
+            throw new Exception("试题数量不足");
+        }
 
-        return res;
+        Collections.shuffle(ids);
+        List<Long> list = ids.subList(0, count);
+        return list;
 
     }
 
@@ -157,7 +158,7 @@ public class PaperAgent {
      * @auther daocers
      * @date 2018/11/25 21:37
      */
-    private List<Long> getQuestionIdListByPolicy(Long paperPolicyId, Integer paperGenerateType, Long bankId, Integer singleCount, Integer multiCount, Integer judgeCount) {
+    private List<Long> getQuestionIdListByPolicy(Long paperPolicyId, Integer paperGenerateType, Long bankId, Integer questionType, Integer count) {
 //        todo 策略模式待开发
         return null;
     }

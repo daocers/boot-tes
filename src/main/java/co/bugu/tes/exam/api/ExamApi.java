@@ -5,7 +5,7 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.answer.service.IAnswerService;
 import co.bugu.tes.exam.dto.QuestionDto;
-import co.bugu.tes.paper.agnet.PaperAgent;
+import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
@@ -98,7 +98,7 @@ public class ExamApi {
      * @date 2018/11/25 20:15
      */
     @RequestMapping(value = "/getQuestionList")
-    public RespDto<List<QuestionDto>> getQuestionList() {
+    public RespDto<List<QuestionDto>> getQuestionList(Long sceneId) {
         User user = UserUtil.getCurrentUser();
         Long userId = user.getId();
 
@@ -128,17 +128,74 @@ public class ExamApi {
     }
 
 
-    @RequestMapping(value = "/generatePaper", method = RequestMethod.POST)
-    public RespDto<Boolean> generatePaper(Long sceneId){
-        User user = UserUtil.getCurrentUser();
-        Long userId = user.getId();
+    /**
+     * 生成试卷
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/26 11:17
+     */
+    @RequestMapping(value = "/getPaper", method = RequestMethod.POST)
+    public RespDto<Long> getPaper(Long sceneId) {
+        try {
+            User user = UserUtil.getCurrentUser();
+            Long userId = user.getId();
 
-        Boolean res = paperAgent.generatePaper(sceneId, userId);
-        if(res){
-            return RespDto.success(true);
-        }else{
-            logger.warn("生成试卷失败");
+            Paper query = new Paper();
+            query.setIsDel(DelFlagEnum.NO.getCode());
+            query.setSceneId(sceneId);
+            query.setUserId(userId);
+            query.setStatus(PaperStatusEnum.OK.getCode());
+            List<Paper> list = paperService.findByCondition(query);
+            if (CollectionUtils.isNotEmpty(list)) {
+                logger.info("已经生成过试卷了，直接进入考试");
+                return RespDto.success(list.get(0).getId());
+            }
+
+            Long paperId = paperAgent.generatePaper(sceneId, userId);
+            return RespDto.success(paperId);
+        } catch (Exception e) {
+            logger.error("生成试卷失败", e);
             return RespDto.fail("生成试卷失败");
         }
+
+
+    }
+
+
+    /**
+     * 获取本场考试还剩下多少时间，单位毫秒
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/26 14:55
+     */
+    @RequestMapping(value = "/getTimeLeft")
+    public RespDto<Long> getTimeLeft(Long sceneId) {
+        User user = UserUtil.getCurrentUser();
+        Long userId = user.getId();
+        Paper query = new Paper();
+        query.setStatus(PaperStatusEnum.OK.getCode());
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        query.setSceneId(sceneId);
+        query.setUserId(userId);
+
+
+//        todo  判断剩余时间，让考试可以继续进行
+        List<Paper> papers = paperService.findByCondition(query);
+        if (CollectionUtils.isNotEmpty(papers)) {
+            Long paperId = papers.get(0).getId();
+            Answer answer = new Answer();
+            answer.setPaperId(paperId);
+            List<Answer> answers = answerService.findByCondition(1, 10, answer);
+            answer = answers.get(0);
+            String info = answer.getTimeLeft();
+//            long res = info.substring(0,2) * 3600 + info.substring(3,5)
+        } else {
+//            理论上不可达
+        }
+        return null;
     }
 }

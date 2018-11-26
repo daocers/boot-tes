@@ -2,34 +2,35 @@ package co.bugu.tes.exam.dto;
 
 /**
  * 通用试题dto
+ *
  * @Author daocers
  * @Date 2018/11/25:20:10
  * @Description:
  */
 public class QuestionDto {
-    private Long id;
-    private Integer type;
+    private Long answerId;
+    private Integer questionType;
     private String title;
     private String content;
     private String answer;
     private String realAnswer;
     private String leftTimeInfo;
 
-
-    public Long getId() {
-        return id;
+    public Long getAnswerId() {
+        return answerId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAnswerId(Long answerId) {
+        this.answerId = answerId;
     }
 
-    public Integer getType() {
-        return type;
+
+    public Integer getQuestionType() {
+        return questionType;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setQuestionType(Integer questionType) {
+        this.questionType = questionType;
     }
 
     public String getTitle() {

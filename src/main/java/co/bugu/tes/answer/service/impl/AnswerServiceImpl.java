@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,18 @@ public class AnswerServiceImpl implements IAnswerService {
     @Override
     public List<Answer> findByCondition(Answer answer) {
         logger.debug("answer findByCondition, 参数： {}", JSON.toJSONString(answer, true));
-        PageHelper.orderBy(ORDER_BY);
+        List<Answer> answers = answerDao.findByObject(answer);
+
+        logger.debug("查询结果， {}", JSON.toJSONString(answers, true));
+        return answers;
+    }
+
+    @Override
+    public List<Answer> findByCondition(Answer answer, String orderBy) {
+        logger.debug("answer findByCondition, 参数： {}", JSON.toJSONString(answer, true));
+        if(StringUtils.isNotEmpty(orderBy)){
+            PageHelper.orderBy(orderBy);
+        }
         List<Answer> answers = answerDao.findByObject(answer);
 
         logger.debug("查询结果， {}", JSON.toJSONString(answers, true));
