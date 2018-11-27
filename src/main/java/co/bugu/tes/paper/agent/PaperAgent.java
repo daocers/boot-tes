@@ -1,23 +1,30 @@
 package co.bugu.tes.paper.agent;
 
 import co.bugu.tes.answer.domain.Answer;
+import co.bugu.tes.answer.service.IAnswerService;
 import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.judge.domain.Judge;
 import co.bugu.tes.judge.service.IJudgeService;
 import co.bugu.tes.multi.domain.Multi;
 import co.bugu.tes.multi.service.IMultiService;
+import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.enums.AnswerFlagEnum;
+import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.enums.QuestionTypeEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.single.domain.Single;
 import co.bugu.tes.single.service.ISingleService;
+import co.bugu.util.UserUtil;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +46,8 @@ public class PaperAgent {
 
     @Autowired
     IPaperService paperService;
+    @Autowired
+    IAnswerService answerService;
 
 
     /**
@@ -163,4 +172,55 @@ public class PaperAgent {
         return null;
     }
 
+    /**
+     * 提交试卷
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/27 15:54
+     */
+    @Transactional(rollbackFor = Exception.class, timeout = 3000)
+    public void commitPaper(Long paperId, List<QuestionDto> questionDtos) throws Exception {
+        Date now = new Date();
+        Long userId = UserUtil.getCurrentUser().getId();
+        Paper paper = paperService.findById(paperId);
+        if (null == paper) {
+            throw new Exception("试卷不存在");
+        }
+
+        paper.setStatus(PaperStatusEnum.COMMITED.getCode());
+        paper.setUpdateUserId(userId);
+        paper.setUpdateTime(now);
+        paper.setAnswerFlag(AnswerFlagEnum.YES.getCode());
+        paper.setEndTime(now);
+        paperService.updateById(paper);
+
+        for (QuestionDto dto : questionDtos) {
+            Answer answer = new Answer();
+            answer.setId(dto.getAnswerId());
+            answer.setAnswer(dto.getRealAnswer());
+            answer.setTimeLeft(dto.getLeftTimeInfo());
+            answer.setUpdateTime(now);
+            answerService.updateById(answer);
+        }
+    }
+
+    /**
+     * 提交单个试题
+     *
+     * @param
+     * @return 修改了多少条数据
+     * @auther daocers
+     * @date 2018/11/27 16:50
+     */
+    public Integer commitQuestion(QuestionDto dto) {
+        Answer answer = new Answer();
+        answer.setId(dto.getAnswerId());
+        answer.setAnswer(dto.getRealAnswer());
+        answer.setTimeLeft(dto.getLeftTimeInfo());
+        answer.setUpdateTime(new Date());
+        int num = answerService.updateById(answer);
+        return num;
+    }
 }

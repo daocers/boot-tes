@@ -3,6 +3,7 @@ package co.bugu.tes.paper.service.impl;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.answer.dao.AnswerDao;
 import co.bugu.tes.answer.domain.Answer;
+import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.dao.PaperDao;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.AnswerFlagEnum;

@@ -16,7 +16,7 @@ public class WebSocketSessionUtil {
         sessionMap.put(userId, session);
     }
 
-    public static void remove(Long userId, WebSocketSession session) {
+    public static void remove(Long userId) {
         sessionMap.remove(userId);
     }
 

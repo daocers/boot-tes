@@ -1,5 +1,6 @@
 package co.bugu.tes.paper.service;
 
+import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.domain.Paper;
 import com.github.pagehelper.PageInfo;
 
@@ -82,4 +83,5 @@ public interface IPaperService {
      * @date 2018/11/25 22:11
      */
     Long createPaper(Long sceneId, Long userId, List<Long> sIds, List<Long> mIds, List<Long> jIds);
+
 }

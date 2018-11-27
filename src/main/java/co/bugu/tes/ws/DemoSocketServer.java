@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint(value = "/websocket")
 @Component
 public class DemoSocketServer {
+
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
 
@@ -53,6 +54,8 @@ public class DemoSocketServer {
     @OnMessage
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
+
+
 
         //群发消息
         for (DemoSocketServer item : webSocketSet) {

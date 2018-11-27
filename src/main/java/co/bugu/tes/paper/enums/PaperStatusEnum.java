@@ -6,7 +6,7 @@ package co.bugu.tes.paper.enums;
  * @Description:
  */
 public enum PaperStatusEnum {
-    OK(1, "正常状态");
+    OK(1, "正常状态"), COMMITED(2, "已提交"), CANCELED(3, "已取消"), MARKED(4, "已判分"), ;
     private int code;
     private String name;
 
