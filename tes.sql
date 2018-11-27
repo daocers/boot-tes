@@ -296,6 +296,7 @@ CREATE TABLE tes_answer (
   question_id BIGINT(21) NOT NULL DEFAULT '-1' COMMENT '试题信息id',
   question_type INT(11) NOT NULL DEFAULT '-1' COMMENT '题型， 1 单选， 2 多选， 3 判断',
   scene_id BIGINT(21) NOT NULL DEFAULT '-1' COMMENT '场次id',
+  right_answer varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '最佳答案',
   answer VARCHAR(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '作答信息',
   time_used INT(11) NOT NULL DEFAULT '-1' COMMENT '已用作答时间，单位：秒',
   time_left VARCHAR(8) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '剩余时间，单位：秒',

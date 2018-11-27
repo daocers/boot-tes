@@ -1,6 +1,7 @@
 package co.bugu.tes.judge.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.judge.dao.JudgeDao;
 import co.bugu.tes.judge.domain.Judge;
 import co.bugu.tes.judge.service.IJudgeService;
@@ -143,7 +144,7 @@ public class JudgeServiceImpl implements IJudgeService {
     }
 
     @Override
-    public List<Long> getAllIds(Judge judge) {
+    public List<AnswerDto4GenPaper> getAllIds(Judge judge) {
         return judgeDao.getAllIds(judge);
     }
 

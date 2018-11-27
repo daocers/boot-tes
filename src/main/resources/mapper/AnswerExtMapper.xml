@@ -7,6 +7,7 @@
         <result column="question_id" jdbcType="BIGINT" property="questionId"/>
         <result column="question_type" jdbcType="INTEGER" property="questionType"/>
         <result column="scene_id" jdbcType="BIGINT" property="sceneId"/>
+        <result column="right_answer" jdbcType="VARCHAR" property="rightAnswer"/>
         <result column="answer" jdbcType="VARCHAR" property="answer"/>
         <result column="time_used" jdbcType="INTEGER" property="timeUsed"/>
         <result column="time_left" jdbcType="VARCHAR" property="timeLeft"/>
@@ -17,7 +18,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, paper_id, question_id, question_type, scene_id, answer, time_used, time_left, 
+    id, paper_id, question_id, question_type, scene_id, right_answer, answer, time_used, time_left,
     is_del, create_user_id, create_time, update_user_id, update_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -33,10 +34,10 @@
     </select>
 
     <insert id="batchAdd" parameterType="list" useGeneratedKeys="true" keyProperty="id">
-        insert into tes_answer(paper_id, question_id, question_type, scene_id,
+        insert into tes_answer(paper_id, right_answer, question_id, question_type, scene_id,
         is_del, create_user_id, create_time, update_user_id, update_time) values
         <foreach collection="list" separator="," item="item">
-            (#{item.paperId}, #{item.questionId}, #{item.questionType}, #{item.sceneId}, 1,
+            (#{item.paperId}, #{item.rightAnswer}, #{item.questionId}, #{item.questionType}, #{item.sceneId}, 1,
             #{item.createUserId},
             #{item.createTime}, #{item.updateUserId}, #{item.updateTime})
         </foreach>

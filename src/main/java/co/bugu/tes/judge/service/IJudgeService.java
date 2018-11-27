@@ -1,5 +1,6 @@
 package co.bugu.tes.judge.service;
 
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.judge.domain.Judge;
 import com.github.pagehelper.PageInfo;
 
@@ -92,5 +93,5 @@ public interface IJudgeService {
      * @auther daocers
      * @date 2018/11/25 21:55
      */
-    List<Long> getAllIds(Judge judge);
+    List<AnswerDto4GenPaper> getAllIds(Judge judge);
 }

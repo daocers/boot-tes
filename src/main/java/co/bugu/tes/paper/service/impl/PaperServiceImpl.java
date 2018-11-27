@@ -3,6 +3,7 @@ package co.bugu.tes.paper.service.impl;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.answer.dao.AnswerDao;
 import co.bugu.tes.answer.domain.Answer;
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.dao.PaperDao;
 import co.bugu.tes.paper.domain.Paper;
@@ -115,7 +116,7 @@ public class PaperServiceImpl implements IPaperService {
 
     @Override
     @Transactional(rollbackFor = Exception.class, timeout = 3000)
-    public Long createPaper(Long sceneId, Long userId, List<Long> sIds, List<Long> mIds, List<Long> jIds) {
+    public Long createPaper(Long sceneId, Long userId, List<AnswerDto4GenPaper> sIds, List<AnswerDto4GenPaper> mIds, List<AnswerDto4GenPaper> jIds) {
         Date now = new Date();
         Paper paper = new Paper();
         paper.setSceneId(sceneId);
@@ -133,7 +134,7 @@ public class PaperServiceImpl implements IPaperService {
         Long paperId = paper.getId();
 
         List<Answer> answers = new ArrayList<>();
-        for(Long id: sIds){
+        for(AnswerDto4GenPaper dto: sIds){
             Answer answer = new Answer();
             answer.setSceneId(sceneId);
             answer.setIsDel(DelFlagEnum.NO.getCode());
@@ -142,12 +143,13 @@ public class PaperServiceImpl implements IPaperService {
             answer.setUpdateUserId(userId);
             answer.setCreateTime(now);
             answer.setUpdateTime(now);
-            answer.setQuestionId(id);
+            answer.setQuestionId(dto.getId());
+            answer.setRightAnswer(dto.getAnswer());
             answer.setQuestionType(QuestionTypeEnum.SINGLE.getCode());
             answers.add(answer);
         }
 
-        for(Long id: mIds){
+        for(AnswerDto4GenPaper dto: mIds){
             Answer answer = new Answer();
             answer.setSceneId(sceneId);
             answer.setIsDel(DelFlagEnum.NO.getCode());
@@ -156,12 +158,13 @@ public class PaperServiceImpl implements IPaperService {
             answer.setUpdateUserId(userId);
             answer.setCreateTime(now);
             answer.setUpdateTime(now);
-            answer.setQuestionId(id);
+            answer.setQuestionId(dto.getId());
+            answer.setRightAnswer(dto.getAnswer());
             answer.setQuestionType(QuestionTypeEnum.MULTI.getCode());
             answers.add(answer);
         }
 
-        for(Long id: jIds){
+        for(AnswerDto4GenPaper dto: jIds){
             Answer answer = new Answer();
             answer.setSceneId(sceneId);
             answer.setIsDel(DelFlagEnum.NO.getCode());
@@ -170,7 +173,8 @@ public class PaperServiceImpl implements IPaperService {
             answer.setUpdateUserId(userId);
             answer.setCreateTime(now);
             answer.setUpdateTime(now);
-            answer.setQuestionId(id);
+            answer.setQuestionId(dto.getId());
+            answer.setRightAnswer(dto.getAnswer());
             answer.setQuestionType(QuestionTypeEnum.JUDGE.getCode());
             answers.add(answer);
         }

@@ -40,6 +40,27 @@
         select
         <include refid="Base_Column_List"/>
         from tes_multi
+        <where>
+            is_del = 1
+            <if test="bankId != null">
+                and bank_id = #{bankId}
+            </if>
+            <if test="attr1 != null">
+                and attr_1 = #{attr1}
+            </if>
+            <if test="attr2 != null">
+                and attr_2 = #{attr2}
+            </if>
+            <if test="attr3 != null">
+                and attr_3 = #{attr3}
+            </if>
+            <if test="attr4 != null">
+                and attr_4 = #{attr4}
+            </if>
+            <if test="attr5 != null">
+                and attr_5 = #{attr5}
+            </if>
+        </where>
     </select>
 
 
@@ -55,7 +76,7 @@
         </foreach>
     </insert>
 
-    <select id="getAllIds" parameterType="co.bugu.tes.multi.domain.Multi" resultType="long">
+    <select id="getAllIds" parameterType="co.bugu.tes.multi.domain.Multi" resultType="co.bugu.tes.answer.dto.AnswerDto4GenPaper">
         select id from tes_multi
         <where>
             is_del = 1

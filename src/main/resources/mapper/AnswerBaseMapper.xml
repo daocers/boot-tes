@@ -16,6 +16,9 @@
       <if test="sceneId != null">
         scene_id = #{sceneId,jdbcType=BIGINT},
       </if>
+      <if test="rightAnswer != null">
+        right_answer = #{rightAnswer,jdbcType=VARCHAR},
+      </if>
       <if test="answer != null">
         answer = #{answer,jdbcType=VARCHAR},
       </if>
@@ -62,6 +65,9 @@
       <if test="sceneId != null">
         scene_id,
       </if>
+      <if test="rightAnswer != null">
+        right_answer,
+      </if>
       <if test="answer != null">
         answer,
       </if>
@@ -99,6 +105,9 @@
       </if>
       <if test="sceneId != null">
         #{sceneId,jdbcType=BIGINT},
+      </if>
+      <if test="rightAnswer != null">
+        #{right_answer},
       </if>
       <if test="answer != null">
         #{answer,jdbcType=VARCHAR},

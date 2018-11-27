@@ -1,5 +1,6 @@
 package co.bugu.tes.single.service;
 
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.single.domain.Single;
 import com.github.pagehelper.PageInfo;
 
@@ -93,5 +94,5 @@ public interface ISingleService {
      * @auther daocers
      * @date 2018/11/25 22:06
      */
-    List<Long> getAllIds(Single single);
+    List<AnswerDto4GenPaper> getAllIds(Single single);
 }

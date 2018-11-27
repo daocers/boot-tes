@@ -1,6 +1,8 @@
 package co.bugu.tes.paper.agent;
 
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.answer.domain.Answer;
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.answer.service.IAnswerService;
 import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.judge.domain.Judge;
@@ -18,6 +20,9 @@ import co.bugu.tes.single.domain.Single;
 import co.bugu.tes.single.service.ISingleService;
 import co.bugu.util.UserUtil;
 import com.google.common.base.Preconditions;
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +39,7 @@ import java.util.List;
  */
 @Service
 public class PaperAgent {
+    private Logger logger = LoggerFactory.getLogger(PaperAgent.class);
     @Autowired
     ISingleService singleService;
     @Autowired
@@ -102,9 +108,9 @@ public class PaperAgent {
         Long paperPolicyId = scene.getPaperPolicyId();
         Integer paperGenerateType = scene.getPaperGenerateType();
 
-        List<Long> sIds = null;
-        List<Long> mIds = null;
-        List<Long> jIds = null;
+        List<AnswerDto4GenPaper> sIds = null;
+        List<AnswerDto4GenPaper> mIds = null;
+        List<AnswerDto4GenPaper> jIds = null;
         if (paperPolicyId > 0) {
 //            策略出题
             sIds = getQuestionIdListByPolicy(paperPolicyId, paperGenerateType, bankId, QuestionTypeEnum.SINGLE.getCode(), singleCount);
@@ -131,9 +137,9 @@ public class PaperAgent {
      * @auther daocers
      * @date 2018/11/25 21:36
      */
-    private List<Long> getQuestionIdListInSimple(Integer paperGenerateType, Long bankId, Integer questionType, Integer count) throws Exception {
+    private List<AnswerDto4GenPaper> getQuestionIdListInSimple(Integer paperGenerateType, Long bankId, Integer questionType, Integer count) throws Exception {
 //      TODO  出卷方式待完善   1 随机， 2 统一，3 统一乱序
-        List<Long> ids = null;
+        List<AnswerDto4GenPaper> ids = null;
         if (questionType == QuestionTypeEnum.SINGLE.getCode()) {
             Single single = new Single();
             single.setBankId(bankId);
@@ -153,7 +159,7 @@ public class PaperAgent {
         }
 
         Collections.shuffle(ids);
-        List<Long> list = ids.subList(0, count);
+        List<AnswerDto4GenPaper> list = ids.subList(0, count);
         return list;
 
     }
@@ -167,7 +173,7 @@ public class PaperAgent {
      * @auther daocers
      * @date 2018/11/25 21:37
      */
-    private List<Long> getQuestionIdListByPolicy(Long paperPolicyId, Integer paperGenerateType, Long bankId, Integer questionType, Integer count) {
+    private List<AnswerDto4GenPaper> getQuestionIdListByPolicy(Long paperPolicyId, Integer paperGenerateType, Long bankId, Integer questionType, Integer count) {
 //        todo 策略模式待开发
         return null;
     }
@@ -222,5 +228,73 @@ public class PaperAgent {
         answer.setUpdateTime(new Date());
         int num = answerService.updateById(answer);
         return num;
+    }
+
+
+    /**
+     * 计算得分
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/27 23:28
+     */
+    public Double computeScore(Long sceneId, Long paperId) throws Exception {
+        Answer query = new Answer();
+        query.setPaperId(paperId);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        List<Answer> answers = answerService.findByCondition(query);
+
+        if (CollectionUtils.isEmpty(answers)) {
+            throw new Exception("没有找到该试卷的答案信息");
+        }
+
+        Scene scene = sceneService.findById(sceneId);
+        int singleCount = scene.getSingleCount();
+        int multiCount = scene.getMultiCount();
+        int judgeCount = scene.getJudgeCount();
+        Double singleScore = scene.getSingleScore();
+        Double multiScore = scene.getMultiScore();
+        Double judgeScore = scene.getJudgeScore();
+        int percentable = scene.getPercentable();
+
+        if (answers.size() != singleCount + multiCount + judgeCount) {
+            logger.warn("试题数量不符合场次要求， paperId: {}, sceneId: {}", new Object[]{paperId, sceneId});
+        }
+
+        int sCount = 0;
+        int mCount = 0;
+        int jCount = 0;
+
+        for (Answer answer : answers) {
+//            答对了
+            if (answer.getRightAnswer().equals(answer.getAnswer())) {
+                if (answer.getQuestionType() == QuestionTypeEnum.SINGLE.getCode()) {
+                    sCount++;
+                } else if (answer.getQuestionType() == QuestionTypeEnum.MULTI.getCode()) {
+                    mCount++;
+                } else if (answer.getQuestionType() == QuestionTypeEnum.JUDGE.getCode()) {
+                    jCount++;
+                }
+            }
+        }
+        double yourScore = (singleScore * 10 * sCount + multiScore * 10 * mCount + judgeScore * 10 * jCount) / 10;
+        double totalScore = (singleScore * 10 * singleCount + multiScore * 10 * multiCount + judgeScore * 10 * judgeCount) / 10;
+        double score = yourScore;
+        if (percentable == 1) {
+//            需要百分比
+            score = score / totalScore * 100;
+        }
+        Paper paper = paperService.findById(paperId);
+        paper.setOriginalScore(totalScore);
+        paper.setStatus(PaperStatusEnum.MARKED.getCode());
+        paper.setUpdateTime(new Date());
+        paper.setScore(score);
+        int num = paperService.updateById(paper);
+        if (num == 1) {
+            return score;
+        } else {
+            throw new Exception("计算成绩失败");
+        }
     }
 }

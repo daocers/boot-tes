@@ -13,6 +13,8 @@ public class Answer {
 
     private Long sceneId;
 
+    private String rightAnswer;
+
     private String answer;
 
     private Integer timeUsed;
@@ -28,6 +30,15 @@ public class Answer {
     private Long updateUserId;
 
     private Date updateTime;
+
+
+    public String getRightAnswer() {
+        return rightAnswer;
+    }
+
+    public void setRightAnswer(String rightAnswer) {
+        this.rightAnswer = rightAnswer;
+    }
 
     public Long getId() {
         return id;

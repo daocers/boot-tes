@@ -1,6 +1,7 @@
 package co.bugu.tes.single.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.single.PublicFlagEnum;
 import co.bugu.tes.single.dao.SingleDao;
 import co.bugu.tes.single.domain.Single;
@@ -149,7 +150,7 @@ public class SingleServiceImpl implements ISingleService {
     }
 
     @Override
-    public List<Long> getAllIds(Single single) {
+    public List<AnswerDto4GenPaper> getAllIds(Single single) {
         return singleDao.getAllIds(single);
     }
 

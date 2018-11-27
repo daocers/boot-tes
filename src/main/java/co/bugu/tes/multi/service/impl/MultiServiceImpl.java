@@ -1,6 +1,7 @@
 package co.bugu.tes.multi.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.multi.dao.MultiDao;
 import co.bugu.tes.multi.domain.Multi;
 import co.bugu.tes.multi.service.IMultiService;
@@ -148,7 +149,7 @@ public class MultiServiceImpl implements IMultiService {
     }
 
     @Override
-    public List<Long> getAllIds(Multi multi) {
+    public List<AnswerDto4GenPaper> getAllIds(Multi multi) {
         return multiDao.getAllIds(multi);
     }
 

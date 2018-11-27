@@ -1,5 +1,6 @@
 package co.bugu.tes.multi.service;
 
+import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.multi.domain.Multi;
 import com.github.pagehelper.PageInfo;
 
@@ -91,5 +92,5 @@ public interface IMultiService {
      * @auther daocers
      * @date 2018/11/25 22:05
      */
-    List<Long> getAllIds(Multi multi);
+    List<AnswerDto4GenPaper> getAllIds(Multi multi);
 }
