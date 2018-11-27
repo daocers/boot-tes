@@ -37,6 +37,9 @@ public interface IAnswerService {
      */
     List<Answer> findByCondition(Answer answer);
 
+
+    List<Answer> findByCondition(Answer answer, String orderBy);
+
     /**
      * 条件查询 分页
      *

@@ -1,20 +1,27 @@
 package co.bugu.tes.paper.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.answer.dao.AnswerDao;
+import co.bugu.tes.answer.domain.Answer;
+import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.dao.PaperDao;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.enums.AnswerFlagEnum;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
+import co.bugu.tes.paper.enums.QuestionTypeEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +33,8 @@ import java.util.List;
 public class PaperServiceImpl implements IPaperService {
     @Autowired
     PaperDao paperDao;
+    @Autowired
+    AnswerDao answerDao;
 
     private Logger logger = LoggerFactory.getLogger(PaperServiceImpl.class);
 
@@ -106,7 +115,7 @@ public class PaperServiceImpl implements IPaperService {
 
     @Override
     @Transactional(rollbackFor = Exception.class, timeout = 3000)
-    public Long createPaper(Long sceneId, Long userId, List<Long> ids) {
+    public Long createPaper(Long sceneId, Long userId, List<Long> sIds, List<Long> mIds, List<Long> jIds) {
         Date now = new Date();
         Paper paper = new Paper();
         paper.setSceneId(sceneId);
@@ -117,8 +126,58 @@ public class PaperServiceImpl implements IPaperService {
         paper.setStatus(PaperStatusEnum.OK.getCode());
         paper.setCreateUserId(userId);
         paper.setUpdateUserId(userId);
-//        todo
-        return null;
+        paper.setAnswerFlag(AnswerFlagEnum.NO.getCode());
+        paper.setBeginTime(now);
+
+        paperDao.insert(paper);
+        Long paperId = paper.getId();
+
+        List<Answer> answers = new ArrayList<>();
+        for(Long id: sIds){
+            Answer answer = new Answer();
+            answer.setSceneId(sceneId);
+            answer.setIsDel(DelFlagEnum.NO.getCode());
+            answer.setPaperId(paperId);
+            answer.setCreateUserId(userId);
+            answer.setUpdateUserId(userId);
+            answer.setCreateTime(now);
+            answer.setUpdateTime(now);
+            answer.setQuestionId(id);
+            answer.setQuestionType(QuestionTypeEnum.SINGLE.getCode());
+            answers.add(answer);
+        }
+
+        for(Long id: mIds){
+            Answer answer = new Answer();
+            answer.setSceneId(sceneId);
+            answer.setIsDel(DelFlagEnum.NO.getCode());
+            answer.setPaperId(paperId);
+            answer.setCreateUserId(userId);
+            answer.setUpdateUserId(userId);
+            answer.setCreateTime(now);
+            answer.setUpdateTime(now);
+            answer.setQuestionId(id);
+            answer.setQuestionType(QuestionTypeEnum.MULTI.getCode());
+            answers.add(answer);
+        }
+
+        for(Long id: jIds){
+            Answer answer = new Answer();
+            answer.setSceneId(sceneId);
+            answer.setIsDel(DelFlagEnum.NO.getCode());
+            answer.setPaperId(paperId);
+            answer.setCreateUserId(userId);
+            answer.setUpdateUserId(userId);
+            answer.setCreateTime(now);
+            answer.setUpdateTime(now);
+            answer.setQuestionId(id);
+            answer.setQuestionType(QuestionTypeEnum.JUDGE.getCode());
+            answers.add(answer);
+        }
+
+        answerDao.batchAdd(answers);
+        return paperId;
     }
+
 
 }

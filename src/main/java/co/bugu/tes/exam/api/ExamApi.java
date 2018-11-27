@@ -4,28 +4,41 @@ import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.answer.service.IAnswerService;
+import co.bugu.tes.exam.dto.LiveDto;
 import co.bugu.tes.exam.dto.QuestionDto;
-import co.bugu.tes.paper.agnet.PaperAgent;
+import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
+import co.bugu.tes.ws.MessageTypeEnum;
+import co.bugu.tes.ws.WebSocketSessionUtil;
 import co.bugu.util.UserUtil;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.websocket.Session;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author daocers
@@ -46,6 +59,8 @@ public class ExamApi {
 
     @Autowired
     PaperAgent paperAgent;
+    @Autowired
+    IUserService userService;
 
     /**
      * 获取就绪的场次信息
@@ -98,7 +113,7 @@ public class ExamApi {
      * @date 2018/11/25 20:15
      */
     @RequestMapping(value = "/getQuestionList")
-    public RespDto<List<QuestionDto>> getQuestionList() {
+    public RespDto<List<QuestionDto>> getQuestionList(Long sceneId) {
         User user = UserUtil.getCurrentUser();
         Long userId = user.getId();
 
@@ -128,17 +143,166 @@ public class ExamApi {
     }
 
 
-    @RequestMapping(value = "/generatePaper", method = RequestMethod.POST)
-    public RespDto<Boolean> generatePaper(Long sceneId){
-        User user = UserUtil.getCurrentUser();
-        Long userId = user.getId();
+    /**
+     * 生成试卷
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/26 11:17
+     */
+    @RequestMapping(value = "/getPaper", method = RequestMethod.POST)
+    public RespDto<Long> getPaper(Long sceneId) {
+        try {
+            User user = UserUtil.getCurrentUser();
+            Long userId = user.getId();
 
-        Boolean res = paperAgent.generatePaper(sceneId, userId);
-        if(res){
-            return RespDto.success(true);
-        }else{
-            logger.warn("生成试卷失败");
+            Paper query = new Paper();
+            query.setIsDel(DelFlagEnum.NO.getCode());
+            query.setSceneId(sceneId);
+            query.setUserId(userId);
+            query.setStatus(PaperStatusEnum.OK.getCode());
+            List<Paper> list = paperService.findByCondition(query);
+            if (CollectionUtils.isNotEmpty(list)) {
+                logger.info("已经生成过试卷了，直接进入考试");
+                return RespDto.success(list.get(0).getId());
+            }
+
+            Long paperId = paperAgent.generatePaper(sceneId, userId);
+            return RespDto.success(paperId);
+        } catch (Exception e) {
+            logger.error("生成试卷失败", e);
             return RespDto.fail("生成试卷失败");
         }
+
+
+    }
+
+
+    /**
+     * 获取本场考试还剩下多少时间，单位毫秒
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/26 14:55
+     */
+    @RequestMapping(value = "/getTimeLeft")
+    public RespDto<Long> getTimeLeft(Long sceneId) {
+        User user = UserUtil.getCurrentUser();
+        Long userId = user.getId();
+        Paper query = new Paper();
+        query.setStatus(PaperStatusEnum.OK.getCode());
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        query.setSceneId(sceneId);
+        query.setUserId(userId);
+
+
+//        todo  判断剩余时间，让考试可以继续进行
+        List<Paper> papers = paperService.findByCondition(query);
+        if (CollectionUtils.isNotEmpty(papers)) {
+            Long paperId = papers.get(0).getId();
+            Answer answer = new Answer();
+            answer.setPaperId(paperId);
+            List<Answer> answers = answerService.findByCondition(1, 10, answer);
+            answer = answers.get(0);
+            String info = answer.getTimeLeft();
+//            long res = info.substring(0,2) * 3600 + info.substring(3,5)
+        } else {
+//            理论上不可达
+        }
+        return null;
+    }
+
+
+    /**
+     * 提交试卷
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/27 15:06
+     */
+    @RequestMapping(value = "/commitPaper", method = RequestMethod.POST)
+    public RespDto<Boolean> commitPaper(Long paperId, @RequestBody List<QuestionDto> questionDtos) throws Exception {
+        logger.info("提交试卷。。。");
+        logger.debug("试卷id: {}", paperId);
+        logger.debug("答案信息： {}", JSON.toJSONString(questionDtos, true));
+
+        paperAgent.commitPaper(paperId, questionDtos);
+        return RespDto.success(true);
+    }
+
+
+    /**
+     * 查看指定场次的考试信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/27 16:29
+     */
+    @RequestMapping(value = "/live")
+    public RespDto<PageInfo<LiveDto>> getSceneLive(Long sceneId, Integer pageNum, Integer pageSize) {
+        Paper paper = new Paper();
+        paper.setSceneId(sceneId);
+        paper.setIsDel(DelFlagEnum.NO.getCode());
+        PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, paper);
+
+        PageInfo<LiveDto> res = new PageInfo<>();
+        BeanUtils.copyProperties(pageInfo, res);
+        List<LiveDto> dtos = Lists.transform(pageInfo.getList(), new Function<Paper, LiveDto>() {
+            @Override
+            public LiveDto apply(@Nullable Paper paper) {
+                LiveDto dto = new LiveDto();
+
+                Long userId = paper.getUserId();
+                User user = userService.findById(userId);
+                dto.setUserId(userId);
+                dto.setName(user.getName());
+                Session session = WebSocketSessionUtil.getSession(userId);
+                if(session != null){
+                    dto.setUserStatus(1);
+                }else{
+                    dto.setUserStatus(2);
+                }
+
+                dto.setPaperStatus(paper.getStatus());
+                dto.setPaperId(paper.getId());
+                return dto;
+            }
+        });
+        res.setList(dtos);
+        return RespDto.success(res);
+    }
+
+    /**
+     * 强制调教指定用户的试卷
+     * 调用之后给客户端通过websocket发消息，
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/27 16:59
+     */
+    @RequestMapping(value = "/forceCommit", method = RequestMethod.POST)
+    public RespDto<Boolean> forceCommit(Long sceneId, Long userId) {
+        try {
+            Session session = WebSocketSessionUtil.getSession(userId);
+            if (session != null) {
+                Map<String, String> res = new HashMap<>();
+                res.put("type", MessageTypeEnum.FORCE_COMMIT_PAPER.getCode() + "");
+                res.put("content", "管理员强制封场，交卷");
+                session.getBasicRemote().sendText(JSON.toJSONString(res));
+                return RespDto.success(true);
+            } else {
+                logger.info("该用户已经离场");
+                return RespDto.success(true);
+            }
+        } catch (Exception e) {
+            logger.error("强制交卷失败", e);
+            return RespDto.fail("强制交卷失败");
+        }
+
     }
 }

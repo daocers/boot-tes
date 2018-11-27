@@ -62,20 +62,20 @@
             <if test="bankId != null">
                 and bank_id = #{bankId}
             </if>
-            <if test="param1 != null">
-                and param1 = #{param1}
+            <if test="attr1 != null">
+                and attr_1 = #{attr1}
             </if>
-            <if test="param2 != null">
-                and param2 = #{param2}
+            <if test="attr2 != null">
+                and attr_2 = #{attr2}
             </if>
-            <if test="param3 != null">
-                and param3 = #{param3}
+            <if test="attr3 != null">
+                and attr_3 = #{attr3}
             </if>
-            <if test="param4 != null">
-                and param4 = #{param4}
+            <if test="attr4 != null">
+                and attr_4 = #{attr4}
             </if>
-            <if test="param5 != null">
-                and param5 = #{param5}
+            <if test="attr5 != null">
+                and attr_5 = #{attr5}
             </if>
         </where>
     </select>
