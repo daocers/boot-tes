@@ -239,9 +239,9 @@ public class PaperAgent {
      * @auther daocers
      * @date 2018/11/27 23:28
      */
-    public Double computeScore(Long sceneId, Long paperId) throws Exception {
+    public Double computeScore(Scene scene, Paper paper) throws Exception {
         Answer query = new Answer();
-        query.setPaperId(paperId);
+        query.setPaperId(paper.getId());
         query.setIsDel(DelFlagEnum.NO.getCode());
         List<Answer> answers = answerService.findByCondition(query);
 
@@ -249,7 +249,6 @@ public class PaperAgent {
             throw new Exception("没有找到该试卷的答案信息");
         }
 
-        Scene scene = sceneService.findById(sceneId);
         int singleCount = scene.getSingleCount();
         int multiCount = scene.getMultiCount();
         int judgeCount = scene.getJudgeCount();
@@ -259,7 +258,7 @@ public class PaperAgent {
         int percentable = scene.getPercentable();
 
         if (answers.size() != singleCount + multiCount + judgeCount) {
-            logger.warn("试题数量不符合场次要求， paperId: {}, sceneId: {}", new Object[]{paperId, sceneId});
+            logger.warn("试题数量不符合场次要求， paperId: {}, sceneId: {}", new Object[]{paper.getId(), scene.getId()});
         }
 
         int sCount = 0;
@@ -285,7 +284,6 @@ public class PaperAgent {
 //            需要百分比
             score = score / totalScore * 100;
         }
-        Paper paper = paperService.findById(paperId);
         paper.setOriginalScore(totalScore);
         paper.setStatus(PaperStatusEnum.MARKED.getCode());
         paper.setUpdateTime(new Date());

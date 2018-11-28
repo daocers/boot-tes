@@ -2,12 +2,22 @@ package co.bugu.tes.paper.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.dto.PaperDto;
 import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.tes.scene.domain.Scene;
+import co.bugu.tes.scene.service.ISceneService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +39,10 @@ public class PaperApi {
 
     @Autowired
     IPaperService paperService;
+    @Autowired
+    IUserService userService;
+    @Autowired
+    ISceneService sceneService;
 
     /**
      * 条件查询
@@ -39,7 +53,7 @@ public class PaperApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<Paper>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Paper paper) {
+    public RespDto<PageInfo<PaperDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Paper paper) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(paper, true));
             if (null == pageNum) {
@@ -48,10 +62,30 @@ public class PaperApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Paper> list = paperService.findByCondition(pageNum, pageSize, paper);
-            PageInfo<Paper> pageInfo = new PageInfo<>(list);
+            PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, paper);
+            PageInfo<PaperDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            if (CollectionUtils.isNotEmpty(pageInfo.getList())) {
+                List<PaperDto> dtos = Lists.transform(pageInfo.getList(), new Function<Paper, PaperDto>() {
+                    @Override
+                    public PaperDto apply(@Nullable Paper paper) {
+                        PaperDto dto = new PaperDto();
+                        BeanUtils.copyProperties(paper, dto);
+                        User user = userService.findById(paper.getUserId());
+                        Scene scene = sceneService.findById(paper.getSceneId());
+                        if (null != user) {
+                            dto.setUserName(user.getName());
+                        }
+                        if (null != scene) {
+                            dto.setSceneName(scene.getName());
+                        }
+                        return dto;
+                    }
+                });
+                res.setList(dtos);
+            }
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();
@@ -70,11 +104,11 @@ public class PaperApi {
     public RespDto<Boolean> savePaper(@RequestBody Paper paper) {
         try {
             Long paperId = paper.getId();
-            if(null == paperId){
+            if (null == paperId) {
                 logger.debug("保存， savePaper, 参数： {}", JSON.toJSONString(paper, true));
                 paperId = paperService.add(paper);
                 logger.info("新增 成功， id: {}", paperId);
-            }else{
+            } else {
                 paperService.updateById(paper);
                 logger.debug("更新成功", JSON.toJSONString(paper, true));
             }

@@ -75,7 +75,7 @@
     </insert>
 
     <select id="getAllIds" parameterType="co.bugu.tes.single.domain.Single" resultType="co.bugu.tes.answer.dto.AnswerDto4GenPaper">
-        select id from tes_single
+        select id, answer from tes_single
         <where>
             is_del = 1
             <if test="bankId != null">

@@ -3,6 +3,7 @@ package co.bugu.tes.scene.service.impl;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.scene.dao.SceneDao;
 import co.bugu.tes.scene.domain.Scene;
+import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
@@ -37,6 +38,7 @@ public class SceneServiceImpl implements ISceneService {
         Date now = new Date();
         scene.setCreateTime(now);
         scene.setUpdateTime(now);
+        scene.setStatus(SceneStatusEnum.READY.getCode());
         sceneDao.insert(scene);
         return scene.getId();
     }

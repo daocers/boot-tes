@@ -76,8 +76,9 @@
     </insert>
 
 
-    <select id="getAllIds" parameterType="co.bugu.tes.judge.domain.Judge" resultType="co.bugu.tes.answer.dto.AnswerDto4GenPaper">
-        select id from tes_judge
+    <select id="getAllIds" parameterType="co.bugu.tes.judge.domain.Judge"
+            resultType="co.bugu.tes.answer.dto.AnswerDto4GenPaper">
+        select id, answer from tes_judge
         <where>
             is_del = 1
             <if test="bankId != null">
