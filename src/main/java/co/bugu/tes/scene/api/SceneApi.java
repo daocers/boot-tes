@@ -6,11 +6,11 @@ import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.user.domain.User;
+import co.bugu.util.CodeUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import org.apache.xmlbeans.impl.tool.CodeGenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +103,7 @@ public class SceneApi {
             User user = UserUtil.getCurrentUser();
             scene.setCreateUserId(user.getId());
             scene.setUpdateUserId(user.getId());
-            scene.setCode(CodeGenUtil);
+            scene.setCode(CodeUtil.getSceneCode());
             if (null == sceneId) {
                 logger.debug("保存， saveScene, 参数： {}", JSON.toJSONString(scene, true));
                 sceneId = sceneService.add(scene);

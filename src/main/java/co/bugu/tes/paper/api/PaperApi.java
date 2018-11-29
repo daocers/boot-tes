@@ -14,6 +14,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,15 +54,51 @@ public class PaperApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<PaperDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Paper paper) {
+    public RespDto<PageInfo<PaperDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody PaperDto paperDto) {
         try {
-            logger.debug("条件查询， 参数: {}", JSON.toJSONString(paper, true));
+            logger.debug("条件查询， 参数: {}", JSON.toJSONString(paperDto, true));
             if (null == pageNum) {
                 pageNum = 1;
             }
             if (null == pageSize) {
                 pageSize = 10;
             }
+            String username = paperDto.getUsername();
+            String sceneCode = paperDto.getSceneCode();
+            String name = paperDto.getUserName();
+
+//            筛选用户
+            User user = new User();
+            List<User> userList = null;
+            if (StringUtils.isNotEmpty(username)) {
+                user.setUsername(username);
+            } else if (StringUtils.isNotEmpty(name)) {
+                user.setName(name);
+            } else {
+                user = null;
+            }
+            if (user != null) {
+                userList = userService.findByCondition(user);
+                if (CollectionUtils.isNotEmpty(userList)) {
+                    user = userList.get(0);
+                }
+                user = userList.get(0);
+            }
+
+//            筛选场次
+            Scene scene = new Scene();
+            if (StringUtils.isNotEmpty(sceneCode)) {
+                scene.setCode(sceneCode);
+                List<Scene> list = sceneService.findByCondition(scene);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    scene = list.get(0);
+                }
+            }
+
+            Paper paper = new Paper();
+            paper.setUserId(user.getId());
+            paper.setSceneId(scene.getId());
+
             PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, paper);
             PageInfo<PaperDto> res = new PageInfo<>();
             BeanUtils.copyProperties(pageInfo, res);

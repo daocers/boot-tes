@@ -1,7 +1,7 @@
 package co.bugu.util;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @Description:
  */
 public class CodeUtil {
+
     private static volatile String dateInfo;
 
     private static AtomicLong sceneIndex = new AtomicLong(1L);
@@ -19,13 +20,26 @@ public class CodeUtil {
 
     static {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String info = formatter.toFormat().format(new Date());
+        LocalDateTime now = LocalDateTime.now();
+        String info = now.format(formatter);
 
         dateInfo = info;
     }
 
     public static void setDateInfo(String dateInfo) {
         CodeUtil.dateInfo = dateInfo;
+    }
+
+    public static void setSceneIndex(AtomicLong sceneIndex) {
+        CodeUtil.sceneIndex = sceneIndex;
+    }
+
+    public static void setPaperIndex(AtomicLong paperIndex) {
+        CodeUtil.paperIndex = paperIndex;
+    }
+
+    public static void setQuestionIndex(AtomicLong questionIndex) {
+        CodeUtil.questionIndex = questionIndex;
     }
 
     /**
@@ -41,6 +55,15 @@ public class CodeUtil {
         return "S" + dateInfo + getSameLengthInfo(index, 5);
     }
 
+
+    /**
+     * 将指定的数字转化为特定位数的字符串
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/29 9:54
+     */
     private static String getSameLengthInfo(long num, int length) {
         StringBuffer tmp = new StringBuffer();
         tmp.append(num);
@@ -66,6 +89,8 @@ public class CodeUtil {
      * @date 2018/11/28 16:17
      */
     public static String getPaperCode() {
+        Long index = paperIndex.getAndIncrement();
+        return "P" + dateInfo + getSameLengthInfo(index, 5);
     }
 
     /**
@@ -77,7 +102,9 @@ public class CodeUtil {
      * @date 2018/11/28 16:17
      */
     public static String getQuestionCode(Integer questionType) {
-        return ""
+        Long index = questionIndex.getAndIncrement();
+
+        return "Q" + getSameLengthInfo(questionType, 2) + getSameLengthInfo(index, 6);
     }
 
 }

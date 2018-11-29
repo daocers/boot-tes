@@ -9,9 +9,11 @@ import java.util.Date;
  */
 public class PaperDto {
     private Long id;
+    private String username;
 
     private String userName;
     private String sceneName;
+    private String sceneCode;
 
     private String code;
 
@@ -30,6 +32,24 @@ public class PaperDto {
     private Long userId;
 
     private Integer status;
+
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
+    public String getSceneCode() {
+        return sceneCode;
+    }
+
+    public void setSceneCode(String sceneCode) {
+        this.sceneCode = sceneCode;
+    }
 
     public Long getId() {
         return id;

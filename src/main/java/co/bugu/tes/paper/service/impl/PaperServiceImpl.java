@@ -4,18 +4,17 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.answer.dao.AnswerDao;
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
-import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.dao.PaperDao;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.AnswerFlagEnum;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.enums.QuestionTypeEnum;
 import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.util.CodeUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,12 +128,13 @@ public class PaperServiceImpl implements IPaperService {
         paper.setUpdateUserId(userId);
         paper.setAnswerFlag(AnswerFlagEnum.NO.getCode());
         paper.setBeginTime(now);
+        paper.setCode(CodeUtil.getPaperCode());
 
         paperDao.insert(paper);
         Long paperId = paper.getId();
 
         List<Answer> answers = new ArrayList<>();
-        for(AnswerDto4GenPaper dto: sIds){
+        for (AnswerDto4GenPaper dto : sIds) {
             Answer answer = new Answer();
             answer.setSceneId(sceneId);
             answer.setIsDel(DelFlagEnum.NO.getCode());
@@ -149,7 +149,7 @@ public class PaperServiceImpl implements IPaperService {
             answers.add(answer);
         }
 
-        for(AnswerDto4GenPaper dto: mIds){
+        for (AnswerDto4GenPaper dto : mIds) {
             Answer answer = new Answer();
             answer.setSceneId(sceneId);
             answer.setIsDel(DelFlagEnum.NO.getCode());
@@ -164,7 +164,7 @@ public class PaperServiceImpl implements IPaperService {
             answers.add(answer);
         }
 
-        for(AnswerDto4GenPaper dto: jIds){
+        for (AnswerDto4GenPaper dto : jIds) {
             Answer answer = new Answer();
             answer.setSceneId(sceneId);
             answer.setIsDel(DelFlagEnum.NO.getCode());
