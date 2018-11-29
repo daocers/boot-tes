@@ -11,6 +11,7 @@ import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.scene.domain.Scene;
+import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
@@ -35,10 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.Session;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author daocers
@@ -152,7 +150,7 @@ public class ExamApi {
      * @date 2018/11/26 11:17
      */
     @RequestMapping(value = "/getPaper", method = RequestMethod.POST)
-    public RespDto<Long> getPaper(Long sceneId) {
+    public RespDto<Long> getPaper(Long sceneId, String authCode) {
         try {
             User user = UserUtil.getCurrentUser();
             Long userId = user.getId();
@@ -303,6 +301,41 @@ public class ExamApi {
             logger.error("强制交卷失败", e);
             return RespDto.fail("强制交卷失败");
         }
+
+    }
+
+    /**
+     * 是否可以进行本场考试
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/29 22:38
+     */
+    @RequestMapping(value = "/canAccess")
+    public RespDto<Boolean> canAccess(Long sceneId, Long authCode){
+        Date now = new Date();
+        Scene scene = sceneService.findById(sceneId);
+        if(!scene.getAuthCode().equals(authCode)){
+            return RespDto.fail("授权码错误");
+        }
+        if(scene.getStatus() == SceneStatusEnum.READY.getCode()){
+            return RespDto.fail("本场考试未开始");
+        }
+        if(scene.getStatus() == SceneStatusEnum.CLOSED.getCode()){
+            return RespDto.fail("本场考试已结束");
+        }
+        if(scene.getStatus() == SceneStatusEnum.CANCELED.getCode()){
+            return RespDto.fail("场次已作废");
+        }
+        if(scene.getOpenTime().after(now)){
+            return RespDto.fail("比赛未开始");
+        }
+        if(scene.getOpenTime().getTime() + scene.getDuration()* 60000 < now.getTime()){
+            return RespDto.fail("迟到太久，参加下一场吧");
+        }
+
+        return RespDto.success();
 
     }
 }

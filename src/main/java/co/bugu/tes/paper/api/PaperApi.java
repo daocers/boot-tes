@@ -83,6 +83,8 @@ public class PaperApi {
                     user = userList.get(0);
                 }
                 user = userList.get(0);
+            }else{
+                user = new User();
             }
 
 //            筛选场次

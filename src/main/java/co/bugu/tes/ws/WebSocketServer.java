@@ -3,6 +3,7 @@ package co.bugu.tes.ws;
 import co.bugu.tes.answer.service.IAnswerService;
 import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.agent.PaperAgent;
+import co.bugu.util.ApplicationContextUtil;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -35,6 +36,9 @@ public class WebSocketServer {
     //建立连接后执行
     @OnOpen
     public void afterConnectionEstablished(Session session) throws Exception {
+        answerService = ApplicationContextUtil.getClass(IAnswerService.class);
+        paperAgent = ApplicationContextUtil.getClass(PaperAgent.class);
+
         logger.debug("连接成功");
         Map<String, String> res = new HashMap<>();
         res.put("code", "0");
