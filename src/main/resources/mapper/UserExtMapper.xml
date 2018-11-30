@@ -35,7 +35,10 @@
         <where>
             is_del = 1
             <if test="username != null and username != ''">
-              and username = #{username}
+                and username = #{username}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
             </if>
         </where>
     </select>

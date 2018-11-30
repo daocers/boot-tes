@@ -70,11 +70,11 @@ public class DepartmentApi {
     public RespDto<Boolean> saveDepartment(@RequestBody Department department) {
         try {
             Long departmentId = department.getId();
-            if(null == departmentId){
+            if (null == departmentId) {
                 logger.debug("保存， saveDepartment, 参数： {}", JSON.toJSONString(department, true));
                 departmentId = departmentService.add(department);
                 logger.info("新增 成功， id: {}", departmentId);
-            }else{
+            } else {
                 departmentService.updateById(department);
                 logger.debug("更新成功", JSON.toJSONString(department, true));
             }
@@ -126,6 +126,20 @@ public class DepartmentApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+    /**
+     * 获取全部岗位信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/30 22:09
+     */
+    @RequestMapping(value = "/findAll")
+    public RespDto<List<Department>> findAll() {
+        List<Department> departments = departmentService.findByCondition(null);
+        return RespDto.success(departments);
     }
 }
 

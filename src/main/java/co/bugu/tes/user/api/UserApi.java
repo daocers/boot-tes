@@ -2,7 +2,14 @@ package co.bugu.tes.user.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.department.domain.Department;
+import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.station.domain.Station;
+import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.dto.UserDto;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
@@ -10,11 +17,15 @@ import co.bugu.util.TokenUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +53,12 @@ public class UserApi {
     @Autowired
     IUserRoleXService userRoleXService;
 
+    @Autowired
+    IBranchService branchService;
+    @Autowired
+    IDepartmentService departmentService;
+    @Autowired
+    IStationService stationService;
 
 
     /**
@@ -60,21 +77,21 @@ public class UserApi {
         User user = new User();
         user.setUsername(username);
         List<User> users = userService.findByCondition(user);
-        if(CollectionUtils.isNotEmpty(users)){
-            if(users.size() > 1){
+        if (CollectionUtils.isNotEmpty(users)) {
+            if (users.size() > 1) {
                 logger.warn("用户名相同的用户有两个，数据异常， username: {}", username);
                 throw new Exception("数据异常");
-            }else{
+            } else {
                 user = users.get(0);
             }
 
-            if(!user.getPassword().equals(password)){
+            if (!user.getPassword().equals(password)) {
                 return RespDto.fail(-1, "用户名/密码错误");
             }
 //            用户名密码匹配，设置token传给服务端
             String token = TokenUtil.getToken(user);
             return RespDto.success(token);
-        }else{
+        } else {
             return RespDto.fail(-1, "用户名/密码错误");
         }
 
@@ -89,11 +106,11 @@ public class UserApi {
      * @date 2018/11/19 17:55
      */
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public RespDto<Boolean> logout(Long id, String token){
+    public RespDto<Boolean> logout(Long id, String token) {
         Long userId = TokenUtil.getUserId(token);
-        if(Objects.equals(userId, id)){
+        if (Objects.equals(userId, id)) {
             TokenUtil.invalid(token);
-        }else{
+        } else {
             return RespDto.fail(-2, "token无效");
         }
         return RespDto.success(true);
@@ -109,7 +126,7 @@ public class UserApi {
      * @date 2018-11-19 17:51
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<User>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody User user) {
+    public RespDto<PageInfo<UserDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody User user) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(user, true));
             if (null == pageNum) {
@@ -118,10 +135,32 @@ public class UserApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<User> list = userService.findByCondition(pageNum, pageSize, user);
-            PageInfo<User> pageInfo = new PageInfo<>(list);
+            PageInfo<User> pageInfo = userService.findByConditionWithPage(pageNum, pageSize, user);
+            PageInfo<UserDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<UserDto> list = Lists.transform(pageInfo.getList(), new Function<User, UserDto>() {
+                @Override
+                public UserDto apply(@Nullable User user) {
+                    UserDto dto = new UserDto();
+                    BeanUtils.copyProperties(user, dto);
+                    Branch branch = branchService.findById(user.getBranchId());
+                    if (branch != null) {
+                        dto.setBranchName(branch.getName());
+                    }
+                    Department department = departmentService.findById(user.getDepartmentId());
+                    if (department != null) {
+                        dto.setDepartmentName(department.getName());
+                    }
+                    Station station = stationService.findById(user.getStationId());
+                    if (station != null) {
+                        dto.setStationName(station.getName());
+                    }
+                    return dto;
+                }
+            });
+            res.setList(list);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();
@@ -140,11 +179,14 @@ public class UserApi {
     public RespDto<Boolean> saveUser(@RequestBody User user) {
         try {
             Long userId = user.getId();
-            if(null == userId){
+            user.setCreateUserId(userId);
+            user.setUpdateUserId(userId);
+            user.setPassword("888888");
+            if (null == userId) {
                 logger.debug("保存， saveUser, 参数： {}", JSON.toJSONString(user, true));
                 userId = userService.add(user);
                 logger.info("新增 成功， id: {}", userId);
-            }else{
+            } else {
                 userService.updateById(user);
                 logger.debug("更新成功", JSON.toJSONString(user, true));
             }
@@ -197,7 +239,6 @@ public class UserApi {
             return RespDto.fail();
         }
     }
-
 
 
     /***

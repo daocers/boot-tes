@@ -70,11 +70,11 @@ public class StationApi {
     public RespDto<Boolean> saveStation(@RequestBody Station station) {
         try {
             Long stationId = station.getId();
-            if(null == stationId){
+            if (null == stationId) {
                 logger.debug("保存， saveStation, 参数： {}", JSON.toJSONString(station, true));
                 stationId = stationService.add(station);
                 logger.info("新增 成功， id: {}", stationId);
-            }else{
+            } else {
                 stationService.updateById(station);
                 logger.debug("更新成功", JSON.toJSONString(station, true));
             }
@@ -126,6 +126,12 @@ public class StationApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+    @RequestMapping(value = "/findAll")
+    public RespDto<List<Station>> findAll() {
+        List<Station> stations = stationService.findByCondition(null);
+        return RespDto.success(stations);
     }
 }
 
