@@ -4,6 +4,8 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.role.dao.RoleDao;
 import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.role.service.IRoleService;
+import co.bugu.tes.rolePermissionX.dao.RolePermissionXDao;
+import co.bugu.tes.rolePermissionX.domain.RolePermissionX;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,7 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +29,8 @@ import java.util.List;
 public class RoleServiceImpl implements IRoleService {
     @Autowired
     RoleDao roleDao;
+    @Autowired
+    RolePermissionXDao xDao;
 
     private Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
 
@@ -100,6 +107,27 @@ public class RoleServiceImpl implements IRoleService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, timeout = 2000, isolation = Isolation.READ_COMMITTED)
+    public List<RolePermissionX> authorize(Long roleId, List<Long> permissionIdList, Long userId) {
+        Date now = new Date();
+        int num = xDao.deleteByRoleId(roleId);
+
+        List<RolePermissionX> xList = new ArrayList<>();
+        for(Long id: permissionIdList){
+            RolePermissionX x = new RolePermissionX();
+            x.setRoleId(roleId);
+            x.setIsDel(DelFlagEnum.NO.getCode());
+            x.setCreateUserId(userId);
+            x.setUpdateUserId(userId);
+            x.setPermissionId(id);
+            x.setNo(1);
+            xList.add(x);
+        }
+        xDao.batchAdd(xList);
+        return xList;
     }
 
 }

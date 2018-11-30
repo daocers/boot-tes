@@ -6,6 +6,7 @@ import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.role.service.IRoleService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
@@ -73,7 +74,7 @@ public class RoleApi {
      * @date 2018/11/22 20:01
      */
     @RequestMapping(value = "/findByUserId")
-    public RespDto<List<Long>> findByUserId(Long userId){
+    public RespDto<List<Long>> findByUserId(Long userId) {
         UserRoleX query = new UserRoleX();
         query.setUserId(userId);
         query.setIsDel(DelFlagEnum.NO.getCode());
@@ -88,6 +89,7 @@ public class RoleApi {
 
     }
 
+
     /**
      * 保存
      *
@@ -100,11 +102,11 @@ public class RoleApi {
     public RespDto<Boolean> saveRole(@RequestBody Role role) {
         try {
             Long roleId = role.getId();
-            if(null == roleId){
+            if (null == roleId) {
                 logger.debug("保存， saveRole, 参数： {}", JSON.toJSONString(role, true));
                 roleId = roleService.add(role);
                 logger.info("新增 成功， id: {}", roleId);
-            }else{
+            } else {
                 roleService.updateById(role);
                 logger.debug("更新成功", JSON.toJSONString(role, true));
             }
@@ -159,15 +161,46 @@ public class RoleApi {
     }
 
 
+    /**
+     * 查找所有的角色
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/30 15:30
+     */
     @RequestMapping(value = "/findAll")
-    public RespDto<List<Role>> findAll(){
-        try{
+    public RespDto<List<Role>> findAll() {
+        try {
             List<Role> roles = roleService.findByCondition(null);
             return RespDto.success(roles);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.info("查询全部角色失败", e);
             return RespDto.fail("查询全部角色失败");
         }
     }
+
+
+    /***
+     * 授权  先软删除，再批量添加
+     * @Time 2017/12/7 22:51
+     * @Author daocers
+     * @param   roleId
+     * @param  permissionIdList
+     * @return co.bugu.common.RespDto<java.lang.Boolean>
+     */
+    @RequestMapping(value = "/authorize", method = RequestMethod.POST)
+    public RespDto<Boolean> authorize(@RequestParam Long roleId, @RequestBody List<Long> permissionIdList) {
+        try {
+            Long userId = UserUtil.getCurrentUser().getId();
+            roleService.authorize(roleId, permissionIdList, userId);
+            return RespDto.success(true);
+        } catch (Exception e) {
+            logger.error("授权失败", e);
+            return RespDto.fail();
+        }
+
+    }
+
 }
 

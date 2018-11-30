@@ -4,10 +4,16 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.permission.dao.PermissionDao;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.service.IPermissionService;
+import co.bugu.tes.rolePermissionX.domain.RolePermissionX;
+import co.bugu.tes.rolePermissionX.service.IRolePermissionXService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +30,8 @@ import java.util.List;
 public class PermissionServiceImpl implements IPermissionService {
     @Autowired
     PermissionDao permissionDao;
+    @Autowired
+    IRolePermissionXService rolePermissionXService;
 
     private Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
@@ -83,7 +91,6 @@ public class PermissionServiceImpl implements IPermissionService {
     public Permission findById(Long permissionId) {
         logger.debug("permission findById, 参数 permissionId: {}", permissionId);
         Permission permission = permissionDao.selectById(permissionId);
-
         logger.debug("查询结果： {}", JSON.toJSONString(permission, true));
         return permission;
     }
@@ -100,6 +107,27 @@ public class PermissionServiceImpl implements IPermissionService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    public List<Long> findIdsByRoleId(Long roleId) {
+        logger.debug("findIdsByRoleId， roleId: {}", roleId);
+        RolePermissionX rolePermissionX = new RolePermissionX();
+        rolePermissionX.setRoleId(roleId);
+        rolePermissionX.setIsDel(DelFlagEnum.NO.getCode());
+        List<RolePermissionX> xList = rolePermissionXService.findByCondition(rolePermissionX);
+        if (CollectionUtils.isEmpty(xList)) {
+            return null;
+        } else {
+            List<Long> res = Lists.transform(xList, new Function<RolePermissionX, Long>() {
+                @Override
+                public Long apply(@Nullable RolePermissionX rolePermissionX) {
+                    return rolePermissionX.getPermissionId();
+                }
+            });
+            return res;
+        }
+
     }
 
 }

@@ -1,6 +1,7 @@
 package co.bugu.tes.role.service;
 
 import co.bugu.tes.role.domain.Role;
+import co.bugu.tes.rolePermissionX.domain.RolePermissionX;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -73,4 +74,14 @@ public interface IRoleService {
      */
     int deleteById(Long roleId, Long operatorId);
 
+
+    /**
+     * 给角色分配权限
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/30 15:33
+     */
+    List<RolePermissionX> authorize(Long roleId, List<Long> permissionIdList, Long userId);
 }

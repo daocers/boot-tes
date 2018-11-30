@@ -73,4 +73,14 @@ public interface IPermissionService {
      */
     int deleteById(Long permissionId, Long operatorId);
 
+    /**
+     * 查找指定角色拥有的权限id列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/30 10:56
+     */
+    List<Long> findIdsByRoleId(Long roleId);
+
 }

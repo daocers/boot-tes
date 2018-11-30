@@ -5,6 +5,8 @@ import co.bugu.tes.permission.agent.PermissionAgent;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.dto.PermissionTreeDto;
 import co.bugu.tes.permission.service.IPermissionService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -146,6 +148,36 @@ public class PermissionApi {
     public RespDto<List<PermissionTreeDto>> getPermissionTree() {
         List<PermissionTreeDto> list = permissionAgent.getPermissionTree();
         return RespDto.success(list);
+    }
+
+    /**
+     * 获取权限列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/30 10:36
+     */
+    @RequestMapping(value = "/getMenuTree")
+    public RespDto<List<PermissionTreeDto>> getMenuTree() {
+        User user = UserUtil.getCurrentUser();
+        List<PermissionTreeDto> list = permissionAgent.getMenuTree(user.getId());
+        return RespDto.success(list);
+    }
+
+
+    /**
+     * 查找角色的授权列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/30 15:23
+     */
+    @RequestMapping(value = "/findPermissionIdList")
+    public RespDto<List<Long>> findPermissionIdListByRoleId(Long roleId) {
+        List<Long> ids = permissionService.findIdsByRoleId(roleId);
+        return RespDto.success(ids);
     }
 }
 
