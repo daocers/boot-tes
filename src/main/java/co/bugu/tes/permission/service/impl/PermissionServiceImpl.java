@@ -1,8 +1,11 @@
 package co.bugu.tes.permission.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.dto.BranchTreeDto;
 import co.bugu.tes.permission.dao.PermissionDao;
 import co.bugu.tes.permission.domain.Permission;
+import co.bugu.tes.permission.dto.PermissionTreeDto;
 import co.bugu.tes.permission.service.IPermissionService;
 import co.bugu.tes.rolePermissionX.domain.RolePermissionX;
 import co.bugu.tes.rolePermissionX.service.IRolePermissionXService;
@@ -35,7 +38,7 @@ public class PermissionServiceImpl implements IPermissionService {
 
     private Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "update_time";
 
     @Override
     public long add(Permission permission) {
@@ -126,6 +129,29 @@ public class PermissionServiceImpl implements IPermissionService {
                 }
             });
             return res;
+        }
+
+    }
+
+    @Override
+    public void saveTree(List<PermissionTreeDto> list, Long userId) {
+        saveInRecursion(userId, list);
+
+    }
+
+    private void saveInRecursion(Long userId, List<PermissionTreeDto> dtos){
+        int idx = 1;
+        for(PermissionTreeDto dto: dtos){
+            Permission permission = new Permission();
+            permission.setId(dto.getId());
+            permission.setUpdateUserId(userId);
+            permission.setSuperiorId(dto.getSuperiorId());
+            permission.setNo(idx);
+            permissionDao.updateById(permission);
+            idx++;
+            if(CollectionUtils.isNotEmpty(dto.getChildren())){
+                saveInRecursion(userId, dto.getChildren());
+            }
         }
 
     }

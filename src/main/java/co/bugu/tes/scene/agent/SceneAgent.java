@@ -12,6 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -26,6 +27,8 @@ import java.util.List;
 public class SceneAgent {
     private Logger logger = LoggerFactory.getLogger(SceneAgent.class);
 
+    @Value("${hn.tes.auto-close-scene-delay}")
+    Integer autoCloseSceneDelay;
 
     @Autowired
     ISceneService sceneService;
@@ -51,8 +54,11 @@ public class SceneAgent {
         if (CollectionUtils.isNotEmpty(scenes)) {
             Date now = new Date();
             for (Scene scene : scenes) {
-//                结束五分钟之后，自动封场
-                if(now.getTime() > scene.getCloseTime().getTime() + 300000){
+//                正在进行的考试，结束3分钟之后，自动封场,时间可配置
+                if(autoCloseSceneDelay == null){
+                    autoCloseSceneDelay = 3;
+                }
+                if (now.getTime() > scene.getCloseTime().getTime() + autoCloseSceneDelay * 60000 && scene.getStatus() == SceneStatusEnum.ON.getCode()) {
                     closeScene(scene);
                 }
             }
@@ -79,9 +85,11 @@ public class SceneAgent {
         List<Paper> papers = paperService.findByCondition(query);
         if (CollectionUtils.isNotEmpty(papers)) {
             for (Paper paper : papers) {
-                Long paperId = paper.getId();
-                double score = paperAgent.computeScore(scene, paper);
-                logger.info("得分， {}， 试卷id: {}", new Object[]{score, paperId});
+                if (paper.getStatus() == PaperStatusEnum.COMMITED.getCode()) {
+                    Long paperId = paper.getId();
+                    double score = paperAgent.computeScore(scene, paper);
+                    logger.info("得分， {}， 试卷id: {}", new Object[]{score, paperId});
+                }
             }
         }
 //        计算完得分，更新场次信息
@@ -110,7 +118,7 @@ public class SceneAgent {
             for (Scene scene : scenes) {
 
 //                开场时间早于当前时间 且 当前时间早于结束时间，设置为开场状态
-                if(scene.getOpenTime().before(now) && now.before(scene.getCloseTime())){
+                if (scene.getOpenTime().before(now) && now.before(scene.getCloseTime())) {
                     scene.setUpdateTime(now);
                     scene.setStatus(SceneStatusEnum.ON.getCode());
                     sceneService.updateById(scene);

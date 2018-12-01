@@ -1,4 +1,4 @@
-package co.bugu.tes.tesk;
+package co.bugu.tes.task;
 
 import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.scene.agent.SceneAgent;

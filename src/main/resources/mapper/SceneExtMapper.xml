@@ -2,40 +2,40 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="co.bugu.tes.scene.dao.SceneDao">
     <resultMap id="BaseResultMap" type="co.bugu.tes.scene.domain.Scene">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="code" jdbcType="VARCHAR" property="code" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="branch_id" jdbcType="BIGINT" property="branchId" />
-    <result column="department_id" jdbcType="BIGINT" property="departmentId" />
-    <result column="station_id" jdbcType="BIGINT" property="stationId" />
-    <result column="auth_code" jdbcType="VARCHAR" property="authCode" />
-    <result column="change_paper" jdbcType="INTEGER" property="changePaper" />
-    <result column="delay_minute" jdbcType="INTEGER" property="delayMinute" />
-    <result column="duration" jdbcType="INTEGER" property="duration" />
-    <result column="cancel_reason" jdbcType="VARCHAR" property="cancelReason" />
-    <result column="single_count" jdbcType="INTEGER" property="singleCount" />
-    <result column="single_score" jdbcType="DOUBLE" property="singleScore" />
-    <result column="multi_count" jdbcType="INTEGER" property="multiCount" />
-    <result column="multi_score" jdbcType="DOUBLE" property="multiScore" />
-    <result column="judge_count" jdbcType="INTEGER" property="judgeCount" />
-    <result column="judge_score" jdbcType="DOUBLE" property="judgeScore" />
-    <result column="paper_policy_id" jdbcType="BIGINT" property="paperPolicyId" />
-    <result column="paper_generate_type" jdbcType="INTEGER" property="paperGenerateType" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="question_bank_id" jdbcType="BIGINT" property="questionBankId" />
-    <result column="user_choice_type" jdbcType="INTEGER" property="userChoiceType" />
-    <result column="total_score" jdbcType="DOUBLE" property="totalScore" />
-    <result column="percentable" jdbcType="INTEGER" property="percentable" />
-    <result column="meta_score_info" jdbcType="VARCHAR" property="metaScoreInfo" />
-    <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="open_time" jdbcType="TIMESTAMP" property="openTime" />
-    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
-    <result column="is_del" jdbcType="INTEGER" property="isDel" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
-  </resultMap>
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="branch_id" jdbcType="BIGINT" property="branchId"/>
+        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
+        <result column="station_id" jdbcType="BIGINT" property="stationId"/>
+        <result column="auth_code" jdbcType="VARCHAR" property="authCode"/>
+        <result column="change_paper" jdbcType="INTEGER" property="changePaper"/>
+        <result column="delay_minute" jdbcType="INTEGER" property="delayMinute"/>
+        <result column="duration" jdbcType="INTEGER" property="duration"/>
+        <result column="cancel_reason" jdbcType="VARCHAR" property="cancelReason"/>
+        <result column="single_count" jdbcType="INTEGER" property="singleCount"/>
+        <result column="single_score" jdbcType="DOUBLE" property="singleScore"/>
+        <result column="multi_count" jdbcType="INTEGER" property="multiCount"/>
+        <result column="multi_score" jdbcType="DOUBLE" property="multiScore"/>
+        <result column="judge_count" jdbcType="INTEGER" property="judgeCount"/>
+        <result column="judge_score" jdbcType="DOUBLE" property="judgeScore"/>
+        <result column="paper_policy_id" jdbcType="BIGINT" property="paperPolicyId"/>
+        <result column="paper_generate_type" jdbcType="INTEGER" property="paperGenerateType"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="question_bank_id" jdbcType="BIGINT" property="questionBankId"/>
+        <result column="user_choice_type" jdbcType="INTEGER" property="userChoiceType"/>
+        <result column="total_score" jdbcType="DOUBLE" property="totalScore"/>
+        <result column="percentable" jdbcType="INTEGER" property="percentable"/>
+        <result column="meta_score_info" jdbcType="VARCHAR" property="metaScoreInfo"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="open_time" jdbcType="TIMESTAMP" property="openTime"/>
+        <result column="close_time" jdbcType="TIMESTAMP" property="closeTime"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="create_user_id" jdbcType="BIGINT" property="createUserId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
+    </resultMap>
     <sql id="Base_Column_List">
     id, code, name, branch_id, department_id, station_id, auth_code, change_paper, delay_minute, 
     duration, cancel_reason, single_count, single_score, multi_count, multi_score, judge_count, 
@@ -44,14 +44,17 @@
     create_time, create_user_id, update_time, update_user_id
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tes_scene
-    where id = #{id,jdbcType=BIGINT}
-  </select>
+        select
+        <include refid="Base_Column_List"/>
+        from tes_scene
+        where id = #{id,jdbcType=BIGINT}
+    </select>
     <select id="findByObject" parameterType="co.bugu.tes.scene.domain.Scene" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tes_scene
-      </select>
+        select
+        <include refid="Base_Column_List"/>
+        from tes_scene
+        <where>
+            is_del = 1
+        </where>
+    </select>
 </mapper>

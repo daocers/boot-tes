@@ -1,6 +1,7 @@
 package co.bugu.tes.permission.service;
 
 import co.bugu.tes.permission.domain.Permission;
+import co.bugu.tes.permission.dto.PermissionTreeDto;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -83,4 +84,5 @@ public interface IPermissionService {
      */
     List<Long> findIdsByRoleId(Long roleId);
 
+    void saveTree(List<PermissionTreeDto> list, Long userId);
 }

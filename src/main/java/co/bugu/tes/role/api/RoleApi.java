@@ -3,7 +3,10 @@ package co.bugu.tes.role.api;
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.role.domain.Role;
+import co.bugu.tes.role.dto.RoleDto;
 import co.bugu.tes.role.service.IRoleService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
 import co.bugu.util.UserUtil;
@@ -15,6 +18,7 @@ import com.google.common.collect.Lists;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +39,8 @@ public class RoleApi {
     IRoleService roleService;
     @Autowired
     IUserRoleXService userRoleXService;
+    @Autowired
+    IUserService userService;
 
     /**
      * 条件查询
@@ -45,7 +51,7 @@ public class RoleApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<Role>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Role role) {
+    public RespDto<PageInfo<RoleDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Role role) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(role, true));
             if (null == pageNum) {
@@ -54,10 +60,23 @@ public class RoleApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Role> list = roleService.findByCondition(pageNum, pageSize, role);
-            PageInfo<Role> pageInfo = new PageInfo<>(list);
-            logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            PageInfo<Role> pageInfo = roleService.findByConditionWithPage(pageNum, pageSize, role);
+            PageInfo<RoleDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<RoleDto> list = Lists.transform(pageInfo.getList(), new Function<Role, RoleDto>() {
+                @Override
+                public RoleDto apply(@Nullable Role role) {
+                    RoleDto dto = new RoleDto();
+                    BeanUtils.copyProperties(role, dto);
+                    User user = userService.findById(role.getCreateUserId());
+                    if (user != null) {
+                        dto.setCreateUserName(user.getName());
+                    }
+                    return dto;
+                }
+            });
+            res.setList(list);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();

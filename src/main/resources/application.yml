@@ -10,3 +10,8 @@ spring:
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
 
+
+hn:
+  tes:
+#  自动封场推迟几分钟，考试时间结束后自动封场
+    auto-close-scene-delay: 3

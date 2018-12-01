@@ -25,6 +25,15 @@
         select
         <include refid="Base_Column_List"/>
         from tes_user_role_x
+        <where>
+            is_del = 1
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
     </select>
 
     <update id="deleteByUserId" parameterType="long">

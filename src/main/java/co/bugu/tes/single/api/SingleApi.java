@@ -1,14 +1,29 @@
 package co.bugu.tes.single.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.department.domain.Department;
+import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.questionBank.domain.QuestionBank;
+import co.bugu.tes.questionBank.service.IQuestionBankService;
 import co.bugu.tes.single.domain.Single;
+import co.bugu.tes.single.dto.SingleDto;
 import co.bugu.tes.single.service.ISingleService;
+import co.bugu.tes.station.domain.Station;
+import co.bugu.tes.station.service.IStationService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
 import co.bugu.util.ExcelUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +33,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -34,6 +52,16 @@ public class SingleApi {
 
     @Autowired
     ISingleService singleService;
+    @Autowired
+    IUserService userService;
+    @Autowired
+    IDepartmentService departmentService;
+    @Autowired
+    IBranchService branchService;
+    @Autowired
+    IStationService stationService;
+    @Autowired
+    IQuestionBankService questionBankService;
 
 
     /**
@@ -101,7 +129,7 @@ public class SingleApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<Single>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Single single) {
+    public RespDto<PageInfo<SingleDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Single single) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(single, true));
             if (null == pageNum) {
@@ -110,10 +138,40 @@ public class SingleApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Single> list = singleService.findByCondition(pageNum, pageSize, single);
-            PageInfo<Single> pageInfo = new PageInfo<>(list);
+            PageInfo<Single> pageInfo = singleService.findByConditionWithPage(pageNum, pageSize, single);
+            PageInfo<SingleDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<SingleDto> list = Lists.transform(pageInfo.getList(), new Function<Single, SingleDto>() {
+                @Override
+                public SingleDto apply(@Nullable Single single) {
+                    SingleDto dto = new SingleDto();
+                    BeanUtils.copyProperties(single, dto);
+                    User user = userService.findById(single.getCreateUserId());
+                    if (null != user) {
+                        dto.setCreateUserName(user.getName());
+                    }
+                    Department department = departmentService.findById(single.getDepartmentId());
+                    if (null != department) {
+                        dto.setDepartmentName(department.getName());
+                    }
+                    Branch branch = branchService.findById(single.getBranchId());
+                    if (null != department) {
+                        dto.setBranchName(branch.getName());
+                    }
+                    Station station = stationService.findById(single.getStationId());
+                    if (null != station) {
+                        dto.setStationName(station.getName());
+                    }
+                    QuestionBank bank = questionBankService.findById(single.getBankId());
+                    if(null != bank){
+                        dto.setBankName(bank.getName());
+                    }
+                    return dto;
+                }
+            });
+            res.setList(list);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();

@@ -14,6 +14,8 @@ public class CodeUtil {
     private static volatile String dateInfo;
 
     private static AtomicLong sceneIndex = new AtomicLong(1L);
+    private static AtomicLong departIndex = new AtomicLong(1L);
+    private static AtomicLong stationIndex = new AtomicLong(1L);
     private static AtomicLong paperIndex = new AtomicLong(1L);
     private static AtomicLong questionIndex = new AtomicLong(1L);
 
@@ -107,4 +109,21 @@ public class CodeUtil {
         return "Q" + getSameLengthInfo(questionType, 2) + getSameLengthInfo(index, 6);
     }
 
+    /**
+     * 获取岗位编号
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/1 11:06
+     */
+    public static String getStationCode() {
+        Long index = stationIndex.getAndIncrement();
+        return "ST" + dateInfo + getSameLengthInfo(index, 3);
+    }
+
+    public static String getDepartmentCode() {
+        Long index = departIndex.getAndIncrement();
+        return "D" + dateInfo + getSameLengthInfo(index, 3);
+    }
 }

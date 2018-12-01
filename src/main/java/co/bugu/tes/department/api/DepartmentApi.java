@@ -3,6 +3,8 @@ package co.bugu.tes.department.api;
 import co.bugu.common.RespDto;
 import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.util.CodeUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -48,8 +50,7 @@ public class DepartmentApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Department> list = departmentService.findByCondition(pageNum, pageSize, department);
-            PageInfo<Department> pageInfo = new PageInfo<>(list);
+            PageInfo<Department> pageInfo = departmentService.findByConditionWithPage(pageNum, pageSize, department);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
             return RespDto.success(pageInfo);
         } catch (Exception e) {
@@ -69,8 +70,12 @@ public class DepartmentApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveDepartment(@RequestBody Department department) {
         try {
+            Long userId = UserUtil.getCurrentUser().getId();
             Long departmentId = department.getId();
+            department.setUpdateUserId(userId);
             if (null == departmentId) {
+                department.setCode(CodeUtil.getDepartmentCode());
+                department.setCreateUserId(userId);
                 logger.debug("保存， saveDepartment, 参数： {}", JSON.toJSONString(department, true));
                 departmentId = departmentService.add(department);
                 logger.info("新增 成功， id: {}", departmentId);

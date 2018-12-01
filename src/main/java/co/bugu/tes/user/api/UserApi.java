@@ -181,8 +181,8 @@ public class UserApi {
             Long userId = user.getId();
             user.setCreateUserId(userId);
             user.setUpdateUserId(userId);
-            user.setPassword("888888");
             if (null == userId) {
+                user.setPassword("888888");
                 logger.debug("保存， saveUser, 参数： {}", JSON.toJSONString(user, true));
                 userId = userService.add(user);
                 logger.info("新增 成功， id: {}", userId);
@@ -253,9 +253,7 @@ public class UserApi {
     public RespDto<Boolean> assignRole(Long userId, @RequestBody List<Long> roleIdList) {
         try {
             Preconditions.checkArgument(null != userId);
-            Preconditions.checkArgument(CollectionUtils.isNotEmpty(roleIdList));
             Long currentUserId = UserUtil.getCurrentUser().getId();
-
             UserRoleX delete = new UserRoleX();
             delete.setUpdateUserId(currentUserId);
             delete.setUserId(userId);

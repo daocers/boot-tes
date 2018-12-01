@@ -1,6 +1,7 @@
 package co.bugu.tes.permission.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.tes.permission.agent.PermissionAgent;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.dto.PermissionTreeDto;
@@ -76,8 +77,13 @@ public class PermissionApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Long> savePermission(@RequestBody Permission permission) {
         try {
+            Long userId = UserUtil.getCurrentUser().getId();
+
             Long permissionId = permission.getId();
+            permission.setUpdateUserId(userId);
             if (null == permissionId) {
+                permission.setCreateUserId(userId);
+                permission.setStatus(BaseStatusEnum.ENABLE.getCode());
                 logger.debug("保存， savePermission, 参数： {}", JSON.toJSONString(permission, true));
                 permissionId = permissionService.add(permission);
                 logger.info("新增 成功， id: {}", permissionId);
@@ -178,6 +184,14 @@ public class PermissionApi {
     public RespDto<List<Long>> findPermissionIdListByRoleId(Long roleId) {
         List<Long> ids = permissionService.findIdsByRoleId(roleId);
         return RespDto.success(ids);
+    }
+
+
+    @RequestMapping(value = "/saveTree", method = RequestMethod.POST)
+    public RespDto<Boolean> saveTree(@RequestBody List<PermissionTreeDto> list) {
+        Long userId = UserUtil.getCurrentUser().getId();
+        permissionService.saveTree(list, userId);
+        return RespDto.success(true);
     }
 }
 

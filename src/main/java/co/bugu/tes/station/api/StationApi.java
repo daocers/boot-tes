@@ -1,13 +1,23 @@
 package co.bugu.tes.station.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.tes.station.domain.Station;
+import co.bugu.tes.station.dto.StationDto;
 import co.bugu.tes.station.service.IStationService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
+import co.bugu.util.CodeUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +39,8 @@ public class StationApi {
 
     @Autowired
     IStationService stationService;
+    @Autowired
+    IUserService userService;
 
     /**
      * 条件查询
@@ -39,7 +51,7 @@ public class StationApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<Station>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Station station) {
+    public RespDto<PageInfo<StationDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Station station) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(station, true));
             if (null == pageNum) {
@@ -48,10 +60,24 @@ public class StationApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Station> list = stationService.findByCondition(pageNum, pageSize, station);
-            PageInfo<Station> pageInfo = new PageInfo<>(list);
+            PageInfo<Station> pageInfo = stationService.findByConditionWithPage(pageNum, pageSize, station);
+            PageInfo<StationDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<StationDto> list = Lists.transform(pageInfo.getList(), new Function<Station, StationDto>() {
+                @Override
+                public StationDto apply(@Nullable Station station) {
+                    StationDto dto = new StationDto();
+                    BeanUtils.copyProperties(station, dto);
+                    User user = userService.findById(station.getCreateUserId());
+                    if (user != null) {
+                        dto.setCreateUserName(user.getName());
+                    }
+                    return dto;
+                }
+            });
+            res.setList(list);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();
@@ -69,8 +95,16 @@ public class StationApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveStation(@RequestBody Station station) {
         try {
+            Long userId = UserUtil.getCurrentUser().getId();
+            station.setUpdateUserId(userId);
             Long stationId = station.getId();
+
+            if (station.getStatus() == null) {
+                station.setStatus(BaseStatusEnum.ENABLE.getCode());
+            }
             if (null == stationId) {
+                station.setCode(CodeUtil.getStationCode());
+                station.setCreateUserId(userId);
                 logger.debug("保存， saveStation, 参数： {}", JSON.toJSONString(station, true));
                 stationId = stationService.add(station);
                 logger.info("新增 成功， id: {}", stationId);

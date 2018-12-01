@@ -1,6 +1,7 @@
 package co.bugu.tes.branch.service;
 
 import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.dto.BranchTreeDto;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -73,4 +74,23 @@ public interface IBranchService {
      */
     int deleteById(Long branchId, Long operatorId);
 
+    /**
+     * 
+     *
+     * @param 
+     * @return 
+     * @auther daocers
+     * @date 2018/12/1 12:09
+     */
+    List<Branch> batchAdd(List<List<String>> data, Long userId) throws Exception;
+
+    /**
+     * 保存拖拽之后的树状结构
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/1 15:13
+     */
+    void saveTree(List<BranchTreeDto> list, Long userId);
 }

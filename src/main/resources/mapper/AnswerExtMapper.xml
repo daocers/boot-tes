@@ -31,6 +31,9 @@
         select
         <include refid="Base_Column_List"/>
         from tes_answer
+        <where>
+            is_del = 1
+        </where>
     </select>
 
     <insert id="batchAdd" parameterType="list" useGeneratedKeys="true" keyProperty="id">

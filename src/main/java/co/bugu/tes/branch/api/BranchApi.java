@@ -1,10 +1,14 @@
 package co.bugu.tes.branch.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.tes.branch.agent.BranchAgent;
 import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.dto.BranchTreeDto;
 import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.single.api.SingleApi;
+import co.bugu.util.ExcelUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -15,7 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -36,12 +47,11 @@ public class BranchApi {
     BranchAgent branchAgent;
 
 
-
     /***
      * 获取机构树 数据
      * @Time 2017/11/25 17:53
      * @Author daocers
-     * @return co.bugu.common.RespDto<java.util.List<co.bugu.tes.branch.BranchTreeVo>>
+     * @return co.bugu.common.RespDto<java.util.List < co.bugu.tes.branch.BranchTreeVo>>
      */
     @RequestMapping(value = "/getBranchTree")
     public RespDto<List<BranchTreeDto>> getBranchTree() {
@@ -93,12 +103,18 @@ public class BranchApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Long> saveBranch(@RequestBody Branch branch) {
         try {
+            Long userId = UserUtil.getCurrentUser().getId();
             Long branchId = branch.getId();
-            if(null == branchId){
+            branch.setUpdateUserId(userId);
+            if (branch.getStatus() == null) {
+                branch.setStatus(BaseStatusEnum.ENABLE.getCode());
+            }
+            if (null == branchId) {
+                branch.setCreateUserId(userId);
                 logger.debug("保存， saveBranch, 参数： {}", JSON.toJSONString(branch, true));
                 branchId = branchService.add(branch);
                 logger.info("新增 成功， id: {}", branchId);
-            }else{
+            } else {
                 branchService.updateById(branch);
                 logger.debug("更新成功", JSON.toJSONString(branch, true));
             }
@@ -150,6 +166,78 @@ public class BranchApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+    /**
+     * 保存树结构1
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/1 15:21
+     */
+    @RequestMapping(value = "/saveTree", method = RequestMethod.POST)
+    public RespDto<Boolean> saveTree(@RequestBody List<BranchTreeDto> list) {
+        Long userId = UserUtil.getCurrentUser().getId();
+        branchService.saveTree(list, userId);
+        return RespDto.success(true);
+    }
+
+    /**
+     * 下载多选题模板
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/21 9:56
+     */
+    @RequestMapping(value = "/downloadModel")
+    public void downloadModel(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" + new String(("机构信息模板.xlsx").getBytes(), "iso-8859-1"));
+            OutputStream os = response.getOutputStream();
+            String rootPath = request.getServletContext().getRealPath("/");
+
+            InputStream is = new BufferedInputStream(SingleApi.class.getClassLoader().getResourceAsStream("models/机构信息模板.xlsx"));
+            byte[] buffer = new byte[1024];
+
+            while (is.read(buffer) != -1) {
+                os.write(buffer);
+            }
+            os.close();
+            is.close();
+        } catch (Exception e) {
+            logger.error("下载机构信息模板失败", e);
+        }
+    }
+
+
+    /**
+     * 批量添加试题
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/11/21 11:39
+     */
+    @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
+    public RespDto batchAdd(MultipartFile file, Long questionBankId) {
+//        String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
+        File target = new File("e:/test.xlsx");
+        Long userId = UserUtil.getCurrentUser().getId();
+        try {
+            file.transferTo(target);
+            List<List<String>> data = ExcelUtil.getData(target);
+            logger.info("批量导入机构，", JSON.toJSONString(data, true));
+            data.remove(0);
+            List<Branch> branches = branchService.batchAdd(data, userId);
+            return RespDto.success();
+        } catch (Exception e) {
+            logger.error("批量添加机构信息失败", e);
+            return RespDto.fail("批量添加机构失败");
+        }
+
     }
 }
 
