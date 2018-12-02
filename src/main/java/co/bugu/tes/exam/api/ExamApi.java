@@ -259,9 +259,9 @@ public class ExamApi {
                 dto.setUserId(userId);
                 dto.setName(user.getName());
                 Session session = WebSocketSessionUtil.getSession(userId);
-                if(session != null){
+                if (session != null) {
                     dto.setUserStatus(1);
-                }else{
+                } else {
                     dto.setUserStatus(2);
                 }
 
@@ -313,26 +313,26 @@ public class ExamApi {
      * @date 2018/11/29 22:38
      */
     @RequestMapping(value = "/canAccess")
-    public RespDto<Boolean> canAccess(Long sceneId, Long authCode){
+    public RespDto<Boolean> canAccess(Long sceneId, String authCode) {
         Date now = new Date();
         Scene scene = sceneService.findById(sceneId);
-        if(!scene.getAuthCode().equals(authCode)){
-            return RespDto.fail("授权码错误");
+        if (!scene.getAuthCode().equals(authCode)) {
+            return RespDto.fail(0, "授权码错误");
         }
-        if(scene.getStatus() == SceneStatusEnum.READY.getCode()){
-            return RespDto.fail("本场考试未开始");
+        if (scene.getStatus() == SceneStatusEnum.READY.getCode()) {
+            return RespDto.fail(-1, "本场考试未开始");
         }
-        if(scene.getStatus() == SceneStatusEnum.CLOSED.getCode()){
-            return RespDto.fail("本场考试已结束");
+        if (scene.getStatus() == SceneStatusEnum.CLOSED.getCode()) {
+            return RespDto.fail(-1, "本场考试已结束");
         }
-        if(scene.getStatus() == SceneStatusEnum.CANCELED.getCode()){
-            return RespDto.fail("场次已作废");
+        if (scene.getStatus() == SceneStatusEnum.CANCELED.getCode()) {
+            return RespDto.fail(-1, "场次已作废");
         }
-        if(scene.getOpenTime().after(now)){
-            return RespDto.fail("比赛未开始");
+        if (scene.getOpenTime().after(now)) {
+            return RespDto.fail(-1, "考试未开始");
         }
-        if(scene.getOpenTime().getTime() + scene.getDuration()* 60000 < now.getTime()){
-            return RespDto.fail("迟到太久，参加下一场吧");
+        if (scene.getOpenTime().getTime() + scene.getDuration() * 60000 < now.getTime()) {
+            return RespDto.fail(-1, "迟到太久，参加下一场吧");
         }
 
         return RespDto.success();

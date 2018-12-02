@@ -3,13 +3,19 @@ package co.bugu.tes.judge.api;
 import co.bugu.common.RespDto;
 import co.bugu.tes.judge.domain.Judge;
 import co.bugu.tes.judge.service.IJudgeService;
+import co.bugu.tes.question.agent.QuestionAgent;
+import co.bugu.tes.question.dto.QuestionListDto;
 import co.bugu.tes.single.api.SingleApi;
 import co.bugu.util.ExcelUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +44,8 @@ public class JudgeApi {
 
     @Autowired
     IJudgeService judgeService;
+    @Autowired
+    QuestionAgent questionAgent;
 
     /**
      * 条件查询
@@ -48,7 +56,7 @@ public class JudgeApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<Judge>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Judge judge) {
+    public RespDto<PageInfo<QuestionListDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Judge judge) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(judge, true));
             if (null == pageNum) {
@@ -57,10 +65,21 @@ public class JudgeApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Judge> list = judgeService.findByCondition(pageNum, pageSize, judge);
-            PageInfo<Judge> pageInfo = new PageInfo<>(list);
+            PageInfo<Judge> pageInfo = judgeService.findByConditionWithPage(pageNum, pageSize, judge);
+            PageInfo<QuestionListDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<QuestionListDto> list = Lists.transform(pageInfo.getList(), new Function<Judge, QuestionListDto>() {
+                @Override
+                public QuestionListDto apply(@Nullable Judge judge) {
+                    QuestionListDto dto = new QuestionListDto();
+                    BeanUtils.copyProperties(judge, dto);
+                    questionAgent.processName(dto);
+                    return dto;
+                }
+            });
+            res.setList(list);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();
@@ -79,11 +98,11 @@ public class JudgeApi {
     public RespDto<Boolean> saveJudge(@RequestBody Judge judge) {
         try {
             Long judgeId = judge.getId();
-            if(null == judgeId){
+            if (null == judgeId) {
                 logger.debug("保存， saveJudge, 参数： {}", JSON.toJSONString(judge, true));
                 judgeId = judgeService.add(judge);
                 logger.info("新增 成功， id: {}", judgeId);
-            }else{
+            } else {
                 judgeService.updateById(judge);
                 logger.debug("更新成功", JSON.toJSONString(judge, true));
             }
@@ -138,7 +157,6 @@ public class JudgeApi {
     }
 
 
-
     /**
      * 下载判断题模板
      *
@@ -186,7 +204,7 @@ public class JudgeApi {
             List<List<String>> data = ExcelUtil.getData(target);
             logger.info("批量导入试题，", JSON.toJSONString(data, true));
             data.remove(0);
-            List<Judge> judges  = judgeService.batchAdd(data, 1L, questionBankId, 1L, 1L, 1L, 1);
+            List<Judge> judges = judgeService.batchAdd(data, 1L, questionBankId, 1L, 1L, 1L, 1);
             return RespDto.success();
         } catch (Exception e) {
             logger.error("批量添加判断题失败", e);

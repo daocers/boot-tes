@@ -2,7 +2,13 @@ package co.bugu.tes.scene.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.tes.questionBank.domain.QuestionBank;
+import co.bugu.tes.questionBank.service.IQuestionBankService;
 import co.bugu.tes.scene.domain.Scene;
+import co.bugu.tes.scene.dto.MyJoinDto;
+import co.bugu.tes.scene.dto.MyOpenDto;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.user.domain.User;
@@ -10,9 +16,13 @@ import co.bugu.util.CodeUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,21 +45,85 @@ public class SceneApi {
 
     @Autowired
     ISceneService sceneService;
+    @Autowired
+    IPaperService paperService;
+    @Autowired
+    IQuestionBankService bankService;
+
 
     @RequestMapping("/myOpen")
-    public RespDto<PageInfo<Scene>> findMyOpen(Integer pageNum, Integer pageSize) {
+    public RespDto<PageInfo<MyOpenDto>> findMyOpen(Integer pageNum, Integer pageSize, Integer status) {
         try {
             User user = UserUtil.getCurrentUser();
             Long userId = user.getId();
             Scene query = new Scene();
+            query.setStatus(status);
             query.setCreateUserId(userId);
             query.setIsDel(DelFlagEnum.NO.getCode());
             PageInfo<Scene> pageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
-            return RespDto.success(pageInfo);
+            PageInfo<MyOpenDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<MyOpenDto> list = Lists.transform(pageInfo.getList(), new Function<Scene, MyOpenDto>() {
+                @Override
+                public MyOpenDto apply(@Nullable Scene scene) {
+                    MyOpenDto dto = new MyOpenDto();
+                    BeanUtils.copyProperties(scene, dto);
+                    QuestionBank bank = bankService.findById(scene.getQuestionBankId());
+                    if(null != bank){
+                        dto.setQuestionBankName(bank.getName());
+                    }
+//                    todo 策略名称待处理，当前暂时未开通策略模式
+
+                    return dto;
+                }
+            });
+            res.setList(list);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("获取我开场的信息失败", e);
             return RespDto.fail("获取场次信息失败");
         }
+    }
+
+
+    /**
+     * 我参加的考试，通过试卷判断
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/2 22:31
+     */
+    @RequestMapping("/myJoin")
+    public RespDto<PageInfo<MyJoinDto>> findMyJoin(Integer pageNum, Integer pageSize){
+        Long userId = UserUtil.getCurrentUser().getId();
+        Paper query = new Paper();
+        query.setUserId(userId);
+        PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, query);
+        PageInfo<MyJoinDto> res = new PageInfo<>();
+        BeanUtils.copyProperties(pageInfo, res);
+        List<MyJoinDto> list = Lists.transform(pageInfo.getList(), new Function<Paper, MyJoinDto>() {
+            @Override
+            public MyJoinDto apply(@Nullable Paper paper) {
+                MyJoinDto dto = new MyJoinDto();
+                Long sceneId = paper.getSceneId();
+                Scene scene = sceneService.findById(sceneId);
+                dto.setId(sceneId);
+                dto.setScene(scene);
+//                dto.setCode(scene.getCode());
+//                dto.setName(scene.getName());
+                dto.setBeginTime(paper.getBeginTime());
+                dto.setEndTime(paper.getEndTime());
+                dto.setUserId(userId);
+                dto.setScore(paper.getScore());
+                dto.setOriginalScore(paper.getOriginalScore());
+//                dto.setSceneStatus(scene.getStatus());
+                dto.setPaperStatus(paper.getStatus());
+                return dto;
+            }
+        });
+        res.setList(list);
+        return RespDto.success(res);
     }
 
     /**

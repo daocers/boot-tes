@@ -55,6 +55,16 @@
         from tes_scene
         <where>
             is_del = 1
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="name != null">
+                and name like #{name}
+            </if>
+            <if test="createUserId != null">
+                and create_user_id = #{createUserId}
+            </if>
+
         </where>
     </select>
 </mapper>

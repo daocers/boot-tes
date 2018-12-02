@@ -1,15 +1,28 @@
 package co.bugu.tes.questionBank.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.department.domain.Department;
+import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.questionBank.domain.QuestionBank;
+import co.bugu.tes.questionBank.dto.QuestionBankDto;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
+import co.bugu.tes.single.service.ISingleService;
+import co.bugu.tes.station.domain.Station;
+import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +45,20 @@ public class QuestionBankApi {
     @Autowired
     IQuestionBankService questionBankService;
 
+
+    @Autowired
+    ISingleService singleService;
+    @Autowired
+    IUserService userService;
+    @Autowired
+    IDepartmentService departmentService;
+    @Autowired
+    IBranchService branchService;
+    @Autowired
+    IStationService stationService;
+
     @RequestMapping(value = "/findAll")
-    public RespDto<List<QuestionBank>> findAll(){
+    public RespDto<List<QuestionBank>> findAll() {
 //        todo 获取用户信息
         User user = UserUtil.getCurrentUser();
         QuestionBank query = new QuestionBank();
@@ -51,7 +76,7 @@ public class QuestionBankApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<QuestionBank>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody QuestionBank questionBank) {
+    public RespDto<PageInfo<QuestionBankDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody QuestionBank questionBank) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(questionBank, true));
             if (null == pageNum) {
@@ -60,10 +85,38 @@ public class QuestionBankApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<QuestionBank> list = questionBankService.findByCondition(pageNum, pageSize, questionBank);
-            PageInfo<QuestionBank> pageInfo = new PageInfo<>(list);
+            PageInfo<QuestionBank> pageInfo = questionBankService.findByConditionWithPage(pageNum, pageSize, questionBank);
+            PageInfo<QuestionBankDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<QuestionBankDto> list = Lists.transform(pageInfo.getList(), new Function<QuestionBank, QuestionBankDto>() {
+                @Override
+                public QuestionBankDto apply(@Nullable QuestionBank questionBank) {
+                    QuestionBankDto dto = new QuestionBankDto();
+                    BeanUtils.copyProperties(questionBank, dto);
+                    Branch branch = branchService.findById(questionBank.getBranchId());
+                    if (null != branch) {
+                        dto.setBranchName(branch.getName());
+                    }
+
+                    Department department = departmentService.findById(questionBank.getDepartmentId());
+                    if (null != department) {
+                        dto.setDepartmentName(department.getName());
+                    }
+
+                    Station station = stationService.findById(questionBank.getStationId());
+                    if (null != station) {
+                        dto.setStationName(station.getName());
+                    }
+                    User user = userService.findById(questionBank.getCreateUserId());
+                    if (null != user) {
+                        dto.setCreateUserName(user.getName());
+                    }
+                    return dto;
+                }
+            });
+            res.setList(list);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();
@@ -82,11 +135,11 @@ public class QuestionBankApi {
     public RespDto<Boolean> saveQuestionBank(@RequestBody QuestionBank questionBank) {
         try {
             Long questionBankId = questionBank.getId();
-            if(null == questionBankId){
+            if (null == questionBankId) {
                 logger.debug("保存， saveQuestionBank, 参数： {}", JSON.toJSONString(questionBank, true));
                 questionBankId = questionBankService.add(questionBank);
                 logger.info("新增 成功， id: {}", questionBankId);
-            }else{
+            } else {
                 questionBankService.updateById(questionBank);
                 logger.debug("更新成功", JSON.toJSONString(questionBank, true));
             }

@@ -3,13 +3,19 @@ package co.bugu.tes.multi.api;
 import co.bugu.common.RespDto;
 import co.bugu.tes.multi.domain.Multi;
 import co.bugu.tes.multi.service.IMultiService;
+import co.bugu.tes.question.agent.QuestionAgent;
+import co.bugu.tes.question.dto.QuestionListDto;
 import co.bugu.tes.single.api.SingleApi;
 import co.bugu.util.ExcelUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +44,8 @@ public class MultiApi {
 
     @Autowired
     IMultiService multiService;
+    @Autowired
+    QuestionAgent questionAgent;
 
     /**
      * 条件查询
@@ -48,7 +56,7 @@ public class MultiApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<Multi>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Multi multi) {
+    public RespDto<PageInfo<QuestionListDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Multi multi) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(multi, true));
             if (null == pageNum) {
@@ -57,10 +65,20 @@ public class MultiApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Multi> list = multiService.findByCondition(pageNum, pageSize, multi);
-            PageInfo<Multi> pageInfo = new PageInfo<>(list);
+            PageInfo<Multi> pageInfo = multiService.findByConditionWithPage(pageNum, pageSize, multi);
+            PageInfo<QuestionListDto> res = new PageInfo<>();
+            List<QuestionListDto> list = Lists.transform(pageInfo.getList(), new Function<Multi, QuestionListDto>() {
+                @Override
+                public QuestionListDto apply(@Nullable Multi multi) {
+                    QuestionListDto dto = new QuestionListDto();
+                    BeanUtils.copyProperties(multi, dto);
+                    questionAgent.processName(dto);
+                    return dto;
+                }
+            });
+            res.setList(list);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();
@@ -79,11 +97,11 @@ public class MultiApi {
     public RespDto<Boolean> saveMulti(@RequestBody Multi multi) {
         try {
             Long multiId = multi.getId();
-            if(null == multiId){
+            if (null == multiId) {
                 logger.debug("保存， saveMulti, 参数： {}", JSON.toJSONString(multi, true));
                 multiId = multiService.add(multi);
                 logger.info("新增 成功， id: {}", multiId);
-            }else{
+            } else {
                 multiService.updateById(multi);
                 logger.debug("更新成功", JSON.toJSONString(multi, true));
             }
@@ -136,7 +154,6 @@ public class MultiApi {
             return RespDto.fail();
         }
     }
-
 
 
     /**

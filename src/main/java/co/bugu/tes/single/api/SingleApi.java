@@ -1,18 +1,14 @@
 package co.bugu.tes.single.api;
 
 import co.bugu.common.RespDto;
-import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.service.IBranchService;
-import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
-import co.bugu.tes.questionBank.domain.QuestionBank;
+import co.bugu.tes.question.agent.QuestionAgent;
+import co.bugu.tes.question.dto.QuestionListDto;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
 import co.bugu.tes.single.domain.Single;
-import co.bugu.tes.single.dto.SingleDto;
 import co.bugu.tes.single.service.ISingleService;
-import co.bugu.tes.station.domain.Station;
 import co.bugu.tes.station.service.IStationService;
-import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.util.ExcelUtil;
 import com.alibaba.fastjson.JSON;
@@ -62,6 +58,9 @@ public class SingleApi {
     IStationService stationService;
     @Autowired
     IQuestionBankService questionBankService;
+
+    @Autowired
+    QuestionAgent questionAgent;
 
 
     /**
@@ -129,7 +128,7 @@ public class SingleApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<SingleDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Single single) {
+    public RespDto<PageInfo<QuestionListDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Single single) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(single, true));
             if (null == pageNum) {
@@ -139,33 +138,14 @@ public class SingleApi {
                 pageSize = 10;
             }
             PageInfo<Single> pageInfo = singleService.findByConditionWithPage(pageNum, pageSize, single);
-            PageInfo<SingleDto> res = new PageInfo<>();
+            PageInfo<QuestionListDto> res = new PageInfo<>();
             BeanUtils.copyProperties(pageInfo, res);
-            List<SingleDto> list = Lists.transform(pageInfo.getList(), new Function<Single, SingleDto>() {
+            List<QuestionListDto> list = Lists.transform(pageInfo.getList(), new Function<Single, QuestionListDto>() {
                 @Override
-                public SingleDto apply(@Nullable Single single) {
-                    SingleDto dto = new SingleDto();
+                public QuestionListDto apply(@Nullable Single single) {
+                    QuestionListDto dto = new QuestionListDto();
                     BeanUtils.copyProperties(single, dto);
-                    User user = userService.findById(single.getCreateUserId());
-                    if (null != user) {
-                        dto.setCreateUserName(user.getName());
-                    }
-                    Department department = departmentService.findById(single.getDepartmentId());
-                    if (null != department) {
-                        dto.setDepartmentName(department.getName());
-                    }
-                    Branch branch = branchService.findById(single.getBranchId());
-                    if (null != department) {
-                        dto.setBranchName(branch.getName());
-                    }
-                    Station station = stationService.findById(single.getStationId());
-                    if (null != station) {
-                        dto.setStationName(station.getName());
-                    }
-                    QuestionBank bank = questionBankService.findById(single.getBankId());
-                    if(null != bank){
-                        dto.setBankName(bank.getName());
-                    }
+                    questionAgent.processName(dto);
                     return dto;
                 }
             });

@@ -364,3 +364,37 @@ CREATE TABLE tes_scene (
   PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT= '场次信息表';
 /*Table structure for table tes_paper_policy */
+
+
+CREATE TABLE tes_property (
+  id BIGINT(21) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  name VARCHAR(100) COLLATE utf8mb4_unicode_ci  NOT NULL COMMENT '题库名称',
+  memo VARCHAR(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '题库描述',
+  no int(11) not null default -1 comment '序号',
+  question_type int(11) not null default -1 comment '题型',
+  required int(11) not null default -1  comment '该属性是否必要',
+  status INT(2) NOT NULL DEFAULT '1' COMMENT '状态',
+  is_del INT(1) NOT NULL DEFAULT '-1' COMMENT '删除标志',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  NOT NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) NOT NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='试题属性';
+
+
+drop table if exists tes_property_item;
+CREATE TABLE tes_property_item (
+  id BIGINT(21) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  name VARCHAR(100) COLLATE utf8mb4_unicode_ci  NOT NULL COMMENT '题库名称',
+  memo VARCHAR(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '题库描述',
+  no int(11) not null default -1 comment '序号',
+  property_id bigint(21) not null default -1 comment '属性id',
+  status INT(2) NOT NULL DEFAULT '1' COMMENT '状态',
+  is_del INT(1) NOT NULL DEFAULT '-1' COMMENT '删除标志',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  NOT NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) NOT NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='试题属性值';
