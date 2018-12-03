@@ -73,4 +73,19 @@ public class UserUtil {
     public static void saveUserToken(Long userId, String token) {
         userTokenCache.put(token, userId);
     }
+
+
+    /**
+     * 清除指定的token
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/3 15:52
+     */
+    public static void invalidToken() {
+        String token = ThreadLocalUtil.getUserToken();
+        userTokenCache.invalidate(token);
+
+    }
 }

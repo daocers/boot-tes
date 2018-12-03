@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 数据api
@@ -107,13 +106,8 @@ public class UserApi {
      * @date 2018/11/19 17:55
      */
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public RespDto<Boolean> logout(Long id, String token) {
-        Long userId = TokenUtil.getUserId(token);
-        if (Objects.equals(userId, id)) {
-            TokenUtil.invalid(token);
-        } else {
-            return RespDto.fail(-2, "token无效");
-        }
+    public RespDto<Boolean> logout() {
+        UserUtil.invalidToken();
         return RespDto.success(true);
     }
 

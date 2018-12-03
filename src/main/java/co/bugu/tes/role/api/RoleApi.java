@@ -1,6 +1,7 @@
 package co.bugu.tes.role.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.role.dto.RoleDto;
@@ -15,6 +16,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +61,9 @@ public class RoleApi {
             }
             if (null == pageSize) {
                 pageSize = 10;
+            }
+            if(role != null && StringUtils.isNotEmpty(role.getName())){
+                role.setName("%" + role.getName() + "%");
             }
             PageInfo<Role> pageInfo = roleService.findByConditionWithPage(pageNum, pageSize, role);
             PageInfo<RoleDto> res = new PageInfo<>();
@@ -120,8 +125,12 @@ public class RoleApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveRole(@RequestBody Role role) {
         try {
+            Long userId = UserUtil.getCurrentUser().getId();
             Long roleId = role.getId();
+            role.setUpdateUserId(userId);
             if (null == roleId) {
+                role.setStatus(BaseStatusEnum.ENABLE.getCode());
+                role.setCreateUserId(userId);
                 logger.debug("保存， saveRole, 参数： {}", JSON.toJSONString(role, true));
                 roleId = roleService.add(role);
                 logger.info("新增 成功， id: {}", roleId);

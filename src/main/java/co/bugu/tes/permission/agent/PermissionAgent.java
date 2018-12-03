@@ -140,7 +140,7 @@ public class PermissionAgent {
         x.setUserId(userId);
         List<UserRoleX> xList = userRoleXService.findByCondition(x);
         if (CollectionUtils.isEmpty(xList)) {
-            return null;
+            return new ArrayList<>();
         }
         List<Long> res = new ArrayList<>();
         for (UserRoleX userRoleX : xList) {

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,9 +82,10 @@ public class PaperApi {
                 userList = userService.findByCondition(user);
                 if (CollectionUtils.isNotEmpty(userList)) {
                     user = userList.get(0);
+                } else {
+                    return RespDto.success(new PageInfo<>(new ArrayList<>()));
                 }
-                user = userList.get(0);
-            }else{
+            } else {
                 user = new User();
             }
 
@@ -127,7 +129,7 @@ public class PaperApi {
             return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
-            return RespDto.fail();
+            return RespDto.fail("筛选失败");
         }
     }
 
