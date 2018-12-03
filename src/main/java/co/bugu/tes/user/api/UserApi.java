@@ -90,6 +90,7 @@ public class UserApi {
             }
 //            用户名密码匹配，设置token传给服务端
             String token = TokenUtil.getToken(user);
+            UserUtil.saveUserToken(user.getId(), token);
             return RespDto.success(token);
         } else {
             return RespDto.fail(-1, "用户名/密码错误");

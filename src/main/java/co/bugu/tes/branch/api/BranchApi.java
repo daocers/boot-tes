@@ -2,6 +2,7 @@ package co.bugu.tes.branch.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.branch.agent.BranchAgent;
 import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.dto.BranchTreeDto;
@@ -51,7 +52,7 @@ public class BranchApi {
      * 获取机构树 数据
      * @Time 2017/11/25 17:53
      * @Author daocers
-     * @return co.bugu.common.RespDto<java.util.List < co.bugu.tes.branch.BranchTreeVo>>
+     * @return co.bugu.common.RespDto<java.util.List   <   co.bugu.tes.branch.BranchTreeVo>>
      */
     @RequestMapping(value = "/getBranchTree")
     public RespDto<List<BranchTreeDto>> getBranchTree() {
@@ -177,7 +178,7 @@ public class BranchApi {
      * @date 2018/12/1 15:21
      */
     @RequestMapping(value = "/saveTree", method = RequestMethod.POST)
-    public RespDto<Boolean> saveTree(@RequestBody List<BranchTreeDto> list) {
+    public RespDto<Boolean> saveTree(@RequestBody List<BranchTreeDto> list) throws UserException {
         Long userId = UserUtil.getCurrentUser().getId();
         branchService.saveTree(list, userId);
         return RespDto.success(true);
@@ -222,7 +223,7 @@ public class BranchApi {
      * @date 2018/11/21 11:39
      */
     @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
-    public RespDto batchAdd(MultipartFile file, Long questionBankId) {
+    public RespDto batchAdd(MultipartFile file, Long questionBankId) throws UserException {
 //        String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
         File target = new File("e:/test.xlsx");
         Long userId = UserUtil.getCurrentUser().getId();

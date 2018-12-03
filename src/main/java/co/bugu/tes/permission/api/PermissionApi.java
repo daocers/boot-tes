@@ -165,7 +165,7 @@ public class PermissionApi {
      * @date 2018/11/30 10:36
      */
     @RequestMapping(value = "/getMenuTree")
-    public RespDto<List<PermissionTreeDto>> getMenuTree() {
+    public RespDto<List<PermissionTreeDto>> getMenuTree() throws Exception {
         User user = UserUtil.getCurrentUser();
         List<PermissionTreeDto> list = permissionAgent.getMenuTree(user.getId());
         return RespDto.success(list);
@@ -188,7 +188,7 @@ public class PermissionApi {
 
 
     @RequestMapping(value = "/saveTree", method = RequestMethod.POST)
-    public RespDto<Boolean> saveTree(@RequestBody List<PermissionTreeDto> list) {
+    public RespDto<Boolean> saveTree(@RequestBody List<PermissionTreeDto> list) throws Exception {
         Long userId = UserUtil.getCurrentUser().getId();
         permissionService.saveTree(list, userId);
         return RespDto.success(true);

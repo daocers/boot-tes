@@ -2,6 +2,7 @@ package co.bugu.tes.exam.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.answer.service.IAnswerService;
 import co.bugu.tes.exam.dto.LiveDto;
@@ -69,7 +70,7 @@ public class ExamApi {
      * @date 2018/11/25 16:37
      */
     @RequestMapping(value = "/findReadyScene")
-    public RespDto<PageInfo<Scene>> getReadyScene(Integer pageNum, Integer pageSize) {
+    public RespDto<PageInfo<Scene>> getReadyScene(Integer pageNum, Integer pageSize) throws UserException {
         User user = UserUtil.getCurrentUser();
         Long userId = user.getId();
         Long departmentId = user.getDepartmentId();
@@ -111,7 +112,7 @@ public class ExamApi {
      * @date 2018/11/25 20:15
      */
     @RequestMapping(value = "/getQuestionList")
-    public RespDto<List<QuestionDto>> getQuestionList(Long sceneId) {
+    public RespDto<List<QuestionDto>> getQuestionList(Long sceneId) throws UserException {
         User user = UserUtil.getCurrentUser();
         Long userId = user.getId();
 
@@ -186,7 +187,7 @@ public class ExamApi {
      * @date 2018/11/26 14:55
      */
     @RequestMapping(value = "/getTimeLeft")
-    public RespDto<Long> getTimeLeft(Long sceneId) {
+    public RespDto<Long> getTimeLeft(Long sceneId) throws UserException {
         User user = UserUtil.getCurrentUser();
         Long userId = user.getId();
         Paper query = new Paper();

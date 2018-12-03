@@ -70,18 +70,17 @@ public class PaperAgent {
         QuestionDto dto = new QuestionDto();
         dto.setQuestionType(questionType);
         dto.setAnswerId(answer.getId());
+//        如果本题已经做答，返显做答记录
+        dto.setRealAnswer(answer.getAnswer());
         if (QuestionTypeEnum.SINGLE.getCode() == questionType) {
             Single single = singleService.findById(questionId);
             BeanUtils.copyProperties(single, dto);
-//            dto.setRealAnswer(single.getAnswer());
         } else if (QuestionTypeEnum.MULTI.getCode() == questionType) {
             Multi multi = multiService.findById(questionId);
             BeanUtils.copyProperties(multi, dto);
-//            dto.setRealAnswer(multi.getAnswer());
         } else if (QuestionTypeEnum.JUDGE.getCode() == questionType) {
             Judge judge = judgeService.findById(questionId);
             BeanUtils.copyProperties(judge, dto);
-//            dto.setRealAnswer(judge.getAnswer());
         }
         return dto;
     }

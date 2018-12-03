@@ -2,6 +2,7 @@ package co.bugu.tes.scene.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.questionBank.domain.QuestionBank;
@@ -95,7 +96,7 @@ public class SceneApi {
      * @date 2018/12/2 22:31
      */
     @RequestMapping("/myJoin")
-    public RespDto<PageInfo<MyJoinDto>> findMyJoin(Integer pageNum, Integer pageSize){
+    public RespDto<PageInfo<MyJoinDto>> findMyJoin(Integer pageNum, Integer pageSize) throws UserException {
         Long userId = UserUtil.getCurrentUser().getId();
         Paper query = new Paper();
         query.setUserId(userId);

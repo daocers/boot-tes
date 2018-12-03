@@ -1,6 +1,13 @@
 package co.bugu.util;
 
+import co.bugu.exception.UserException;
 import co.bugu.tes.user.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @Author daocers
@@ -8,6 +15,8 @@ import co.bugu.tes.user.domain.User;
  * @Description:
  */
 public class TokenUtil {
+    private static Logger logger = LoggerFactory.getLogger(TokenUtil.class);
+
     /**
      * 为指定用户获取token
      *
@@ -16,8 +25,19 @@ public class TokenUtil {
      * @auther daocers
      * @date 2018/11/19 19:09
      */
-    public static String getToken(User user) {
-        return user.getId() + "";
+    public static String getToken(User user) throws Exception {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+            String info = user.getId() + user.getPassword() + System.currentTimeMillis();
+            md.update(info.getBytes());
+
+            String pwd = new BigInteger(1, md.digest()).toString(16);
+            return pwd;
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("密码加密失败", e);
+            throw new UserException("加密失败", UserException.ERR_UNKNOW);
+        }
     }
 
     /**

@@ -13,8 +13,21 @@ public class QuestionDto {
     private String title;
     private String content;
     private String answer;
+//    实际答案
     private String realAnswer;
     private String leftTimeInfo;
+
+
+//    正确答案
+    private String rightAnswer;
+    public String getRightAnswer() {
+        return rightAnswer;
+    }
+
+    public void setRightAnswer(String rightAnswer) {
+        this.rightAnswer = rightAnswer;
+    }
+
 
     public Long getAnswerId() {
         return answerId;

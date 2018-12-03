@@ -1,6 +1,7 @@
 package co.bugu.tes.questionBank.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.exception.UserException;
 import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.department.domain.Department;
@@ -58,7 +59,7 @@ public class QuestionBankApi {
     IStationService stationService;
 
     @RequestMapping(value = "/findAll")
-    public RespDto<List<QuestionBank>> findAll() {
+    public RespDto<List<QuestionBank>> findAll() throws UserException {
 //        todo 获取用户信息
         User user = UserUtil.getCurrentUser();
         QuestionBank query = new QuestionBank();
