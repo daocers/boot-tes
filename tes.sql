@@ -375,3 +375,16 @@ CREATE TABLE tes_property_item (
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY(id)
 ) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='试题属性值';
+
+drop table if exists tes_login_log;
+create table tes_login_log(
+  id bigint(21) not null auto_increment comment '',
+  user_id bigint(21) not null default -1 comment '',
+  ip varchar(15) not null default '' comment '登录ip',
+  content varchar(100) not null default '' comment '其他登录信息',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  noT NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='登录日志信息';
