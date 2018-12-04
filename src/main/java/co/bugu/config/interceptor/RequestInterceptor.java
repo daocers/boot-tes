@@ -38,7 +38,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         String token = request.getHeader("token");
         String url = request.getRequestURI();
 
-        if(url.equals(URL_LOGIN)){
+        if(url.endsWith(URL_LOGIN)){
             return true;
         }
 

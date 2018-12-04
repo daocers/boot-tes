@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="co.bugu.boot.tes.loginLog.dao.LoginLogDao">
-  <update id="updateById" parameterType="co.bugu.boot.tes.loginLog.domain.LoginLog">
+<mapper namespace="co.bugu.tes.loginLog.dao.LoginLogDao">
+  <update id="updateById" parameterType="co.bugu.tes.loginLog.domain.LoginLog">
     update tes_login_log
     <set>
       <if test="userId != null">
@@ -32,7 +32,7 @@
     delete from tes_login_log
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="co.bugu.boot.tes.loginLog.domain.LoginLog" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="co.bugu.tes.loginLog.domain.LoginLog" useGeneratedKeys="true">
     insert into tes_login_log
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userId != null">

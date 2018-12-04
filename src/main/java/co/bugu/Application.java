@@ -4,7 +4,9 @@ import com.thetransactioncompany.cors.CORSFilter;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -17,11 +19,39 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @MapperScan("co.bugu.*.*.dao")
-public class Application {
+//public class Application {
+//    public static void main(String[] args) {
+//        SpringApplication.run(Application.class, args);
+//    }
+//
+//    /**
+//     * 过滤器配置
+//     *
+//     * @param
+//     * @return
+//     * @auther daocers
+//     * @date 2018/12/3 10:31
+//     */
+//    @Bean
+//    public FilterRegistrationBean filterRegistrationBean() {
+//        FilterRegistrationBean bean = new FilterRegistrationBean();
+//        bean.setFilter(new CORSFilter());
+//        bean.setName("cors");
+//        bean.addUrlPatterns("/*");
+//        return bean;
+//    }
+//}
+
+
+public class Application extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(Application.class);
+    }
 
 
     /**
@@ -41,10 +71,5 @@ public class Application {
         return bean;
     }
 
-
-//    @Bean
-//    public ApplicationContextUtil applicationContextUtil() {
-//        return new ApplicationContextUtil();
-//    }
 
 }
