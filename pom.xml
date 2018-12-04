@@ -7,7 +7,7 @@
   <groupId>co.bugu.boot</groupId>
   <artifactId>boot-tes</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <!--<packaging>war</packaging>-->
 
   <name>boot-tes</name>
 

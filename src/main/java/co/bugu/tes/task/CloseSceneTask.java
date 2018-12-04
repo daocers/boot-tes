@@ -51,7 +51,7 @@ public class CloseSceneTask {
      * @auther daocers
      * @date 2018/11/28 15:05
      */
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 30000)
     public void changeSceneReadyToOn(){
         try{
             logger.info("开始修改场次状态");

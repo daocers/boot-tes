@@ -6,6 +6,8 @@ import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.loginLog.domain.LoginLog;
+import co.bugu.tes.loginLog.service.ILoginLogService;
 import co.bugu.tes.station.domain.Station;
 import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
@@ -32,8 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * 数据api
@@ -58,6 +60,8 @@ public class UserApi {
     IDepartmentService departmentService;
     @Autowired
     IStationService stationService;
+    @Autowired
+    ILoginLogService loginLogService;
 
 
     /**
@@ -69,10 +73,11 @@ public class UserApi {
      * @date 2018/11/19 17:54
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public RespDto<String> login(String username, String password) throws Exception {
+    public RespDto<String> login(String username, String password, HttpServletRequest request) throws Exception {
         Preconditions.checkArgument(StringUtils.isNotEmpty(username), "用户名不能为空");
         Preconditions.checkArgument(StringUtils.isNotEmpty(password), "密码不能为空");
 
+        String ip = request.getRemoteAddr();
         User user = new User();
         user.setUsername(username);
         List<User> users = userService.findByCondition(user);
@@ -82,6 +87,24 @@ public class UserApi {
                 throw new Exception("数据异常");
             } else {
                 user = users.get(0);
+//                处理登录日志
+                try {
+                    LoginLog log = new LoginLog();
+                    Enumeration<String> headerNames = request.getHeaderNames();
+                    Map<String, String> map = new HashMap<>();
+                    while (headerNames.hasMoreElements()) {
+                        String header = headerNames.nextElement();
+                        String value = request.getHeader(header);
+                        map.put(header, value);
+                    }
+                    log.setUserId(user.getId());
+                    log.setIp(ip);
+                    log.setContent(JSON.toJSONString(map));
+                    loginLogService.add(log);
+                } catch (Exception e) {
+                    logger.error("保存登录日志失败", e);
+                }
+
             }
 
             if (!user.getPassword().equals(password)) {

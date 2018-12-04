@@ -1,6 +1,7 @@
 package co.bugu.util;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -31,7 +32,7 @@ public class ExcelUtil {
         title.add("项目");
         title.add("地址");
         title.add("电话");
-        List<List> content = new ArrayList<>();
+        List<List<String>> content = new ArrayList<>();
         content.add(title);
         List<String> line = new ArrayList<>();
         line.add("12312312");
@@ -60,7 +61,7 @@ public class ExcelUtil {
      * @return
      * @throws Exception
      */
-    public static File getFile(String name, String type, String dirPath, List<String> title, Map<String, List<String>> validationInfo, List<List> content) throws Exception {
+    public static File getFile(String name, String type, String dirPath, List<String> title, Map<String, List<String>> validationInfo, List<List<String>> content) throws Exception {
         File file = new File(dirPath, name + "." + type);
         OutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream = writeToOutputStream(type, title, content, validationInfo, fileOutputStream);
@@ -78,7 +79,7 @@ public class ExcelUtil {
      * @return
      * @throws Exception
      */
-    public static OutputStream writeToOutputStream(String type, List<String> title, List<List> content, Map<String, List<String>> validationInfo, OutputStream outputStream) throws Exception {
+    public static OutputStream writeToOutputStream(String type, List<String> title, List<List<String>> content, Map<String, List<String>> validationInfo, OutputStream outputStream) throws Exception {
 
         if ("xls".equalsIgnoreCase(type)) {
             type = "xls";
@@ -109,7 +110,7 @@ public class ExcelUtil {
      * @return
      * @throws Exception
      */
-    private static Workbook writeToExcel(String type, List<String> title, List<List> content, Map<String, List<String>> validationInfo) throws Exception {
+    private static Workbook writeToExcel(String type, List<String> title, List<List<String>> content, Map<String, List<String>> validationInfo) throws Exception {
 
         Workbook workbook = createExcel(type);
 
@@ -178,7 +179,7 @@ public class ExcelUtil {
             cell.setCellValue(title.get(i));
 
             String item = title.get(i);
-            if (validationInfo.containsKey(item)) {
+            if (MapUtils.isNotEmpty(validationInfo) && validationInfo.containsKey(item)) {
                 List<String> dropList = validationInfo.get(item);
                 DataValidationHelper dvHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint dvConstraint = dvHelper.createExplicitListConstraint(
@@ -214,7 +215,7 @@ public class ExcelUtil {
      * @param content
      * @param hasTitle 是否有title，没有title从第0行开始，有的话从第一行开始
      */
-    private static void writeContent(Workbook workbook, Sheet sheet, List<List> content, boolean hasTitle) {
+    private static void writeContent(Workbook workbook, Sheet sheet, List<List<String>> content, boolean hasTitle) {
         if (CollectionUtils.isNotEmpty(content)) {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -323,7 +324,7 @@ public class ExcelUtil {
      * @Author daocers
      * @param   inputStream 输入流
      * @param index excel 的sheet索引，从0开始，默认为0
-     * @return java.util.List<java.util.List<java.lang.String>>
+     * @return java.util.List<java.util.List < java.lang.String>>
      */
     public static List<List<String>> getData(InputStream inputStream, Integer... index) throws IOException, InvalidFormatException {
         Workbook workbook = WorkbookFactory.create(inputStream);
@@ -414,7 +415,7 @@ public class ExcelUtil {
      * @Time 2017/12/14 0:04
      * @Author daocers
      */
-    public static void download(HttpServletRequest request, HttpServletResponse response, String fileName, List<String> title, List<List> content, Map<String, List<String>> validationInfo) throws Exception {
+    public static void download(HttpServletRequest request, HttpServletResponse response, String fileName, List<String> title, List<List<String>> content, Map<String, List<String>> validationInfo) throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         fileName += "-" + format.format(new Date()) + ".xlsx";
         // 给文件名编码,防止ie下载时文件名乱码

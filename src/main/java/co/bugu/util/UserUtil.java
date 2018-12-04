@@ -88,4 +88,16 @@ public class UserUtil {
         userTokenCache.invalidate(token);
 
     }
+
+    /**
+     * 获取token的数量
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/4 21:57
+     */
+    public static Long getTokenCount() {
+        return userTokenCache.size();
+    }
 }
