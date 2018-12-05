@@ -40,6 +40,9 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </select>
 </mapper>

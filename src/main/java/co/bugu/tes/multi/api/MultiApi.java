@@ -67,6 +67,7 @@ public class MultiApi {
             }
             PageInfo<Multi> pageInfo = multiService.findByConditionWithPage(pageNum, pageSize, multi);
             PageInfo<QuestionListDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
             List<QuestionListDto> list = Lists.transform(pageInfo.getList(), new Function<Multi, QuestionListDto>() {
                 @Override
                 public QuestionListDto apply(@Nullable Multi multi) {

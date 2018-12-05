@@ -33,6 +33,15 @@
         from tes_answer
         <where>
             is_del = 1
+            <if test="sceneId != null">
+                and scene_id = #{sceneId}
+            </if>
+            <if test="paperId != null">
+                and paper_id = #{paperId}
+            </if>
+            <if test="questionType != null">
+                and question_type = #{questionType}
+            </if>
         </where>
     </select>
 

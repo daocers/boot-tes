@@ -36,12 +36,16 @@ public class RequestInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) throws UserException, IOException {
         String token = request.getHeader("token");
+
         String url = request.getRequestURI();
 
         if(url.endsWith(URL_LOGIN)){
             return true;
         }
 
+        if(StringUtils.isEmpty(token)){
+            token = request.getParameter("token");
+        }
 //        除了登录接口，其他都需要token信息
         if (StringUtils.isEmpty(token)) {
             throw new UserException("请求参数异常，没有token信息", UserException.INVALID_TOKEN);

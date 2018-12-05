@@ -61,6 +61,7 @@ public class ExamApi {
     @Autowired
     IUserService userService;
 
+
     /**
      * 获取就绪的场次信息
      *
@@ -120,7 +121,9 @@ public class ExamApi {
         query.setUserId(userId);
         query.setStatus(PaperStatusEnum.OK.getCode());
         query.setIsDel(DelFlagEnum.NO.getCode());
+        query.setSceneId(sceneId);
         List<Paper> papers = paperService.findByCondition(query);
+
         if (CollectionUtils.isNotEmpty(papers) && papers.size() == 1) {
             query = papers.get(0);
             Long paperId = query.getId();
@@ -135,8 +138,8 @@ public class ExamApi {
             }
             return RespDto.success(dtos);
         } else {
-            logger.warn("试卷信息有误，用户ID：", userId);
-            return RespDto.fail("获取试卷信息失败");
+            logger.warn("没有找到考试中的试卷：scenId: {}, userId: {}", new Object[]{sceneId, userId});
+            return RespDto.fail("没有找到正在考试中的试卷");
         }
 
     }
@@ -160,14 +163,21 @@ public class ExamApi {
             query.setIsDel(DelFlagEnum.NO.getCode());
             query.setSceneId(sceneId);
             query.setUserId(userId);
-            query.setStatus(PaperStatusEnum.OK.getCode());
             List<Paper> list = paperService.findByCondition(query);
-            if (CollectionUtils.isNotEmpty(list)) {
-                logger.info("已经生成过试卷了，直接进入考试");
-                return RespDto.success(list.get(0).getId());
-            }
+            Long paperId = null;
 
-            Long paperId = paperAgent.generatePaper(sceneId, userId);
+//            先判断是否有可用状态的试卷
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (Paper paper : list) {
+                    int status = paper.getStatus();
+                    if (status != PaperStatusEnum.CANCELED.getCode()) {
+                        paperId = paper.getId();
+                    }
+                }
+            }
+            if (null == paperId) {
+                paperId = paperAgent.generatePaper(sceneId, userId);
+            }
             return RespDto.success(paperId);
         } catch (Exception e) {
             logger.error("生成试卷失败", e);
@@ -187,29 +197,86 @@ public class ExamApi {
      * @date 2018/11/26 14:55
      */
     @RequestMapping(value = "/getTimeLeft")
-    public RespDto<Long> getTimeLeft(Long sceneId) throws UserException {
-        User user = UserUtil.getCurrentUser();
-        Long userId = user.getId();
-        Paper query = new Paper();
-        query.setStatus(PaperStatusEnum.OK.getCode());
-        query.setIsDel(DelFlagEnum.NO.getCode());
-        query.setSceneId(sceneId);
-        query.setUserId(userId);
+    public RespDto<Integer> getTimeLeft(Long sceneId) throws UserException {
+
+        Scene scene = sceneService.findById(sceneId);
+//        如果已经封场，直接返回0
+        if (scene.getStatus() == SceneStatusEnum.CLOSED.getCode()) {
+            return RespDto.success(0);
+        }
+
+//        考试中
+        if (scene.getStatus() == SceneStatusEnum.ON.getCode()) {
+            User user = UserUtil.getCurrentUser();
+            Long userId = user.getId();
+            Paper query = new Paper();
+            query.setStatus(PaperStatusEnum.OK.getCode());
+            query.setIsDel(DelFlagEnum.NO.getCode());
+            query.setSceneId(sceneId);
+            query.setUserId(userId);
 
 
 //        todo  判断剩余时间，让考试可以继续进行
-        List<Paper> papers = paperService.findByCondition(query);
-        if (CollectionUtils.isNotEmpty(papers)) {
-            Long paperId = papers.get(0).getId();
-            Answer answer = new Answer();
-            answer.setPaperId(paperId);
-            List<Answer> answers = answerService.findByCondition(1, 10, answer);
-            answer = answers.get(0);
-            String info = answer.getTimeLeft();
-//            long res = info.substring(0,2) * 3600 + info.substring(3,5)
-        } else {
+            List<Paper> papers = paperService.findByCondition(query);
+            if (CollectionUtils.isNotEmpty(papers)) {
+                Paper paper = papers.get(0);
+//                只有ok状态的才有剩余时间判断
+                if (paper.getStatus() == PaperStatusEnum.OK.getCode()) {
+                    Long paperId = papers.get(0).getId();
+                    Answer answer = new Answer();
+                    answer.setPaperId(paperId);
+                    List<Answer> answers = answerService.findByCondition(1, 10, answer);
+//                    还未作答
+                    if (CollectionUtils.isNotEmpty(answers)) {
+                        Date now = new Date();
+                        long secondsPassed = (now.getTime() - paper.getBeginTime().getTime()) / 1000;
+                        Long left = scene.getDuration() * 60 - secondsPassed;
+                        if (left > 0) {
+                            return RespDto.success(left.intValue());
+                        } else {
+                            return RespDto.success(0);
+                        }
+                    } else {
+                        answer = answers.get(0);
+                        String info = answer.getTimeLeft();
+                        String[] arr = info.split(":");
+                        int hours = 0;
+                        int minutes = 0;
+                        int seconds = 0;
+                        if (arr[0].startsWith("0")) {
+                            hours = Integer.parseInt(arr[0].substring(1));
+                        } else {
+                            hours = Integer.parseInt(arr[0]);
+                        }
+
+                        if (arr[1].startsWith("0")) {
+                            minutes = Integer.parseInt(arr[1].substring(1));
+                        } else {
+                            minutes = Integer.parseInt(arr[1]);
+                        }
+
+                        if (arr[2].startsWith("0")) {
+                            seconds = Integer.parseInt(arr[2].substring(1));
+                        } else {
+                            seconds = Integer.parseInt(arr[2]);
+                        }
+
+                        int totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                        return RespDto.success(totalSeconds);
+                    }
+
+                } else {
+//                    已提交，已判分，已作废的直接返回0
+                    return RespDto.success(0);
+                }
+
+            } else {
 //            理论上不可达
+            }
+
+
         }
+
         return null;
     }
 
