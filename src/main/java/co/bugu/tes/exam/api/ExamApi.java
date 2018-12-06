@@ -385,22 +385,22 @@ public class ExamApi {
         Date now = new Date();
         Scene scene = sceneService.findById(sceneId);
         if (!scene.getAuthCode().equals(authCode)) {
-            return RespDto.fail(0, "授权码错误");
+            return RespDto.fail("授权码错误");
         }
         if (scene.getStatus() == SceneStatusEnum.READY.getCode()) {
-            return RespDto.fail(-1, "本场考试未开始");
+            return RespDto.fail("本场考试未开始");
         }
         if (scene.getStatus() == SceneStatusEnum.CLOSED.getCode()) {
-            return RespDto.fail(-1, "本场考试已结束");
+            return RespDto.fail("本场考试已结束");
         }
         if (scene.getStatus() == SceneStatusEnum.CANCELED.getCode()) {
-            return RespDto.fail(-1, "场次已作废");
+            return RespDto.fail( "场次已作废");
         }
         if (scene.getOpenTime().after(now)) {
-            return RespDto.fail(-1, "考试未开始");
+            return RespDto.fail("考试未开始");
         }
         if (scene.getOpenTime().getTime() + scene.getDuration() * 60000 < now.getTime()) {
-            return RespDto.fail(-1, "迟到太久，参加下一场吧");
+            return RespDto.fail("迟到太久，参加下一场吧");
         }
 
         return RespDto.success();
