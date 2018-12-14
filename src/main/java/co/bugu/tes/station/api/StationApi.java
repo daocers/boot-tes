@@ -2,6 +2,8 @@ package co.bugu.tes.station.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.manager.service.IManagerService;
 import co.bugu.tes.station.domain.Station;
 import co.bugu.tes.station.dto.StationDto;
 import co.bugu.tes.station.service.IStationService;
@@ -41,6 +43,28 @@ public class StationApi {
     IStationService stationService;
     @Autowired
     IUserService userService;
+    @Autowired
+    IManagerService managerService;
+
+
+    /**
+     * 设置管理员
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/14 12:00
+     */
+    @RequestMapping(value = "/setManager")
+    public RespDto<Boolean> setManger(Long userId, Long stationId) {
+        try {
+            managerService.setManager(ManagerTypeEnum.STATION.getCode(), userId, stationId);
+            return RespDto.success(true);
+        } catch (Exception e) {
+            logger.error("设置部门管理员失败", e);
+            return RespDto.fail("设置管理员失败");
+        }
+    }
 
     /**
      * 条件查询

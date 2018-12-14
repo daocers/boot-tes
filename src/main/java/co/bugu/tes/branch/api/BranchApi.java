@@ -7,6 +7,8 @@ import co.bugu.tes.branch.agent.BranchAgent;
 import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.dto.BranchTreeDto;
 import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.manager.service.IManagerService;
 import co.bugu.tes.single.api.SingleApi;
 import co.bugu.util.ExcelUtil;
 import co.bugu.util.UserUtil;
@@ -46,6 +48,29 @@ public class BranchApi {
 
     @Autowired
     BranchAgent branchAgent;
+
+    @Autowired
+    IManagerService managerService;
+
+
+    /**
+     * 设置机构管理员
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/14 12:01
+     */
+    @RequestMapping(value = "/setManager")
+    public RespDto<Boolean> setManger(Long userId, Long branchId) {
+        try {
+            managerService.setManager(ManagerTypeEnum.BRANCH.getCode(), userId, branchId);
+            return RespDto.success(true);
+        } catch (Exception e) {
+            logger.error("设置部门管理员失败", e);
+            return RespDto.fail("设置管理员失败");
+        }
+    }
 
 
     /***
