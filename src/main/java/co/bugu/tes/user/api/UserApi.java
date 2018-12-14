@@ -2,6 +2,7 @@ package co.bugu.tes.user.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.department.domain.Department;
@@ -35,7 +36,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 数据api
@@ -90,16 +93,10 @@ public class UserApi {
 //                处理登录日志
                 try {
                     LoginLog log = new LoginLog();
-                    Enumeration<String> headerNames = request.getHeaderNames();
-                    Map<String, String> map = new HashMap<>();
-                    while (headerNames.hasMoreElements()) {
-                        String header = headerNames.nextElement();
-                        String value = request.getHeader(header);
-                        map.put(header, value);
-                    }
+                    String userAgent = request.getHeader("user-agent");
                     log.setUserId(user.getId());
                     log.setIp(ip);
-                    log.setContent(JSON.toJSONString(map));
+                    log.setContent(userAgent);
                     loginLogService.add(log);
                 } catch (Exception e) {
                     logger.error("保存登录日志失败", e);
@@ -132,6 +129,32 @@ public class UserApi {
     public RespDto<Boolean> logout() {
         UserUtil.invalidToken();
         return RespDto.success(true);
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/7 16:40
+     */
+    @RequestMapping(value = "/changePass", method = RequestMethod.POST)
+    public RespDto<Boolean> changePassword(String password, String passNew) throws UserException {
+        Preconditions.checkArgument(StringUtils.isNotEmpty(password), "密码不能为空");
+        Preconditions.checkArgument(StringUtils.isNotEmpty(passNew), "新密码不能为空");
+        User user = UserUtil.getCurrentUser();
+        if (user.getPassword().equals(password)) {
+            user.setPassword(passNew);
+            user.setUpdateUserId(user.getId());
+            user.setUpdateTime(new Date());
+            user.setId(user.getId());
+            int num = userService.updateById(user);
+            return RespDto.success(true);
+        } else {
+            return RespDto.fail("密码错误");
+        }
+
     }
 
 
