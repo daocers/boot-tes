@@ -3,6 +3,8 @@ package co.bugu.tes.department.api;
 import co.bugu.common.RespDto;
 import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.manager.service.IManagerService;
 import co.bugu.util.CodeUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
@@ -31,6 +33,27 @@ public class DepartmentApi {
 
     @Autowired
     IDepartmentService departmentService;
+    @Autowired
+    IManagerService managerService;
+
+    /**
+     * 设置部门管理员
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/14 9:30
+     */
+    @RequestMapping(value = "/setManager")
+    public RespDto<Boolean> setManger(Long userId, Long departmentId) {
+        try {
+            managerService.setManager(ManagerTypeEnum.DEPARTMENT.getCode(), userId, departmentId);
+            return RespDto.success(true);
+        } catch (Exception e) {
+            logger.error("设置部门管理员失败", e);
+            return RespDto.fail("设置管理员失败");
+        }
+    }
 
     /**
      * 条件查询

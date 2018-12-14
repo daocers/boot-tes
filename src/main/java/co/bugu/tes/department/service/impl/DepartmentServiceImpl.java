@@ -1,9 +1,12 @@
 package co.bugu.tes.department.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.department.dao.DepartmentDao;
 import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.manager.service.IManagerService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -24,6 +28,8 @@ import java.util.List;
 public class DepartmentServiceImpl implements IDepartmentService {
     @Autowired
     DepartmentDao departmentDao;
+    @Autowired
+    IManagerService managerService;
 
     private Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
@@ -101,5 +107,6 @@ public class DepartmentServiceImpl implements IDepartmentService {
         logger.debug("将 {} 条 数据删除", num);
         return num;
     }
+
 
 }
