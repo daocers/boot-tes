@@ -2,11 +2,14 @@ package co.bugu.tes.branch.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.branch.agent.BranchAgent;
 import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.dto.BranchDto;
 import co.bugu.tes.branch.dto.BranchTreeDto;
 import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.manager.domain.Manager;
 import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.manager.service.IManagerService;
 import co.bugu.tes.single.api.SingleApi;
@@ -14,9 +17,14 @@ import co.bugu.util.ExcelUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,9 +70,12 @@ public class BranchApi {
      * @date 2018/12/14 12:01
      */
     @RequestMapping(value = "/setManager")
-    public RespDto<Boolean> setManger(Long userId, Long branchId) {
+    public RespDto<Boolean> setManger(String userIds, Long targetId) {
         try {
-            managerService.setManager(ManagerTypeEnum.BRANCH.getCode(), userId, branchId);
+            List<Long> ids = JSON.parseArray(userIds, Long.class);
+            for (Long userId : ids) {
+                managerService.setManager(ManagerTypeEnum.BRANCH.getCode(), userId, targetId);
+            }
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("设置部门管理员失败", e);
@@ -72,12 +83,57 @@ public class BranchApi {
         }
     }
 
+    @RequestMapping(value = "/removeManager")
+    public RespDto<Boolean> removeManager(Long userId, Long branchId) {
+        try {
+            Manager query = new Manager();
+            query.setUserId(userId);
+            query.setTargetId(branchId);
+            query.setType(ManagerTypeEnum.BRANCH.getCode());
+            List<Manager> managers = managerService.findByCondition(query);
+            Long currentUserId = UserUtil.getCurrentUser().getId();
+            Manager manager = new Manager();
+            manager.setId(managers.get(0).getId());
+            manager.setIsDel(DelFlagEnum.YES.getCode());
+            manager.setTargetId(branchId);
+            manager.setUserId(userId);
+            manager.setUpdateUserId(currentUserId);
+            managerService.updateById(manager);
+            return RespDto.success(true);
+        } catch (Exception e) {
+            logger.error("删除管理员失败", e);
+            return RespDto.fail("删除管理员失败");
+        }
+    }
+
+    @RequestMapping(value = "/getUnderManager")
+    public RespDto<List<Branch>> getUnderManager() throws UserException {
+        Long userId = UserUtil.getCurrentUser().getId();
+        Manager query = new Manager();
+        query.setUserId(userId);
+        query.setType(ManagerTypeEnum.BRANCH.getCode());
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        List<Manager> list = managerService.findByCondition(query);
+        if (CollectionUtils.isNotEmpty(list)) {
+            List<Branch> branches = Lists.transform(list, new Function<Manager, Branch>() {
+                @Override
+                public Branch apply(@Nullable Manager manager) {
+                    Long branchId = manager.getTargetId();
+                    Branch branch = branchService.findById(branchId);
+                    return branch;
+                }
+            });
+            return RespDto.success(branches);
+        } else {
+            return RespDto.success();
+        }
+    }
 
     /***
      * 获取机构树 数据
      * @Time 2017/11/25 17:53
      * @Author daocers
-     * @return co.bugu.common.RespDto<java.util.List   <   co.bugu.tes.branch.BranchTreeVo>>
+     * @return co.bugu.common.RespDto<java.util.List               <               co.bugu.tes.branch.BranchTreeVo>>
      */
     @RequestMapping(value = "/getBranchTree")
     public RespDto<List<BranchTreeDto>> getBranchTree() {
@@ -99,7 +155,7 @@ public class BranchApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findByCondition")
-    public RespDto<PageInfo<Branch>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Branch branch) {
+    public RespDto<PageInfo<BranchDto>> findByCondition(Integer pageNum, Integer pageSize, @RequestBody Branch branch) {
         try {
             logger.debug("条件查询， 参数: {}", JSON.toJSONString(branch, true));
             if (null == pageNum) {
@@ -108,10 +164,20 @@ public class BranchApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<Branch> list = branchService.findByCondition(pageNum, pageSize, branch);
-            PageInfo<Branch> pageInfo = new PageInfo<>(list);
-            logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
-            return RespDto.success(pageInfo);
+            PageInfo<Branch> pageInfo = branchService.findByConditionWithPage(pageNum, pageSize, branch);
+            PageInfo<BranchDto> res = new PageInfo<>();
+            BeanUtils.copyProperties(pageInfo, res);
+            List<BranchDto> list = Lists.transform(pageInfo.getList(), new Function<Branch, BranchDto>() {
+                @Override
+                public BranchDto apply(@Nullable Branch branch) {
+                    BranchDto dto = new BranchDto();
+                    BeanUtils.copyProperties(branch, dto);
+                    dto.setUserList(managerService.getManager(ManagerTypeEnum.BRANCH.getCode(), branch.getId()));
+                    return dto;
+                }
+            });
+            res.setList(list);
+            return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);
             return RespDto.fail();

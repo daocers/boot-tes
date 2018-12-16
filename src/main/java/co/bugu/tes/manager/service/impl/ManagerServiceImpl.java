@@ -6,18 +6,24 @@ import co.bugu.exception.UserException;
 import co.bugu.tes.manager.dao.ManagerDao;
 import co.bugu.tes.manager.domain.Manager;
 import co.bugu.tes.manager.service.IManagerService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +35,8 @@ import java.util.List;
 public class ManagerServiceImpl implements IManagerService {
     @Autowired
     ManagerDao managerDao;
+    @Autowired
+    IUserService userService;
 
     private Logger logger = LoggerFactory.getLogger(ManagerServiceImpl.class);
 
@@ -135,6 +143,28 @@ public class ManagerServiceImpl implements IManagerService {
             managerDao.insert(manager);
         }
         return 1;
+    }
+
+    @Override
+    public List<User> getManager(int type, Long targetId) {
+        Manager query = new Manager();
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        query.setType(type);
+        query.setTargetId(targetId);
+
+        List<Manager> managers = managerDao.findByObject(query);
+        if (CollectionUtils.isNotEmpty(managers)) {
+            List<User> userList = Lists.transform(managers, new Function<Manager, User>() {
+                @Override
+                public User apply(@Nullable Manager manager) {
+                    Long userId = manager.getUserId();
+                    User user = userService.findById(userId);
+                    return user;
+                }
+            });
+            return userList;
+        }
+        return new ArrayList<>();
     }
 
 }

@@ -10,6 +10,7 @@ import co.bugu.tes.questionBank.service.IQuestionBankService;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.dto.MyJoinDto;
 import co.bugu.tes.scene.dto.MyOpenDto;
+import co.bugu.tes.scene.dto.SceneDto;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.user.domain.User;
@@ -70,7 +71,7 @@ public class SceneApi {
                     MyOpenDto dto = new MyOpenDto();
                     BeanUtils.copyProperties(scene, dto);
                     QuestionBank bank = bankService.findById(scene.getQuestionBankId());
-                    if(null != bank){
+                    if (null != bank) {
                         dto.setQuestionBankName(bank.getName());
                     }
 //                    todo 策略名称待处理，当前暂时未开通策略模式
@@ -164,8 +165,16 @@ public class SceneApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public RespDto<Boolean> saveScene(@RequestBody Scene scene) {
+    public RespDto<Boolean> saveScene(@RequestBody SceneDto sceneDto) {
         try {
+            Scene scene = new Scene();
+            BeanUtils.copyProperties(sceneDto, scene);
+            List<Long> branchIds = sceneDto.getBranchIds();
+            List<Long> departmentIds = sceneDto.getDepartmentIds();
+            List<Long> stationIds = sceneDto.getStationIds();
+
+
+
             Date now = new Date();
             if (now.after(scene.getOpenTime())) {
                 return RespDto.fail("开场时间不能早于当前时间");
@@ -181,14 +190,14 @@ public class SceneApi {
             scene.setCode(CodeUtil.getSceneCode());
             if (null == sceneId) {
                 logger.debug("保存， saveScene, 参数： {}", JSON.toJSONString(scene, true));
-                sceneId = sceneService.add(scene);
+                sceneId = sceneService.add(scene, branchIds, departmentIds, stationIds);
                 logger.info("新增 成功， id: {}", sceneId);
             } else {
                 Scene obj = sceneService.findById(sceneId);
                 if (obj.getStatus() != SceneStatusEnum.READY.getCode()) {
                     return RespDto.fail("本场考试已经开场或取消，不能修改");
                 }
-                sceneService.updateById(scene);
+                sceneService.updateById(scene, branchIds, departmentIds, stationIds);
                 logger.debug("更新成功", JSON.toJSONString(scene, true));
             }
             return RespDto.success(sceneId != null);

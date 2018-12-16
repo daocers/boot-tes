@@ -2,6 +2,7 @@ package co.bugu.tes.manager.service;
 
 import co.bugu.exception.UserException;
 import co.bugu.tes.manager.domain.Manager;
+import co.bugu.tes.user.domain.User;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -76,5 +77,16 @@ public interface IManagerService {
 
 
     int setManager(int type, Long userId, Long targetId) throws UserException;
+
+
+    /**
+     * 获取管理员列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/16 20:03
+     */
+    List<User> getManager(int type, Long targetId);
 
 }

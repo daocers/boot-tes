@@ -1,6 +1,10 @@
 package co.bugu.tes.scene.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.joinInfo.domain.JoinInfo;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.scene.dao.SceneDao;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
@@ -9,11 +13,13 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +31,8 @@ import java.util.List;
 public class SceneServiceImpl implements ISceneService {
     @Autowired
     SceneDao sceneDao;
+    @Autowired
+    IBranchService branchService;
 
     private Logger logger = LoggerFactory.getLogger(SceneServiceImpl.class);
 
@@ -41,6 +49,49 @@ public class SceneServiceImpl implements ISceneService {
         scene.setStatus(SceneStatusEnum.READY.getCode());
         sceneDao.insert(scene);
         return scene.getId();
+    }
+
+    @Override
+    public long add(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) {
+        scene.setIsDel(DelFlagEnum.NO.getCode());
+
+        Date now = new Date();
+        scene.setCreateTime(now);
+        scene.setUpdateTime(now);
+        scene.setStatus(SceneStatusEnum.READY.getCode());
+        sceneDao.insert(scene);
+        Long sceneId = scene.getId();
+        List<JoinInfo> list = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(branchIds)){
+            for(Long branchId: branchIds){
+                Branch branch = branchService.findById(branchId);
+                JoinInfo info = new JoinInfo();
+                info.setIsDel(DelFlagEnum.NO.getCode());
+                info.setTargetId(branchId);
+                info.setTargetCode(branch.getCode());
+                info.setType(ManagerTypeEnum.BRANCH.getCode());
+                info.setSceneId(sceneId);
+                list.add(info);
+            }
+        }
+
+        if(CollectionUtils.isNotEmpty(departmentIds)){
+            for(Long departmentId: departmentIds){
+                JoinInfo info = new JoinInfo();
+                info.setIsDel(DelFlagEnum.NO.getCode());
+                info.setTargetId(departmentId);
+                info.setType(ManagerTypeEnum.DEPARTMENT.getCode());
+                info.setSceneId(sceneId);
+                list.add(info);
+            }
+        }
+
+        return 0;
+    }
+
+    @Override
+    public long updateById(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) {
+        return 0;
     }
 
     @Override

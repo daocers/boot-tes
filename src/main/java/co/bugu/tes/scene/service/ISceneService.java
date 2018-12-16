@@ -21,6 +21,8 @@ public interface ISceneService {
      */
     long add(Scene scene);
 
+    long add(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds);
+    long updateById(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds);
     /**
      * 通过id更新
      *

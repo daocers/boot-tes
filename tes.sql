@@ -404,3 +404,21 @@ CREATE TABLE tes_manager (
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY(id)
 ) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='管理员信息';
+
+
+
+
+drop table if exists tes_join_info;
+CREATE TABLE tes_join_info (
+  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
+  scene_id bigint(21) not null comment '场次id',
+  target_id bigint(21) not null comment '管理id',
+  target_code VARCHAR(100) COLLATE utf8mb4_unicode_ci  noT NULL COMMENT '编号',
+  type INT(11) noT NULL DEFAULT -1 COMMENT '管理员类型， 1 部门， 2 机构， 3 岗位',
+  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  noT NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='参考人员';

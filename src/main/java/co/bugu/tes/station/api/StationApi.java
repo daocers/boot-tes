@@ -2,6 +2,9 @@ package co.bugu.tes.station.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
+import co.bugu.tes.manager.domain.Manager;
 import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.manager.service.IManagerService;
 import co.bugu.tes.station.domain.Station;
@@ -16,6 +19,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +60,65 @@ public class StationApi {
      * @date 2018/12/14 12:00
      */
     @RequestMapping(value = "/setManager")
-    public RespDto<Boolean> setManger(Long userId, Long stationId) {
+    public RespDto<Boolean> setManger(String userIds, Long targetId) {
         try {
-            managerService.setManager(ManagerTypeEnum.STATION.getCode(), userId, stationId);
+            List<Long> ids = JSON.parseArray(userIds, Long.class);
+            for (Long userId : ids) {
+                managerService.setManager(ManagerTypeEnum.STATION.getCode(), userId, targetId);
+            }
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("设置部门管理员失败", e);
             return RespDto.fail("设置管理员失败");
+        }
+    }
+
+
+    @RequestMapping(value = "/removeManager")
+    public RespDto<Boolean> removeManager(Long userId, Long stationId) {
+        try {
+            Manager query = new Manager();
+            query.setUserId(userId);
+            query.setTargetId(stationId);
+            query.setType(ManagerTypeEnum.STATION.getCode());
+            List<Manager> managers = managerService.findByCondition(query);
+            Long currentUserId = UserUtil.getCurrentUser().getId();
+            Manager manager = new Manager();
+            manager.setId(managers.get(0).getId());
+            manager.setIsDel(DelFlagEnum.YES.getCode());
+            manager.setTargetId(stationId);
+            manager.setUserId(userId);
+            manager.setUpdateUserId(currentUserId);
+            managerService.updateById(manager);
+            return RespDto.success(true);
+        } catch (Exception e) {
+            logger.error("删除管理员失败", e);
+            return RespDto.fail("删除管理员失败");
+        }
+    }
+
+    @RequestMapping(value = "/getUnderManager")
+    public RespDto<List<Station>> getUnderManager() throws UserException {
+        Long userId = UserUtil.getCurrentUser().getId();
+        Manager query = new Manager();
+        query.setUserId(userId);
+        query.setType(ManagerTypeEnum.STATION.getCode());
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        List<Manager> list = managerService.findByCondition(query);
+        if (CollectionUtils.isNotEmpty(list)) {
+            List<Station> stations = Lists.transform(list, new Function<Manager, Station>() {
+                @Override
+                public Station apply(@Nullable Manager manager) {
+                    Long stationId = manager.getTargetId();
+                    Station station = stationService.findById(stationId);
+                    logger.info("stationId: {}, {}", new String[]{"" + stationId, JSON.toJSONString(station, true)});
+
+                    return station;
+                }
+            });
+            return RespDto.success(stations);
+        } else {
+            return RespDto.success();
         }
     }
 
@@ -96,6 +152,7 @@ public class StationApi {
                     if (user != null) {
                         dto.setCreateUserName(user.getName());
                     }
+                    dto.setUserList(managerService.getManager(ManagerTypeEnum.STATION.getCode(), station.getId()));
                     return dto;
                 }
             });

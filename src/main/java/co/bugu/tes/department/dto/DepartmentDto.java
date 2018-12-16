@@ -1,4 +1,4 @@
-package co.bugu.tes.station.dto;
+package co.bugu.tes.department.dto;
 
 import co.bugu.tes.user.domain.User;
 
@@ -7,17 +7,19 @@ import java.util.List;
 
 /**
  * @Author daocers
- * @Date 2018/12/1:10:34
+ * @Date 2018/12/16:19:57
  * @Description:
  */
-public class StationDto {
+public class DepartmentDto {
     private Long id;
-
-    private String code;
 
     private String name;
 
-    private String memo;
+    private String code;
+
+    private Long superiorId;
+
+    private Integer isDel;
 
     private Integer status;
 
@@ -25,17 +27,7 @@ public class StationDto {
 
     private Long createUserId;
 
-    private String createUserName;
-
     private List<User> userList;
-
-    public List<User> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
-    }
 
     public Long getId() {
         return id;
@@ -43,14 +35,6 @@ public class StationDto {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getName() {
@@ -61,12 +45,28 @@ public class StationDto {
         this.name = name;
     }
 
-    public String getMemo() {
-        return memo;
+    public String getCode() {
+        return code;
     }
 
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Long getSuperiorId() {
+        return superiorId;
+    }
+
+    public void setSuperiorId(Long superiorId) {
+        this.superiorId = superiorId;
+    }
+
+    public Integer getIsDel() {
+        return isDel;
+    }
+
+    public void setIsDel(Integer isDel) {
+        this.isDel = isDel;
     }
 
     public Integer getStatus() {
@@ -93,11 +93,11 @@ public class StationDto {
         this.createUserId = createUserId;
     }
 
-    public String getCreateUserName() {
-        return createUserName;
+    public List<User> getUserList() {
+        return userList;
     }
 
-    public void setCreateUserName(String createUserName) {
-        this.createUserName = createUserName;
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
     }
 }
