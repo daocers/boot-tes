@@ -7,6 +7,7 @@ import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.questionBank.domain.QuestionBank;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
+import co.bugu.tes.scene.agent.SceneAgent;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.dto.MyJoinDto;
 import co.bugu.tes.scene.dto.MyOpenDto;
@@ -51,6 +52,8 @@ public class SceneApi {
     IPaperService paperService;
     @Autowired
     IQuestionBankService bankService;
+    @Autowired
+    SceneAgent sceneAgent;
 
 
     @RequestMapping("/myOpen")
@@ -159,7 +162,7 @@ public class SceneApi {
     /**
      * 保存
      *
-     * @param scene
+     * @param sceneDto
      * @return co.bugu.common.RespDto<java.lang.Boolean>
      * @author daocers
      * @date 2018-11-20 17:15
@@ -172,7 +175,6 @@ public class SceneApi {
             List<Long> branchIds = sceneDto.getBranchIds();
             List<Long> departmentIds = sceneDto.getDepartmentIds();
             List<Long> stationIds = sceneDto.getStationIds();
-
 
 
             Date now = new Date();
@@ -217,11 +219,11 @@ public class SceneApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/findById")
-    public RespDto<Scene> findById(Long id) {
+    public RespDto<SceneDto> findById(Long id) {
         try {
             logger.info("findById, id： {}", id);
-            Scene scene = sceneService.findById(id);
-            return RespDto.success(scene);
+            SceneDto dto = sceneAgent.findById(id);
+            return RespDto.success(dto);
         } catch (Exception e) {
             logger.error("获取详情失败", e);
             return RespDto.fail();

@@ -8,6 +8,8 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author daocers
@@ -28,6 +31,13 @@ public class StationServiceImpl implements IStationService {
     private Logger logger = LoggerFactory.getLogger(StationServiceImpl.class);
 
     private static String ORDER_BY = "update_time DESC";
+
+
+    private Cache<Long, Station> stationCache = CacheBuilder.newBuilder()
+            .maximumSize(100)
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .concurrencyLevel(3)
+            .build();
 
     @Override
     public long add(Station station) {
@@ -82,8 +92,15 @@ public class StationServiceImpl implements IStationService {
     @Override
     public Station findById(Long stationId) {
         logger.debug("station findById, 参数 stationId: {}", stationId);
-        Station station = stationDao.selectById(stationId);
-
+        Station station = stationCache.getIfPresent(stationId);
+        if (null != station) {
+            return station;
+        }
+        station = stationDao.selectById(stationId);
+        if (station == null) {
+            station = new Station();
+        }
+        stationCache.put(stationId, station);
         logger.debug("查询结果： {}", JSON.toJSONString(station, true));
         return station;
     }

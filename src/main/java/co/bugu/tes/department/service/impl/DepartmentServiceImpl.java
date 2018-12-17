@@ -1,24 +1,24 @@
 package co.bugu.tes.department.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
-import co.bugu.exception.UserException;
 import co.bugu.tes.department.dao.DepartmentDao;
 import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
-import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.manager.service.IManagerService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author daocers
@@ -34,6 +34,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
     private static String ORDER_BY = "update_time DESC";
+
+
+    private Cache<Long, Department> departmentCache =
+            CacheBuilder.newBuilder()
+                    .maximumSize(100)
+                    .concurrencyLevel(3)
+                    .expireAfterWrite(1, TimeUnit.HOURS)
+                    .build();
 
     @Override
     public long add(Department department) {
@@ -88,7 +96,16 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public Department findById(Long departmentId) {
         logger.debug("department findById, 参数 departmentId: {}", departmentId);
-        Department department = departmentDao.selectById(departmentId);
+        Department department = departmentCache.getIfPresent(departmentId);
+        if (department != null) {
+            return department;
+        }
+
+        department = departmentDao.selectById(departmentId);
+        if(null == department){
+            department = new Department();
+        }
+        departmentCache.put(departmentId, department);
 
         logger.debug("查询结果： {}", JSON.toJSONString(department, true));
         return department;

@@ -13,6 +13,9 @@
       <if test="targetCode != null">
         target_code = #{targetCode,jdbcType=VARCHAR},
       </if>
+      <if test="targetName != null">
+        target_name = #{targetName,jdbcType=VARCHAR},
+      </if>
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
       </if>
@@ -50,6 +53,9 @@
       <if test="targetCode != null">
         target_code,
       </if>
+      <if test="targetName != null">
+        target_name,
+      </if>
       <if test="type != null">
         type,
       </if>
@@ -78,6 +84,9 @@
       </if>
       <if test="targetCode != null">
         #{targetCode,jdbcType=VARCHAR},
+      </if>
+      <if test="targetName != null">
+        #{targetName,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},

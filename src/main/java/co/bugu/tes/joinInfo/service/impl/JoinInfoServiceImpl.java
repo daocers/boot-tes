@@ -1,18 +1,29 @@
 package co.bugu.tes.joinInfo.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.department.domain.Department;
+import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.joinInfo.dao.JoinInfoDao;
 import co.bugu.tes.joinInfo.domain.JoinInfo;
 import co.bugu.tes.joinInfo.service.IJoinInfoService;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.station.domain.Station;
+import co.bugu.tes.station.service.IStationService;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +35,13 @@ import java.util.List;
 public class JoinInfoServiceImpl implements IJoinInfoService {
     @Autowired
     JoinInfoDao joinInfoDao;
+
+    @Autowired
+    IBranchService branchService;
+    @Autowired
+    IDepartmentService departmentService;
+    @Autowired
+    IStationService stationService;
 
     private Logger logger = LoggerFactory.getLogger(JoinInfoServiceImpl.class);
 
@@ -100,6 +118,73 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    public List<JoinInfo> batchAdd(List<JoinInfo> list) {
+        joinInfoDao.batchAdd(list);
+        return list;
+    }
+
+    @Override
+    public List<JoinInfo> saveJoinInfo(Long sceneId, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException {
+//        先删除所有的，然后批量添加
+        joinInfoDao.deleteBySceneId(sceneId);
+
+        Long userId = UserUtil.getCurrentUser().getId();
+        List<JoinInfo> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(branchIds)) {
+            for (Long branchId : branchIds) {
+                Branch branch = branchService.findById(branchId);
+                JoinInfo info = new JoinInfo();
+                info.setIsDel(DelFlagEnum.NO.getCode());
+                info.setTargetId(branchId);
+                info.setTargetCode(branch.getCode());
+                info.setTargetName(branch.getName());
+                info.setType(ManagerTypeEnum.BRANCH.getCode());
+                info.setSceneId(sceneId);
+                info.setCreateUserId(userId);
+                info.setUpdateUserId(userId);
+                list.add(info);
+
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(departmentIds)) {
+            for (Long departmentId : departmentIds) {
+                Department department = departmentService.findById(departmentId);
+                JoinInfo info = new JoinInfo();
+                info.setIsDel(DelFlagEnum.NO.getCode());
+                info.setTargetId(departmentId);
+                info.setType(ManagerTypeEnum.DEPARTMENT.getCode());
+                info.setTargetCode(department.getCode());
+                info.setTargetName(department.getName());
+                info.setSceneId(sceneId);
+                info.setCreateUserId(userId);
+                info.setUpdateUserId(userId);
+                list.add(info);
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(stationIds)) {
+            for (Long stationId : stationIds) {
+                Station station = stationService.findById(stationId);
+                JoinInfo info = new JoinInfo();
+                info.setIsDel(DelFlagEnum.NO.getCode());
+                info.setTargetId(stationId);
+                info.setTargetCode(station.getCode());
+                info.setTargetName(station.getName());
+                info.setType(ManagerTypeEnum.STATION.getCode());
+                info.setSceneId(sceneId);
+                info.setCreateUserId(userId);
+                info.setUpdateUserId(userId);
+                list.add(info);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(list)) {
+            joinInfoDao.batchAdd(list);
+        }
+        return list;
     }
 
 }

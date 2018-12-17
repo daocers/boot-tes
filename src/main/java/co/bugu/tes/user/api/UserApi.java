@@ -200,7 +200,6 @@ public class UserApi {
                 }
             });
             res.setList(list);
-            logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
             return RespDto.success(res);
         } catch (Exception e) {
             logger.error("findByCondition  失败", e);

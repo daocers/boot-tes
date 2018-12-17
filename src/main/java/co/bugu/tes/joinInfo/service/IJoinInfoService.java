@@ -1,5 +1,6 @@
 package co.bugu.tes.joinInfo.service;
 
+import co.bugu.exception.UserException;
 import co.bugu.tes.joinInfo.domain.JoinInfo;
 import com.github.pagehelper.PageInfo;
 
@@ -42,7 +43,7 @@ public interface IJoinInfoService {
      *
      * @param pageNum  页码，从1 开始
      * @param pageSize 每页多少条
-     * @param joinInfo     查询条件
+     * @param joinInfo 查询条件
      * @return
      */
     List<JoinInfo> findByCondition(Integer pageNum, Integer pageSize, JoinInfo joinInfo);
@@ -52,7 +53,7 @@ public interface IJoinInfoService {
      *
      * @param pageNum  页码，从1 开始
      * @param pageSize 每页多少条
-     * @param joinInfo     查询条件
+     * @param joinInfo 查询条件
      * @return
      */
     PageInfo<JoinInfo> findByConditionWithPage(Integer pageNum, Integer pageSize, JoinInfo joinInfo);
@@ -73,4 +74,24 @@ public interface IJoinInfoService {
      */
     int deleteById(Long joinInfoId, Long operatorId);
 
+    /**
+     * 批量添加
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/17 10:13
+     */
+    List<JoinInfo> batchAdd(List<JoinInfo> list);
+
+
+    /**
+     * 保存参赛信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/17 14:28
+     */
+    List<JoinInfo> saveJoinInfo(Long sceneId, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException;
 }

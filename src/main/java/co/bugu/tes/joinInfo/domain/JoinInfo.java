@@ -11,6 +11,8 @@ public class JoinInfo {
 
     private String targetCode;
 
+    private String targetName;
+
     private Integer type;
 
     private Integer isDel;
@@ -53,6 +55,14 @@ public class JoinInfo {
 
     public void setTargetCode(String targetCode) {
         this.targetCode = targetCode;
+    }
+
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public void setTargetName(String targetName) {
+        this.targetName = targetName;
     }
 
     public Integer getType() {

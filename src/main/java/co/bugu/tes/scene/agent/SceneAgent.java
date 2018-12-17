@@ -1,20 +1,27 @@
 package co.bugu.tes.scene.agent;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.joinInfo.domain.JoinInfo;
+import co.bugu.tes.joinInfo.service.IJoinInfoService;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.manager.service.IManagerService;
 import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.scene.domain.Scene;
+import co.bugu.tes.scene.dto.SceneDto;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +43,41 @@ public class SceneAgent {
     IPaperService paperService;
     @Autowired
     PaperAgent paperAgent;
+    @Autowired
+    IManagerService managerService;
+    @Autowired
+    IJoinInfoService joinInfoService;
 
+    public SceneDto findById(Long sceneId) {
+        Scene scene = sceneService.findById(sceneId);
+        if (null == scene) {
+            return null;
+        }
+        SceneDto dto = new SceneDto();
+        BeanUtils.copyProperties(scene, dto);
+
+        JoinInfo query = new JoinInfo();
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        query.setSceneId(sceneId);
+        List<JoinInfo> list = joinInfoService.findByCondition(query);
+        List<Long> branchIds = new ArrayList<>();
+        List<Long> departmentIds = new ArrayList<>();
+        List<Long> stationIds = new ArrayList<>();
+        for (JoinInfo info : list) {
+            if (info.getType() == ManagerTypeEnum.DEPARTMENT.getCode()) {
+                departmentIds.add(info.getTargetId());
+            } else if (info.getType() == ManagerTypeEnum.BRANCH.getCode()) {
+                branchIds.add(info.getTargetId());
+            } else {
+                stationIds.add(info.getTargetId());
+            }
+        }
+        dto.setBranchIds(branchIds);
+        dto.setDepartmentIds(departmentIds);
+        dto.setStationIds(stationIds);
+        return dto;
+
+    }
 
     /**
      * 封场
@@ -55,7 +96,7 @@ public class SceneAgent {
             Date now = new Date();
             for (Scene scene : scenes) {
 //                正在进行的考试，结束3分钟之后，自动封场,时间可配置
-                if(autoCloseSceneDelay == null){
+                if (autoCloseSceneDelay == null) {
                     autoCloseSceneDelay = 3;
                 }
                 if (now.getTime() > scene.getCloseTime().getTime() + autoCloseSceneDelay * 60000 && scene.getStatus() == SceneStatusEnum.ON.getCode()) {

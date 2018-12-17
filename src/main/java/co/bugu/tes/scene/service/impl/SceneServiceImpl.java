@@ -1,25 +1,26 @@
 package co.bugu.tes.scene.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
-import co.bugu.tes.branch.domain.Branch;
+import co.bugu.exception.UserException;
 import co.bugu.tes.branch.service.IBranchService;
-import co.bugu.tes.joinInfo.domain.JoinInfo;
-import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.joinInfo.service.IJoinInfoService;
 import co.bugu.tes.scene.dao.SceneDao;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
+import co.bugu.tes.station.service.IStationService;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,12 @@ public class SceneServiceImpl implements ISceneService {
     SceneDao sceneDao;
     @Autowired
     IBranchService branchService;
+    @Autowired
+    IDepartmentService departmentService;
+    @Autowired
+    IStationService stationService;
+    @Autowired
+    IJoinInfoService joinInfoService;
 
     private Logger logger = LoggerFactory.getLogger(SceneServiceImpl.class);
 
@@ -51,8 +58,10 @@ public class SceneServiceImpl implements ISceneService {
         return scene.getId();
     }
 
+
     @Override
-    public long add(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) {
+    @Transactional(rollbackFor = Exception.class, timeout = 3000)
+    public long add(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException {
         scene.setIsDel(DelFlagEnum.NO.getCode());
 
         Date now = new Date();
@@ -61,37 +70,20 @@ public class SceneServiceImpl implements ISceneService {
         scene.setStatus(SceneStatusEnum.READY.getCode());
         sceneDao.insert(scene);
         Long sceneId = scene.getId();
-        List<JoinInfo> list = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(branchIds)){
-            for(Long branchId: branchIds){
-                Branch branch = branchService.findById(branchId);
-                JoinInfo info = new JoinInfo();
-                info.setIsDel(DelFlagEnum.NO.getCode());
-                info.setTargetId(branchId);
-                info.setTargetCode(branch.getCode());
-                info.setType(ManagerTypeEnum.BRANCH.getCode());
-                info.setSceneId(sceneId);
-                list.add(info);
-            }
-        }
-
-        if(CollectionUtils.isNotEmpty(departmentIds)){
-            for(Long departmentId: departmentIds){
-                JoinInfo info = new JoinInfo();
-                info.setIsDel(DelFlagEnum.NO.getCode());
-                info.setTargetId(departmentId);
-                info.setType(ManagerTypeEnum.DEPARTMENT.getCode());
-                info.setSceneId(sceneId);
-                list.add(info);
-            }
-        }
-
-        return 0;
+        Long userId = scene.getCreateUserId();
+        joinInfoService.saveJoinInfo(sceneId, branchIds, departmentIds, stationIds);
+        return sceneId;
     }
 
     @Override
-    public long updateById(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) {
-        return 0;
+    public long updateById(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException {
+        Preconditions.checkNotNull(scene.getId(), "id不能为空");
+        scene.setUpdateTime(new Date());
+        Long userId = UserUtil.getCurrentUser().getId();
+        scene.setUpdateUserId(userId);
+        sceneDao.updateById(scene);
+        joinInfoService.saveJoinInfo(scene.getId(), branchIds, departmentIds, stationIds);
+        return scene.getId();
     }
 
     @Override

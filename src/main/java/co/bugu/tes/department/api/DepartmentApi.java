@@ -97,7 +97,7 @@ public class DepartmentApi {
         Long userId = UserUtil.getCurrentUser().getId();
         Manager query = new Manager();
         query.setUserId(userId);
-        query.setType(ManagerTypeEnum.BRANCH.getCode());
+        query.setType(ManagerTypeEnum.DEPARTMENT.getCode());
         query.setIsDel(DelFlagEnum.NO.getCode());
         List<Manager> list = managerService.findByCondition(query);
         if (CollectionUtils.isNotEmpty(list)) {

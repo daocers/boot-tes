@@ -10,6 +10,8 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author daocers
@@ -31,6 +34,12 @@ public class BranchServiceImpl implements IBranchService {
     private Logger logger = LoggerFactory.getLogger(BranchServiceImpl.class);
 
     private static String ORDER_BY = "update_time";
+
+    private Cache<Long, Branch> branchCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(3)
+            .maximumSize(1000)
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build();
 
     @Override
     public long add(Branch branch) {
@@ -85,8 +94,16 @@ public class BranchServiceImpl implements IBranchService {
     @Override
     public Branch findById(Long branchId) {
         logger.debug("branch findById, 参数 branchId: {}", branchId);
-        Branch branch = branchDao.selectById(branchId);
+        Branch branch = branchCache.getIfPresent(branchId);
+        if (null != branch) {
+            return branch;
+        }
 
+        branch = branchDao.selectById(branchId);
+        if (null == branch) {
+            branch = new Branch();
+        }
+        branchCache.put(branchId, branch);
         logger.debug("查询结果： {}", JSON.toJSONString(branch, true));
         return branch;
     }
@@ -161,16 +178,16 @@ public class BranchServiceImpl implements IBranchService {
         saveInRecursion(userId, list);
     }
 
-    private void saveInRecursion(Long userId, List<BranchTreeDto> dtos){
+    private void saveInRecursion(Long userId, List<BranchTreeDto> dtos) {
         int idx = 1;
-        for(BranchTreeDto dto: dtos){
+        for (BranchTreeDto dto : dtos) {
             Branch branch = new Branch();
             branch.setSuperiorId(dto.getSuperiorId());
             branch.setId(dto.getId());
             branch.setUpdateUserId(userId);
             branch.setLevel(dto.getLevel());
             branchDao.updateById(branch);
-            if(CollectionUtils.isNotEmpty(dto.getChildren())){
+            if (CollectionUtils.isNotEmpty(dto.getChildren())) {
                 saveInRecursion(userId, dto.getChildren());
             }
         }

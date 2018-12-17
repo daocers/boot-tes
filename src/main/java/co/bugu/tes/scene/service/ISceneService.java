@@ -1,5 +1,6 @@
 package co.bugu.tes.scene.service;
 
+import co.bugu.exception.UserException;
 import co.bugu.tes.scene.domain.Scene;
 import com.github.pagehelper.PageInfo;
 
@@ -21,8 +22,26 @@ public interface ISceneService {
      */
     long add(Scene scene);
 
-    long add(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds);
-    long updateById(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds);
+    /**
+     * 保存场次信息，并添加对应的考生范围
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/17 10:06
+     */
+    long add(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException;
+
+    /**
+     * 更新场次信息，并更新对应的考生范围
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/17 10:06
+     */
+    long updateById(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException;
+
     /**
      * 通过id更新
      *
@@ -44,7 +63,7 @@ public interface ISceneService {
      *
      * @param pageNum  页码，从1 开始
      * @param pageSize 每页多少条
-     * @param scene     查询条件
+     * @param scene    查询条件
      * @return
      */
     List<Scene> findByCondition(Integer pageNum, Integer pageSize, Scene scene);
@@ -54,7 +73,7 @@ public interface ISceneService {
      *
      * @param pageNum  页码，从1 开始
      * @param pageSize 每页多少条
-     * @param scene     查询条件
+     * @param scene    查询条件
      * @return
      */
     PageInfo<Scene> findByConditionWithPage(Integer pageNum, Integer pageSize, Scene scene);
