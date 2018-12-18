@@ -244,7 +244,6 @@ public class SceneApi {
             logger.debug("准备删除， 参数: {}", id);
             Preconditions.checkArgument(id != null, "id不能为空");
             int count = sceneService.deleteById(id, operatorId);
-
             return RespDto.success(count == 1);
         } catch (Exception e) {
             logger.error("删除 失败", e);

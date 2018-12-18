@@ -424,3 +424,38 @@ CREATE TABLE tes_join_info (
   PRIMARY KEY(id)
 ) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='参考人员';
 
+
+
+-- 翻打凭条
+drop table if exists tes_receipt;
+CREATE TABLE tes_receipt (
+  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
+  scene_id bigint(21) not null comment '场次id',
+  content varchar(11)  COLLATE utf8mb4_unicode_ci  noT NULL COMMENT '内容信息，一个随机数字',
+  type INT(11) noT NULL DEFAULT -1 COMMENT '管理员类型， 1 部门， 2 机构， 3 岗位',
+  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  noT NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='参考人员';
+
+
+-- 翻打凭条
+drop table if exists tes_receipt_record;
+CREATE TABLE tes_receipt_record (
+  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
+  scene_id bigint(21) not null default -1 comment '场次id',
+  size int(11) not null default -1 comment '测试的张数',
+  seconds int(11) not null default -1 comment '使用的张数',
+  right_count int(11) not null default -1 comment '正确数量',
+  false_count int(11) not null default -1 comment '错误数量',
+  rate double(5, 2) not null default 0.00 comment '正确率',
+  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  noT NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='翻打凭条记录';
