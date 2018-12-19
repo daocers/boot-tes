@@ -5,7 +5,6 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.answer.service.IAnswerService;
-import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.exam.dto.LiveDto;
 import co.bugu.tes.exam.dto.QuestionDto;
@@ -13,6 +12,7 @@ import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.tes.scene.agent.SceneAgent;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
@@ -64,6 +64,8 @@ public class ExamApi {
     IUserService userService;
     @Autowired
     IBranchService branchService;
+    @Autowired
+    SceneAgent sceneAgent;
 
 
     /**
@@ -76,16 +78,27 @@ public class ExamApi {
      */
     @RequestMapping(value = "/findReadyScene")
     public RespDto<PageInfo<Scene>> getReadyScene(Integer pageNum, Integer pageSize) throws UserException {
+//        User user = UserUtil.getCurrentUser();
+//        Long userId = user.getId();
+//        Long departmentId = user.getDepartmentId();
+//        Long branchId = user.getBranchId();
+//        Branch branch = new Branch();
+//        if(null != branchId && branchId > 0){
+//            branch = branchService.findById(branchId);
+//        }
+//        Scene query = new Scene();
+//        PageInfo<Scene> pageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
+//        return RespDto.success(pageInfo);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Date beginDate = calendar.getTime();
+
+        calendar.add(Calendar.DAY_OF_MONTH, 7);
+        Date endDate = calendar.getTime();
         User user = UserUtil.getCurrentUser();
-        Long userId = user.getId();
-        Long departmentId = user.getDepartmentId();
-        Long branchId = user.getBranchId();
-        Branch branch = new Branch();
-        if(null != branchId && branchId > 0){
-            branch = branchService.findById(branchId);
-        }
-        Scene query = new Scene();
-        PageInfo<Scene> pageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
+        PageInfo<Scene> pageInfo = sceneAgent.findReadySceneForUser(pageNum, pageSize, user, beginDate, endDate);
         return RespDto.success(pageInfo);
 
     }
@@ -403,7 +416,7 @@ public class ExamApi {
             return RespDto.fail("本场考试已结束");
         }
         if (scene.getStatus() == SceneStatusEnum.CANCELED.getCode()) {
-            return RespDto.fail( "场次已作废");
+            return RespDto.fail("场次已作废");
         }
         if (scene.getOpenTime().after(now)) {
             return RespDto.fail("考试未开始");

@@ -96,7 +96,7 @@ public class UserApi {
                     String userAgent = request.getHeader("user-agent");
                     log.setUserId(user.getId());
                     log.setIp(ip);
-                    log.setContent(userAgent);
+                    log.setContent(userAgent.substring(0, 100));
                     loginLogService.add(log);
                 } catch (Exception e) {
                     logger.error("保存登录日志失败", e);

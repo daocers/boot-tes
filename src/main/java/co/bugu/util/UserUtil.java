@@ -57,7 +57,7 @@ public class UserUtil {
         if (null == userService) {
             userService = ApplicationContextUtil.getClass(IUserService.class);
         }
-        User user = userService.findById(1L);
+        User user = userService.findById(userId);
         return user;
     }
 

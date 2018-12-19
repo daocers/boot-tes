@@ -1,6 +1,7 @@
 package co.bugu.tes.questionBank.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.service.IBranchService;
@@ -135,8 +136,16 @@ public class QuestionBankApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveQuestionBank(@RequestBody QuestionBank questionBank) {
         try {
+            User user = UserUtil.getCurrentUser();
+            Long userId = user.getId();
+            questionBank.setUpdateUserId(userId);
             Long questionBankId = questionBank.getId();
             if (null == questionBankId) {
+                questionBank.setCreateUserId(userId);
+                questionBank.setStatus(BaseStatusEnum.ENABLE.getCode());
+                questionBank.setBranchId(user.getBranchId());
+                questionBank.setDepartmentId(user.getDepartmentId());
+                questionBank.setStationId(user.getStationId());
                 logger.debug("保存， saveQuestionBank, 参数： {}", JSON.toJSONString(questionBank, true));
                 questionBankId = questionBankService.add(questionBank);
                 logger.info("新增 成功， id: {}", questionBankId);

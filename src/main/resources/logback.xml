@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <!-- 定义参数 -->
+    <property name="log.lever" value="debug"/>
+    <property name="log.maxHistory" value="30"/>
+    <property name="log.filePath" value="logs"></property>
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}:%L - %msg%n"/>
+
+    <!-- 控制台设置 -->
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- DEBUG -->
+    <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件路径 -->
+        <file>${log.filePath}/debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 文件名称 -->
+            <fileNamePattern>${log.filePath}/debug/debug.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+            <!-- 文件最大保存历史数量 -->
+            <MaxHistory>${log.maxHistory}</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+            <!--<onMismatch>DENY</onMismatch>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+        </filter>
+    </appender>
+
+    <!-- INFO -->
+    <appender name="infoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件路径 -->
+        <file>${log.filePath}/info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 文件名称 -->
+            <fileNamePattern>${log.filePath}/info/info.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+            <!-- 文件最大保存历史数量 -->
+            <MaxHistory>${log.maxHistory}</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+            <!--<onMismatch>DENY</onMismatch>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+        </filter>
+    </appender>
+
+    <!-- ERROR -->
+    <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件路径 -->
+        <file>${log.filePath}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 文件名称 -->
+            <fileNamePattern>${log.filePath}/error/error.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+            <!-- 文件最大保存历史数量 -->
+            <MaxHistory>${log.maxHistory}</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+            <!--<onMismatch>DENY</onMismatch>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+        </filter>
+    </appender>
+
+    <!-- 生产环境用info -->
+    <!--<logger level="${log.lever}">-->
+        <!--&lt;!&ndash;<appender-ref ref="dailyAppender"/>&ndash;&gt;-->
+        <!--<appender-ref ref="debugAppender"/>-->
+        <!--<appender-ref ref="infoAppender"/>-->
+        <!--<appender-ref ref="errorAppender"/>-->
+    <!--</logger>-->
+
+
+    <root level="${log.lever}">
+        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="debugAppender"/>
+        <appender-ref ref="infoAppender"/>
+        <appender-ref ref="errorAppender"/>
+    </root>
+
+    <logger name="co.bugu.tes" level="DEBUG" />
+</configuration>

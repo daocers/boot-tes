@@ -218,6 +218,7 @@ public class SceneAgent {
             Branch branch = branchService.findById(branchId);
             String likeCode = branch.getCode() + "%";
             query.setTargetCode(likeCode);
+            query.setTargetId(null);
             query.setType(ManagerTypeEnum.BRANCH.getCode());
             List<JoinInfo> list = joinInfoService.findByUserInfo(query);
             infos.addAll(list);
