@@ -12,6 +12,7 @@ public class BranchTreeDto {
     private Long id;
     private String name;
     private Long superiorId;
+    private String superiorCode;
     private List<BranchTreeDto> children;
     private String code;
 
@@ -19,6 +20,14 @@ public class BranchTreeDto {
 
     private Integer level;
 
+
+    public String getSuperiorCode() {
+        return superiorCode;
+    }
+
+    public void setSuperiorCode(String superiorCode) {
+        this.superiorCode = superiorCode;
+    }
 
     public Long getId() {
         return id;

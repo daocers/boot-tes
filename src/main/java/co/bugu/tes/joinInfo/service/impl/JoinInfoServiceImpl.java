@@ -8,8 +8,10 @@ import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.joinInfo.dao.JoinInfoDao;
 import co.bugu.tes.joinInfo.domain.JoinInfo;
+import co.bugu.tes.joinInfo.dto.JoinInfoQueryDto;
 import co.bugu.tes.joinInfo.service.IJoinInfoService;
 import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.station.domain.Station;
 import co.bugu.tes.station.service.IStationService;
 import co.bugu.util.UserUtil;
@@ -127,7 +129,8 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
     }
 
     @Override
-    public List<JoinInfo> saveJoinInfo(Long sceneId, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException {
+    public List<JoinInfo> saveJoinInfo(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException {
+        Long sceneId = scene.getId();
 //        先删除所有的，然后批量添加
         joinInfoDao.deleteBySceneId(sceneId);
 
@@ -145,6 +148,7 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
                 info.setSceneId(sceneId);
                 info.setCreateUserId(userId);
                 info.setUpdateUserId(userId);
+                info.setOpenTime(scene.getOpenTime());
                 list.add(info);
 
             }
@@ -162,6 +166,7 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
                 info.setSceneId(sceneId);
                 info.setCreateUserId(userId);
                 info.setUpdateUserId(userId);
+                info.setOpenTime(scene.getOpenTime());
                 list.add(info);
             }
         }
@@ -178,6 +183,7 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
                 info.setSceneId(sceneId);
                 info.setCreateUserId(userId);
                 info.setUpdateUserId(userId);
+                info.setOpenTime(scene.getOpenTime());
                 list.add(info);
             }
         }
@@ -185,6 +191,11 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
             joinInfoDao.batchAdd(list);
         }
         return list;
+    }
+
+    @Override
+    public List<JoinInfo> findByUserInfo(JoinInfoQueryDto queryDto) {
+        return joinInfoDao.findByUserInfo(queryDto);
     }
 
 }

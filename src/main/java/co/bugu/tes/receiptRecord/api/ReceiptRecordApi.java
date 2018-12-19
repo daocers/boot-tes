@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * 数据api
  *
@@ -31,6 +29,29 @@ public class ReceiptRecordApi {
 
     @Autowired
     IReceiptRecordService receiptRecordService;
+
+    @RequestMapping(value = "/getMyRecords")
+    public RespDto<PageInfo<ReceiptRecord>> getMyRecords(Integer pageNum, Integer pageSize) {
+        try {
+            if (null == pageNum) {
+                pageNum = 1;
+            }
+            if (null == pageSize) {
+                pageSize = 10;
+            }
+
+            Long userId = UserUtil.getCurrentUser().getId();
+            ReceiptRecord receiptRecord = new ReceiptRecord();
+            receiptRecord.setCreateUserId(userId);
+            PageInfo<ReceiptRecord> pageInfo = receiptRecordService.findByConditionWithPage(pageNum, pageSize, receiptRecord);
+            logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
+            return RespDto.success(pageInfo);
+        } catch (Exception e) {
+            logger.error("findByCondition  失败", e);
+            return RespDto.fail();
+        }
+    }
+
 
     /**
      * 条件查询
@@ -50,8 +71,7 @@ public class ReceiptRecordApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<ReceiptRecord> list = receiptRecordService.findByCondition(pageNum, pageSize, receiptRecord);
-            PageInfo<ReceiptRecord> pageInfo = new PageInfo<>(list);
+            PageInfo<ReceiptRecord> pageInfo = receiptRecordService.findByConditionWithPage(pageNum, pageSize, receiptRecord);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
             return RespDto.success(pageInfo);
         } catch (Exception e) {

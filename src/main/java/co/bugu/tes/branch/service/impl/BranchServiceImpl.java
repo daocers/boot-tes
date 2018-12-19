@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -41,14 +43,42 @@ public class BranchServiceImpl implements IBranchService {
             .expireAfterWrite(1, TimeUnit.HOURS)
             .build();
 
+
+    /**
+     * 获取机构编码
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/19 11:50
+     */
+    public String getCode(Long superiorId, String superiorCode) {
+        Branch query = new Branch();
+        query.setSuperiorId(superiorId);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        List<Branch> list = this.findByCondition(query);
+        int size = list.size() + 1;
+        if (size < 10) {
+            return superiorCode + "00" + size;
+        } else if (size < 100) {
+            return superiorCode + "0" + size;
+        } else {
+            return superiorCode + size;
+        }
+    }
+
+
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public long add(Branch branch) {
         //todo 校验参数
         branch.setIsDel(DelFlagEnum.NO.getCode());
 
+
         Date now = new Date();
         branch.setCreateTime(now);
         branch.setUpdateTime(now);
+        branch.setCode(getCode(branch.getSuperiorId(), branch.getSuperiorCode()));
         branchDao.insert(branch);
         return branch.getId();
     }

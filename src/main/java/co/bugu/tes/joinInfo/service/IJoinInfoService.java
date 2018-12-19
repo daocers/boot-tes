@@ -2,6 +2,8 @@ package co.bugu.tes.joinInfo.service;
 
 import co.bugu.exception.UserException;
 import co.bugu.tes.joinInfo.domain.JoinInfo;
+import co.bugu.tes.joinInfo.dto.JoinInfoQueryDto;
+import co.bugu.tes.scene.domain.Scene;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -93,5 +95,16 @@ public interface IJoinInfoService {
      * @auther daocers
      * @date 2018/12/17 14:28
      */
-    List<JoinInfo> saveJoinInfo(Long sceneId, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException;
+    List<JoinInfo> saveJoinInfo(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException;
+
+
+    /**
+     * 查询，查看哪些人能参加
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/19 16:01
+     */
+    List<JoinInfo> findByUserInfo(JoinInfoQueryDto queryDto);
 }

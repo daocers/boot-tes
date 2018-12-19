@@ -8,6 +8,7 @@
         <result column="target_code" jdbcType="VARCHAR" property="targetCode"/>
         <result column="target_name" jdbcType="VARCHAR" property="targetName"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="open_time" jdbcType="TIMESTAMP" property="openTime"/>
         <result column="is_del" jdbcType="INTEGER" property="isDel"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
@@ -15,8 +16,8 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, scene_id, target_id, target_code, target_name, type, is_del, update_time, update_user_id,
-    create_user_id, create_time
+    id, scene_id, target_id, target_code, target_name, type, open_time, is_del, update_time,
+    update_user_id, create_user_id, create_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -44,10 +45,11 @@
 
 
     <insert id="batchAdd" parameterType="list" useGeneratedKeys="true" keyProperty="id">
-        insert into tes_join_info(scene_id, target_id, target_code, target_name, type, is_del, update_user_id,
+        insert into tes_join_info(scene_id, target_id, target_code, target_name, type, open_time, is_del,
+        update_user_id,
         create_user_id) values
         <foreach collection="list" item="item" separator=",">
-            (#{item.sceneId}, #{item.targetId}, #{item.targetCode},#{item.targetName}, #{item.type}, 1,
+            (#{item.sceneId}, #{item.targetId}, #{item.targetCode},#{item.targetName}, #{item.type}, #{item.openTime},1,
             #{item.updateUserId},
             #{item.createUserId})
         </foreach>
@@ -56,4 +58,33 @@
     <update id="deleteBySceneId" parameterType="long">
         update tes_join_info set is_del = 2 where scene_id = #{sceneId}
     </update>
+
+    <select id="findByUserInfo" parameterType="co.bugu.tes.joinInfo.dto.JoinInfoQueryDto"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tes_join_info
+        <where>
+            is_del = 1
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="targetId != null">
+                and target_id = #{targetId}
+            </if>
+            <if test="sceneId != null">
+                and scene_id = #{sceneId}
+            </if>
+            <if test="targetCode != null and targetCode != ''">
+                and target_code like #{targetCode}
+            </if>
+            <if test="beginDate != null">
+                and open_time <![CDATA[ > ]]> #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and open_time <![CDATA[ < ]]> #{endDate}
+            </if>
+
+        </where>
+    </select>
 </mapper>

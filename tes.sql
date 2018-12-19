@@ -416,6 +416,7 @@ CREATE TABLE tes_join_info (
   target_code VARCHAR(100) COLLATE utf8mb4_unicode_ci  noT NULL COMMENT '编号',
   target_name VARCHAR(100) COLLATE utf8mb4_unicode_ci  noT NULL COMMENT '编号',
   type INT(11) noT NULL DEFAULT -1 COMMENT '管理员类型， 1 部门， 2 机构， 3 岗位',
+    open_time DATETIME  DEFAULT NULL  COMMENT '开场时间',
   is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
   update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
   update_user_id BIGINT(21)  noT NULL DEFAULT '-1'  COMMENT '更新人id',

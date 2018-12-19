@@ -1,5 +1,6 @@
 package co.bugu.tes.branch.agent;
 
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.dto.BranchTreeDto;
 import co.bugu.tes.branch.service.IBranchService;
@@ -78,21 +79,23 @@ public class BranchAgent {
 
     /**
      * 递归获取下级
+     *
      * @param id
      * @param info
      * @return
      */
-    private List<BranchTreeDto> getChildren(Long id, Map<Long, List<BranchTreeDto>> info){
+    private List<BranchTreeDto> getChildren(Long id, Map<Long, List<BranchTreeDto>> info) {
         List<BranchTreeDto> children = info.get(id);
 
-        if(CollectionUtils.isEmpty(children)){
+        if (CollectionUtils.isEmpty(children)) {
             return null;
-        }else{
-            for(BranchTreeDto child: children){
+        } else {
+            for (BranchTreeDto child : children) {
                 child.setChildren(getChildren(child.getId(), info));
             }
         }
         return children;
     }
+
 
 }

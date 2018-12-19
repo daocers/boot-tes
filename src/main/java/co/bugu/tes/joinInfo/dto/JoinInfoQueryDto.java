@@ -1,8 +1,14 @@
-package co.bugu.tes.joinInfo.domain;
+package co.bugu.tes.joinInfo.dto;
 
 import java.util.Date;
 
-public class JoinInfo {
+/**
+ * @Author daocers
+ * @Date 2018/12/19:15:57
+ * @Description:
+ */
+public class JoinInfoQueryDto {
+
     private Long id;
 
     private Long sceneId;
@@ -16,6 +22,10 @@ public class JoinInfo {
     private Integer type;
 
     private Date openTime;
+
+    private Date beginDate;
+    private Date endDate;
+
 
     private Integer isDel;
 
@@ -81,6 +91,22 @@ public class JoinInfo {
 
     public void setOpenTime(Date openTime) {
         this.openTime = openTime;
+    }
+
+    public Date getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public Integer getIsDel() {

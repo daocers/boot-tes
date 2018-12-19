@@ -15,6 +15,8 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author daocers
@@ -40,6 +43,14 @@ public class SceneServiceImpl implements ISceneService {
     IStationService stationService;
     @Autowired
     IJoinInfoService joinInfoService;
+
+    //    缓存场次信息
+    Cache<Long, Scene> sceneCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(60, TimeUnit.SECONDS)
+            .maximumSize(100)
+            .concurrencyLevel(3)
+            .initialCapacity(10)
+            .build();
 
     private Logger logger = LoggerFactory.getLogger(SceneServiceImpl.class);
 
@@ -71,18 +82,19 @@ public class SceneServiceImpl implements ISceneService {
         sceneDao.insert(scene);
         Long sceneId = scene.getId();
         Long userId = scene.getCreateUserId();
-        joinInfoService.saveJoinInfo(sceneId, branchIds, departmentIds, stationIds);
+        joinInfoService.saveJoinInfo(scene, branchIds, departmentIds, stationIds);
         return sceneId;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, timeout = 3000)
     public long updateById(Scene scene, List<Long> branchIds, List<Long> departmentIds, List<Long> stationIds) throws UserException {
         Preconditions.checkNotNull(scene.getId(), "id不能为空");
         scene.setUpdateTime(new Date());
         Long userId = UserUtil.getCurrentUser().getId();
         scene.setUpdateUserId(userId);
         sceneDao.updateById(scene);
-        joinInfoService.saveJoinInfo(scene.getId(), branchIds, departmentIds, stationIds);
+        joinInfoService.saveJoinInfo(scene, branchIds, departmentIds, stationIds);
         return scene.getId();
     }
 
@@ -127,8 +139,15 @@ public class SceneServiceImpl implements ISceneService {
     @Override
     public Scene findById(Long sceneId) {
         logger.debug("scene findById, 参数 sceneId: {}", sceneId);
-        Scene scene = sceneDao.selectById(sceneId);
 
+        Scene scene = sceneCache.getIfPresent(sceneId);
+        if (scene != null) {
+            return scene;
+        }
+        scene = sceneDao.selectById(sceneId);
+        if (scene != null) {
+            sceneCache.put(sceneId, scene);
+        }
         logger.debug("查询结果： {}", JSON.toJSONString(scene, true));
         return scene;
     }

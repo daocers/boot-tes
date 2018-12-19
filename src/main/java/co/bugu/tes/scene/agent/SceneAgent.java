@@ -1,7 +1,10 @@
 package co.bugu.tes.scene.agent;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.joinInfo.domain.JoinInfo;
+import co.bugu.tes.joinInfo.dto.JoinInfoQueryDto;
 import co.bugu.tes.joinInfo.service.IJoinInfoService;
 import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.manager.service.IManagerService;
@@ -13,7 +16,12 @@ import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.dto.SceneDto;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
+import co.bugu.tes.user.domain.User;
+import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,9 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author daocers
@@ -47,6 +53,8 @@ public class SceneAgent {
     IManagerService managerService;
     @Autowired
     IJoinInfoService joinInfoService;
+    @Autowired
+    IBranchService branchService;
 
     public SceneDto findById(Long sceneId) {
         Scene scene = sceneService.findById(sceneId);
@@ -166,5 +174,87 @@ public class SceneAgent {
                 }
             }
         }
+    }
+
+
+    /**
+     * 为考试用户查找就绪的场次
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2018/12/19 16:18
+     */
+    public PageInfo<Scene> findReadySceneForUser(Integer pageNum, Integer pageSize, User user, Date beginDate, Date endDate) {
+        if (user == null) {
+            return new PageInfo<>();
+        }
+        Long branchId = user.getBranchId();
+        Long departmentId = user.getDepartmentId();
+        Long stationId = user.getStationId();
+
+        JoinInfoQueryDto query = new JoinInfoQueryDto();
+        query.setBeginDate(beginDate);
+        query.setEndDate(endDate);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+
+
+        List<JoinInfo> infos = new ArrayList<>();
+        if (departmentId != null && departmentId > 0) {
+            query.setTargetId(departmentId);
+            query.setType(ManagerTypeEnum.DEPARTMENT.getCode());
+            List<JoinInfo> list = joinInfoService.findByUserInfo(query);
+            infos.addAll(list);
+        }
+
+        if (stationId != null && stationId > 0) {
+            query.setTargetId(stationId);
+            query.setType(ManagerTypeEnum.STATION.getCode());
+            List<JoinInfo> list = joinInfoService.findByUserInfo(query);
+            infos.addAll(list);
+        }
+
+        if (branchId != null && branchId > 0) {
+            Branch branch = branchService.findById(branchId);
+            String likeCode = branch.getCode() + "%";
+            query.setTargetCode(likeCode);
+            query.setType(ManagerTypeEnum.BRANCH.getCode());
+            List<JoinInfo> list = joinInfoService.findByUserInfo(query);
+            infos.addAll(list);
+        }
+
+        List<Scene> scenes = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(infos)) {
+            Collections.sort(infos, new Comparator<JoinInfo>() {
+                @Override
+                public int compare(JoinInfo o1, JoinInfo o2) {
+                    return o1.getOpenTime().compareTo(o2.getOpenTime());
+                }
+            });
+
+            scenes = Lists.transform(infos, new Function<JoinInfo, Scene>() {
+                @Override
+                public Scene apply(@Nullable JoinInfo joinInfo) {
+                    Long sceneId = joinInfo.getSceneId();
+                    Scene scene = sceneService.findById(sceneId);
+                    return scene;
+                }
+            });
+        }
+        PageInfo<Scene> pageInfo = new PageInfo<>();
+        pageInfo.setPageNum(pageNum);
+        pageInfo.setPageSize(pageSize);
+        int index = (pageNum - 1) * pageSize;
+        if (scenes.size() <= index) {
+            pageInfo.setList(new ArrayList<>());
+        } else {
+            int toIndex = pageNum * pageSize;
+            if (scenes.size() < toIndex) {
+                toIndex = scenes.size();
+            }
+            List<Scene> list = scenes.subList(index, toIndex);
+            pageInfo.setList(list);
+        }
+        return pageInfo;
     }
 }

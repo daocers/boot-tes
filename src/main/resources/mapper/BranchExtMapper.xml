@@ -32,6 +32,12 @@
         from tes_branch
         <where>
             is_del = 1
+            <if test="superiorId != null">
+                and superior_id = #{superiorId}
+            </if>
+            <if test="superiorCode != null and superiorCode != ''">
+                and superior_code = #{superiorCode}
+            </if>
         </where>
     </select>
 </mapper>

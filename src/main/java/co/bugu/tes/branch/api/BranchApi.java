@@ -133,7 +133,7 @@ public class BranchApi {
      * 获取机构树 数据
      * @Time 2017/11/25 17:53
      * @Author daocers
-     * @return co.bugu.common.RespDto<java.util.List               <               co.bugu.tes.branch.BranchTreeVo>>
+     * @return co.bugu.common.RespDto<java.util.List                               <                               co.bugu.tes.branch.BranchTreeVo>>
      */
     @RequestMapping(value = "/getBranchTree")
     public RespDto<List<BranchTreeDto>> getBranchTree() {

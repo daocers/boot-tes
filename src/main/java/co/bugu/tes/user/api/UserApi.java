@@ -218,6 +218,14 @@ public class UserApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveUser(@RequestBody User user) {
         try {
+            User query = new User();
+            query.setUsername(user.getUsername());
+            query.setIsDel(DelFlagEnum.NO.getCode());
+            List<User> users = userService.findByCondition(query);
+            if (CollectionUtils.isNotEmpty(users)) {
+                return RespDto.fail("该用户名已经存在，请确认");
+            }
+
             Long userId = user.getId();
             user.setCreateUserId(userId);
             user.setUpdateUserId(userId);

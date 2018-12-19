@@ -5,6 +5,8 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.answer.service.IAnswerService;
+import co.bugu.tes.branch.domain.Branch;
+import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.exam.dto.LiveDto;
 import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.agent.PaperAgent;
@@ -60,6 +62,8 @@ public class ExamApi {
     PaperAgent paperAgent;
     @Autowired
     IUserService userService;
+    @Autowired
+    IBranchService branchService;
 
 
     /**
@@ -75,6 +79,11 @@ public class ExamApi {
         User user = UserUtil.getCurrentUser();
         Long userId = user.getId();
         Long departmentId = user.getDepartmentId();
+        Long branchId = user.getBranchId();
+        Branch branch = new Branch();
+        if(null != branchId && branchId > 0){
+            branch = branchService.findById(branchId);
+        }
         Scene query = new Scene();
         PageInfo<Scene> pageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
         return RespDto.success(pageInfo);
