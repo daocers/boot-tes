@@ -196,7 +196,7 @@ public class JudgeApi {
      * @date 2018/11/21 11:39
      */
     @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
-    public RespDto batchAdd(MultipartFile file, Long questionBankId) {
+    public RespDto<Boolean> batchAdd(MultipartFile file, Long questionBankId) {
 //        String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
         File target = new File("e:/test.xlsx");
         try {
@@ -205,7 +205,7 @@ public class JudgeApi {
             logger.info("批量导入试题，", JSON.toJSONString(data, true));
             data.remove(0);
             List<Judge> judges = judgeService.batchAdd(data, 1L, questionBankId, 1L, 1L, 1L, 1);
-            return RespDto.success();
+            return RespDto.success(true);
         } catch (Exception e) {
             logger.error("批量添加判断题失败", e);
             return RespDto.fail("批量添加判断题失败");
