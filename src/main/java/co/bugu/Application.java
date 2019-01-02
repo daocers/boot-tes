@@ -1,5 +1,6 @@
 package co.bugu;
 
+import co.bugu.config.filter.TokenFilter;
 import com.thetransactioncompany.cors.CORSFilter;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -67,6 +68,16 @@ public class Application extends SpringBootServletInitializer {
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(new CORSFilter());
         bean.setName("cors");
+        bean.addUrlPatterns("/*");
+        return bean;
+    }
+
+
+    @Bean
+    public FilterRegistrationBean tokenFilter(){
+        FilterRegistrationBean bean = new FilterRegistrationBean();
+        bean.setFilter(new TokenFilter());
+        bean.setName("tokenFilter");
         bean.addUrlPatterns("/*");
         return bean;
     }
