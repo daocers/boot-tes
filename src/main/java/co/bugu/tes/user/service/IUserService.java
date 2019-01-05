@@ -1,5 +1,6 @@
 package co.bugu.tes.user.service;
 
+import co.bugu.exception.UserException;
 import co.bugu.tes.user.domain.User;
 import com.github.pagehelper.PageInfo;
 
@@ -73,4 +74,13 @@ public interface IUserService {
      */
     int deleteById(Long userId, Long operatorId);
 
+    /**
+     * 批量添加用户信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/1/5 11:26
+     */
+    List<User> batchAdd(List<List<String>> data) throws UserException;
 }

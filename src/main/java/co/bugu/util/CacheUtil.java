@@ -28,6 +28,9 @@ import java.util.concurrent.TimeUnit;
 public class CacheUtil {
     static IPermissionService permissionService;
     static IRolePermissionXService rolePermissionXService;
+//    static IBranchService branchService;
+//    static IDepartmentService departmentService;
+//    static IStationService stationService;
 
 
 
@@ -36,6 +39,9 @@ public class CacheUtil {
     static {
         permissionService = ApplicationContextUtil.getClass(IPermissionService.class);
         rolePermissionXService = ApplicationContextUtil.getClass(IRolePermissionXService.class);
+//        branchService = ApplicationContextUtil.getClass(IBranchService.class);
+//        departmentService = ApplicationContextUtil.getClass(IDepartmentService.class);
+//        stationService = ApplicationContextUtil.getClass(IStationService.class);
     }
 
     //    角色对应的权限列表
@@ -47,7 +53,6 @@ public class CacheUtil {
      */
     static Cache<Long, Permission> permissionCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
             .concurrencyLevel(3).maximumSize(500).build();
-
 
     public static List<Long> getPermissionIdsByRoleId(Long roleId) {
         List<Long> res = rolePerIdsCache.getIfPresent(roleId);

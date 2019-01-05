@@ -16,6 +16,7 @@ import co.bugu.tes.user.dto.UserDto;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
+import co.bugu.util.ExcelUtil;
 import co.bugu.util.TokenUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
@@ -34,8 +35,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -218,18 +225,20 @@ public class UserApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveUser(@RequestBody User user) {
         try {
-            User query = new User();
-            query.setUsername(user.getUsername());
-            query.setIsDel(DelFlagEnum.NO.getCode());
-            List<User> users = userService.findByCondition(query);
-            if (CollectionUtils.isNotEmpty(users)) {
-                return RespDto.fail("该用户名已经存在，请确认");
-            }
+
 
             Long userId = user.getId();
             user.setCreateUserId(userId);
             user.setUpdateUserId(userId);
             if (null == userId) {
+                User query = new User();
+                query.setUsername(user.getUsername());
+                query.setIsDel(DelFlagEnum.NO.getCode());
+                List<User> users = userService.findByCondition(query);
+                if (CollectionUtils.isNotEmpty(users)) {
+                    return RespDto.fail("该用户名已经存在，请确认");
+                }
+
                 user.setPassword("888888");
                 logger.debug("保存， saveUser, 参数： {}", JSON.toJSONString(user, true));
                 userId = userService.add(user);
@@ -327,6 +336,69 @@ public class UserApi {
             logger.error("分配角色失败", e);
             return RespDto.fail();
         }
+    }
+
+
+    /**
+     * 下载用户模板
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019-01-05 11:21:00
+     */
+    @RequestMapping(value = "/downloadModel")
+    public void downloadModel(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" + new String(("用户信息模板.xlsx").getBytes(), "iso-8859-1"));
+            OutputStream os = response.getOutputStream();
+            String rootPath = request.getServletContext().getRealPath("/");
+
+            InputStream is = new BufferedInputStream(UserApi.class.getClassLoader().getResourceAsStream("models/用户信息模板.xlsx"));
+            byte[] buffer = new byte[1024];
+
+            while (is.read(buffer) != -1) {
+                os.write(buffer);
+            }
+            os.close();
+            is.close();
+        } catch (Exception e) {
+            logger.error("下载用户信息模板失败", e);
+        }
+    }
+
+
+    /**
+     * 批量添加用户
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019-01-05 11:21:00
+     */
+    @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
+    public RespDto<Boolean> batchAdd(MultipartFile file) {
+        String tmpPath = UserApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
+        File tmpDir = new File(tmpPath);
+        if (!tmpDir.exists()) {
+            tmpDir.mkdirs();
+        }
+        File target = new File(tmpDir, file.getOriginalFilename());
+        try {
+            file.transferTo(target);
+            List<List<String>> data = ExcelUtil.getData(target);
+            logger.info("批量导入用户，", JSON.toJSONString(data, true));
+            data.remove(0);
+            List<User> users = userService.batchAdd(data);
+            return RespDto.success(true);
+        } catch (Exception e) {
+            logger.error("批量添加用户失败", e);
+            return RespDto.fail("批量添加用户失败");
+        } finally {
+            target.delete();
+        }
+
     }
 }
 

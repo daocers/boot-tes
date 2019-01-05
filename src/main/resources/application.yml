@@ -25,4 +25,8 @@ server:
   servlet:
     context-path: /hn
 
+bugu:
+  init:
+    password: 888888
+
 

@@ -103,8 +103,12 @@ public class SingleApi {
      */
     @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
     public RespDto<Boolean> batchAdd(MultipartFile file, Long questionBankId) {
-//        String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
-        File target = new File("e:/test.xlsx");
+        String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
+        File tmpDir = new File(tmpPath);
+        if(!tmpDir.exists()){
+            tmpDir.mkdirs();
+        }
+        File target = new File(tmpDir, file.getOriginalFilename());
         try {
             file.transferTo(target);
             List<List<String>> data = ExcelUtil.getData(target);
@@ -115,6 +119,8 @@ public class SingleApi {
         } catch (Exception e) {
             logger.error("批量添加单选题失败", e);
             return RespDto.fail("批量添加单选题失败");
+        }finally {
+            target.delete();
         }
 
     }

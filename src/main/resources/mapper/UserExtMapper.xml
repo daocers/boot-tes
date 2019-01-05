@@ -42,4 +42,14 @@
             </if>
         </where>
     </select>
+
+    <insert id="batchAdd" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        insert into tes_user(username, password, id_no, name, branch_id, department_id, station_id, status, is_del,
+        create_user_id, update_user_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.username}, #{item.password}, #{item.idNo}, #{item.name}, #{item.branchId},
+            #{item.departmentId}, #{item.stationId}, 1, 1, #{item.createUserId}, #{item.updateUserId})
+        </foreach>
+    </insert>
 </mapper>
