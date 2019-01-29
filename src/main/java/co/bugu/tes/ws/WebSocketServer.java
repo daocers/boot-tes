@@ -45,9 +45,14 @@ public class WebSocketServer {
         res.put("message", "ok");
         session.getBasicRemote().sendText(JSON.toJSONString(res));
         List<String> userIdInfo = session.getRequestParameterMap().get("userId");
+        List<String> sceneInfo = session.getRequestParameterMap().get("sceneId");
         Long userId = Long.parseLong(userIdInfo.get(0));
+        Long sceneId = Long.parseLong(sceneInfo.get(0));
 //      存入session
         WebSocketSessionUtil.add(userId, session);
+
+        WebSocketSessionUtil.addOnlineUser(userId, session);
+        WebSocketSessionUtil.addSceneUser(sceneId, userId);
     }
 
     /**
@@ -88,7 +93,15 @@ public class WebSocketServer {
         } else if (type == MessageTypeEnum.CLIENT_CLOSE.getCode()) {
             List<String> userIdInfo = session.getRequestParameterMap().get("userId");
             Long userId = Long.parseLong(userIdInfo.get(0));
+            List<String> sceneInfo = session.getRequestParameterMap().get("sceneId");
+            Long sceneId = Long.parseLong(sceneInfo.get(0));
+
+//            清空在内存中的引用
             WebSocketSessionUtil.remove(userId);
+
+
+            WebSocketSessionUtil.removeOnlineUser(userId);
+            WebSocketSessionUtil.removeSceneUser(sceneId, userId);
         } else {
             logger.warn("无效消息, {}", message);
         }
