@@ -14,6 +14,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -22,8 +24,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author daocers
@@ -39,6 +44,14 @@ public class PermissionServiceImpl implements IPermissionService {
     private Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
     private static String ORDER_BY = "update_time";
+
+
+//    存放权限信息
+    Cache<Long, Permission> permissionCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(5).maximumSize(200)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .initialCapacity(1)
+            .build();
 
     @Override
     public long add(Permission permission) {
@@ -131,6 +144,26 @@ public class PermissionServiceImpl implements IPermissionService {
             return res;
         }
 
+    }
+
+    @Override
+    public List<Permission> findByRoleId(Long roleId) {
+        List<Long> permissionIds = findIdsByRoleId(roleId);
+        List<Permission> res = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(permissionIds)){
+            for(Long id: permissionIds){
+                Permission permission = permissionCache.getIfPresent(id);
+                if(null == permission){
+                    permission = permissionDao.selectById(id);
+                    if(null == permission){
+                        logger.warn("无效的查询条件，有可能导致缓存穿透，permissionId: {}", id);
+                    }
+                    permissionCache.put(id, permission);
+                }
+                res.add(permission);
+            }
+        }
+        return res;
     }
 
     @Override

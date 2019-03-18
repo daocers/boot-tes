@@ -84,5 +84,13 @@ public interface IPermissionService {
      */
     List<Long> findIdsByRoleId(Long roleId);
 
+
+    /**
+     * 查找指定角色的权限列表
+     * @param roleId
+     * @return
+     */
+    List<Permission> findByRoleId(Long roleId);
+
     void saveTree(List<PermissionTreeDto> list, Long userId);
 }

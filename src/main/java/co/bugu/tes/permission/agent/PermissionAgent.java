@@ -153,4 +153,28 @@ public class PermissionAgent {
         return res;
     }
 
+    public boolean checkAuthOfUrl4UserId(String url, Long userId){
+        UserRoleX x = new UserRoleX();
+        x.setUserId(userId);
+        List<UserRoleX> xList = userRoleXService.findByCondition(x);
+        if (CollectionUtils.isEmpty(xList)) {
+            return false;
+        }
+
+        for (UserRoleX userRoleX : xList) {
+            Long roleId = userRoleX.getRoleId();
+            List<Permission> permissions = permissionService.findByRoleId(roleId);
+            if (CollectionUtils.isNotEmpty(permissions)) {
+                for(Permission permission: permissions){
+                    String permissionUrl = permission.getUrl();
+                    if(url.endsWith(permissionUrl)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
 }
