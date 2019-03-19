@@ -7,6 +7,7 @@ import co.bugu.tes.rolePermissionX.service.IRolePermissionXService;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
+import co.bugu.util.CacheHolderUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 权限业务逻辑类
@@ -69,7 +71,7 @@ public class PermissionAgent {
 //        });
 
         List<PermissionTreeDto> treeDtos = new ArrayList<>();
-        for(Permission permission: list){
+        for (Permission permission : list) {
             PermissionTreeDto dto = new PermissionTreeDto();
             BeanUtils.copyProperties(permission, dto);
             treeDtos.add(dto);
@@ -136,42 +138,79 @@ public class PermissionAgent {
      * @date 2018/11/30 10:54
      */
     public List<Long> findPermissionIdsByUserId(Long userId) {
-        UserRoleX x = new UserRoleX();
-        x.setUserId(userId);
-        List<UserRoleX> xList = userRoleXService.findByCondition(x);
-        if (CollectionUtils.isEmpty(xList)) {
-            return new ArrayList<>();
+        List<Long> roleIds = CacheHolderUtil.getRoleIdListByUserId(userId);
+        if (CollectionUtils.isEmpty(roleIds)) {
+            UserRoleX x = new UserRoleX();
+            x.setUserId(userId);
+            List<UserRoleX> xList = userRoleXService.findByCondition(x);
+            if (CollectionUtils.isEmpty(xList)) {
+                return new ArrayList<>();
+            }
+            roleIds = Lists.transform(xList, userRoleX -> userRoleX.getRoleId());
+            CacheHolderUtil.putUserRoleList(userId, roleIds);
+
         }
         List<Long> res = new ArrayList<>();
-        for (UserRoleX userRoleX : xList) {
-            Long roleId = userRoleX.getRoleId();
-            List<Long> permissionIds = permissionService.findIdsByRoleId(roleId);
-            if (CollectionUtils.isNotEmpty(permissionIds)) {
-                res.addAll(permissionIds);
+        for (Long roleId : roleIds) {
+            List<Long> pids = CacheHolderUtil.getPermissionIdsByRoleId(roleId);
+            if (CollectionUtils.isEmpty(pids)) {
+                List<Long> permissionIds = permissionService.findIdsByRoleId(roleId);
+                if (CollectionUtils.isNotEmpty(permissionIds)) {
+                    res.addAll(permissionIds);
+                    CacheHolderUtil.putRolePermissionList(roleId, permissionIds);
+                }
             }
         }
         return res;
+
     }
 
-    public boolean checkAuthOfUrl4UserId(String url, Long userId){
-        UserRoleX x = new UserRoleX();
-        x.setUserId(userId);
-        List<UserRoleX> xList = userRoleXService.findByCondition(x);
-        if (CollectionUtils.isEmpty(xList)) {
-            return false;
+    public List<Permission> findPermissionListByUserId(Long userId) {
+        List<Long> pIds = findPermissionIdsByUserId(userId);
+        if (CollectionUtils.isEmpty(pIds)) {
+            return null;
         }
 
-        for (UserRoleX userRoleX : xList) {
-            Long roleId = userRoleX.getRoleId();
-            List<Permission> permissions = permissionService.findByRoleId(roleId);
-            if (CollectionUtils.isNotEmpty(permissions)) {
-                for(Permission permission: permissions){
-                    String permissionUrl = permission.getUrl();
-                    if(url.endsWith(permissionUrl)){
-                        return true;
-                    }
+        List<Permission> res = new CopyOnWriteArrayList<>();
+
+        pIds.parallelStream().forEach(permissionId -> {
+            Permission permission = CacheHolderUtil.getPermission(permissionId);
+            if (null == permission) {
+                permission = permissionService.findById(permissionId);
+            }
+            if (permission != null) {
+                CacheHolderUtil.putPermission(permissionId, permission);
+                res.add(permission);
+            }
+        });
+        return res;
+    }
+
+
+    /**
+     * 检查用户是否有权限访问某个url
+     *
+     * @param userId
+     * @param url
+     * @return
+     */
+    public boolean checkAuthForUser(Long userId, String url) {
+        List<Long> pIds = findPermissionIdsByUserId(userId);
+        if (CollectionUtils.isEmpty(pIds)) {
+            return false;
+        }
+        for (Long pId : pIds) {
+            Permission permission = CacheHolderUtil.getPermission(pId);
+            if (null == permission) {
+                permission = permissionService.findById(pId);
+            }
+            if (null != permission) {
+                String pUrl = permission.getUrl();
+                if (url.endsWith(pUrl)) {
+                    return true;
                 }
             }
+
         }
         return false;
     }

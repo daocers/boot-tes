@@ -1,9 +1,7 @@
 package co.bugu.config.interceptor;
 
 import co.bugu.common.RespDto;
-import co.bugu.exception.UserException;
 import co.bugu.tes.permission.agent.PermissionAgent;
-import co.bugu.tes.role.dto.RoleDto;
 import co.bugu.tes.user.domain.User;
 import co.bugu.util.ApplicationContextUtil;
 import co.bugu.util.ThreadLocalUtil;
@@ -17,11 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Writer;
-import java.time.Period;
-import java.util.List;
 
 public class PermissionInterceptor implements HandlerInterceptor {
     private static Logger logger = LoggerFactory.getLogger(PermissionInterceptor.class);
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = ThreadLocalUtil.getUserToken();
@@ -29,10 +26,10 @@ public class PermissionInterceptor implements HandlerInterceptor {
 
         String requestUrl = request.getRequestURL().toString();
         PermissionAgent permissionAgent = ApplicationContextUtil.getClass(PermissionAgent.class);
-        boolean hasAuth = permissionAgent.checkAuthOfUrl4UserId(requestUrl, user.getId());
-        if(hasAuth){
+        boolean hasAuth = permissionAgent.checkAuthForUser(user.getId(), requestUrl);
+        if (hasAuth) {
             return true;
-        }else{
+        } else {
             response.setCharacterEncoding("utf-8");
             Writer writer = response.getWriter();
             writer.write(JSON.toJSONString(RespDto.fail(-1, "您没有相对应的权限")));

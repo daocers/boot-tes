@@ -33,7 +33,6 @@ public class CacheUtil {
 //    static IStationService stationService;
 
 
-
     private static Logger logger = LoggerFactory.getLogger(CacheUtil.class);
 
     static {
@@ -48,11 +47,14 @@ public class CacheUtil {
     static Cache<Long, List<Long>> rolePerIdsCache = CacheBuilder.newBuilder().expireAfterWrite(3, TimeUnit.MINUTES)
             .concurrencyLevel(3).build();
 
-    /**
-     * 缓存权限信息
-     */
-    static Cache<Long, Permission> permissionCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
-            .concurrencyLevel(3).maximumSize(500).build();
+
+    //    保存对应的权限信息
+    static Cache<Long, Permission> permissionCache = CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .concurrencyLevel(5)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build();
+
 
     public static List<Long> getPermissionIdsByRoleId(Long roleId) {
         List<Long> res = rolePerIdsCache.getIfPresent(roleId);
