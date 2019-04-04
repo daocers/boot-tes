@@ -3,14 +3,17 @@ package co.bugu.tes.permission.agent;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.dto.PermissionTreeDto;
 import co.bugu.tes.permission.service.IPermissionService;
+import co.bugu.tes.rolePermissionX.domain.RolePermissionX;
 import co.bugu.tes.rolePermissionX.service.IRolePermissionXService;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
-import co.bugu.util.CacheHolderUtil;
 import com.google.common.base.Function;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 权限业务逻辑类
@@ -41,6 +45,46 @@ public class PermissionAgent {
     IRolePermissionXService rolePermissionXService;
     @Autowired
     IUserRoleXService userRoleXService;
+
+    /**
+     * 指定id的角色和对应的权限id列表的缓存
+     *
+     * @param
+     * @return
+     * @author daocers
+     * @data 2019/4/4 15:11
+     */
+    Cache<Long, List<Long>> roleIdPermIdsCache = CacheBuilder.newBuilder().concurrencyLevel(4)
+            .maximumSize(100)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build();
+
+    /**
+     * 权限的缓存
+     *
+     * @param
+     * @return
+     * @author daocers
+     * @data 2019/4/4 15:13
+     */
+    Cache<Long, Permission> permissionCache = CacheBuilder.newBuilder().concurrencyLevel(8)
+            .maximumSize(1000)
+            .expireAfterWrite(3, TimeUnit.MINUTES)
+            .build();
+
+
+    /**
+     * 权限的url和对应的id的缓存
+     *
+     * @param
+     * @return
+     * @author daocers
+     * @data 2019/4/4 15:27
+     */
+    Cache<String, Long> urlPermissionIdCache = CacheBuilder.newBuilder().concurrencyLevel(3)
+            .maximumSize(1000)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build();
 
     public List<PermissionTreeDto> getPermissionTree() {
         List<Permission> permissionList = permissionService.findByCondition(null);
@@ -138,48 +182,62 @@ public class PermissionAgent {
      * @date 2018/11/30 10:54
      */
     public List<Long> findPermissionIdsByUserId(Long userId) {
-        List<Long> roleIds = CacheHolderUtil.getRoleIdListByUserId(userId);
-        if (CollectionUtils.isEmpty(roleIds)) {
-            UserRoleX x = new UserRoleX();
-            x.setUserId(userId);
-            List<UserRoleX> xList = userRoleXService.findByCondition(x);
-            if (CollectionUtils.isEmpty(xList)) {
-                return new ArrayList<>();
-            }
-            roleIds = Lists.transform(xList, userRoleX -> userRoleX.getRoleId());
-            CacheHolderUtil.putUserRoleList(userId, roleIds);
-
+        UserRoleX query = new UserRoleX();
+        query.setUserId(userId);
+        List<UserRoleX> xList = userRoleXService.findByCondition(query);
+        if (CollectionUtils.isEmpty(xList)) {
+            return new ArrayList<>();
         }
+
         List<Long> res = new ArrayList<>();
-        for (Long roleId : roleIds) {
-            List<Long> pids = CacheHolderUtil.getPermissionIdsByRoleId(roleId);
-            if (CollectionUtils.isEmpty(pids)) {
-                List<Long> permissionIds = permissionService.findIdsByRoleId(roleId);
-                if (CollectionUtils.isNotEmpty(permissionIds)) {
-                    res.addAll(permissionIds);
-                    CacheHolderUtil.putRolePermissionList(roleId, permissionIds);
+        for (UserRoleX x : xList) {
+            Long roleId = x.getRoleId();
+            List<Long> pIds = roleIdPermIdsCache.getIfPresent(roleId);
+            if (pIds == null) {
+                RolePermissionX rolePermissionX = new RolePermissionX();
+                rolePermissionX.setRoleId(roleId);
+                List<RolePermissionX> rolePermissionXList = rolePermissionXService.findByCondition(rolePermissionX);
+                if (CollectionUtils.isEmpty(rolePermissionXList)) {
+//                    防止缓存穿透
+                    roleIdPermIdsCache.put(roleId, new ArrayList<>());
+                } else {
+                    pIds = Lists.transform(rolePermissionXList, item -> item.getPermissionId());
+                    roleIdPermIdsCache.put(roleId, pIds);
+//                    添加到结果中
+                    res.addAll(pIds);
                 }
+
             }
         }
         return res;
 
     }
 
+
+    /**
+     * 查找指定用户的所有权限信息
+     *
+     * @param
+     * @return
+     * @author daocers
+     * @data 2019/4/4 15:20
+     */
     public List<Permission> findPermissionListByUserId(Long userId) {
+//        先找用户的权限id列表
         List<Long> pIds = findPermissionIdsByUserId(userId);
         if (CollectionUtils.isEmpty(pIds)) {
-            return null;
+            return new ArrayList<>();
         }
 
         List<Permission> res = new CopyOnWriteArrayList<>();
 
-        pIds.parallelStream().forEach(permissionId -> {
-            Permission permission = CacheHolderUtil.getPermission(permissionId);
+        pIds.stream().forEach(permissionId -> {
+            Permission permission = permissionCache.getIfPresent(permissionId);
             if (null == permission) {
                 permission = permissionService.findById(permissionId);
+                permissionCache.put(permissionId, permission);
             }
-            if (permission != null) {
-                CacheHolderUtil.putPermission(permissionId, permission);
+            if (null != permission) {
                 res.add(permission);
             }
         });
@@ -195,22 +253,26 @@ public class PermissionAgent {
      * @return
      */
     public boolean checkAuthForUser(Long userId, String url) {
-        List<Long> pIds = findPermissionIdsByUserId(userId);
-        if (CollectionUtils.isEmpty(pIds)) {
-            return false;
+        if (StringUtils.isEmpty(url)) {
+            logger.warn("权限url为空");
+            return true;
         }
-        for (Long pId : pIds) {
-            Permission permission = CacheHolderUtil.getPermission(pId);
-            if (null == permission) {
-                permission = permissionService.findById(pId);
+        Long pId = urlPermissionIdCache.getIfPresent(url);
+        if (pId == null) {
+            Permission query = new Permission();
+            query.setUrl(url);
+            List<Permission> list = permissionService.findByCondition(query);
+            if (CollectionUtils.isEmpty(list)) {
+                logger.warn("系统中没有包含指定的url：{}", url);
+                return false;
             }
-            if (null != permission) {
-                String pUrl = permission.getUrl();
-                if (url.endsWith(pUrl)) {
-                    return true;
-                }
-            }
+            pId = list.get(0).getId();
+            urlPermissionIdCache.put(url, pId);
+        }
+        List<Long> pIds = findPermissionIdsByUserId(userId);
 
+        if (pIds.contains(pId)) {
+            return true;
         }
         return false;
     }

@@ -39,3 +39,11 @@ bugu:
   init:
     password: 888888
 
+
+swagger:
+  base:
+    package: co.bugu.tes.**.api
+  api:
+    title: tes
+    version: 1.0
+    description: 基础版本
