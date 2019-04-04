@@ -19,6 +19,9 @@
         <result column="multi_score" jdbcType="DOUBLE" property="multiScore"/>
         <result column="judge_count" jdbcType="INTEGER" property="judgeCount"/>
         <result column="judge_score" jdbcType="DOUBLE" property="judgeScore"/>
+        <result column="receipt_count" jdbcType="INTEGER" property="receiptCount"/>
+        <result column="number_length" jdbcType="INTEGER" property="numberLength"/>
+        <result column="decimal_length" jdbcType="INTEGER" property="decimalLength"/>
         <result column="paper_policy_id" jdbcType="BIGINT" property="paperPolicyId"/>
         <result column="paper_generate_type" jdbcType="INTEGER" property="paperGenerateType"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
@@ -37,11 +40,12 @@
         <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, code, name, branch_id, department_id, station_id, auth_code, change_paper, delay_minute, 
-    duration, cancel_reason, single_count, single_score, multi_count, multi_score, judge_count, 
-    judge_score, paper_policy_id, paper_generate_type, remark, question_bank_id, user_choice_type, 
-    total_score, percentable, meta_score_info, status, open_time, close_time, is_del, 
-    create_time, create_user_id, update_time, update_user_id
+    id, code, name, branch_id, department_id, station_id, auth_code, change_paper, delay_minute,
+    duration, cancel_reason, single_count, single_score, multi_count, multi_score, judge_count,
+    judge_score, receipt_count, number_length, decimal_length, paper_policy_id, paper_generate_type,
+    remark, question_bank_id, user_choice_type, total_score, percentable, meta_score_info,
+    status, open_time, close_time, is_del, create_time, create_user_id, update_time,
+    update_user_id
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select

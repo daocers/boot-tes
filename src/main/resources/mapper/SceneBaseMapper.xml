@@ -52,6 +52,15 @@
       <if test="judgeScore != null">
         judge_score = #{judgeScore,jdbcType=DOUBLE},
       </if>
+      <if test="receiptCount != null">
+        receipt_count = #{receiptCount,jdbcType=INTEGER},
+      </if>
+      <if test="numberLength != null">
+        number_length = #{numberLength,jdbcType=INTEGER},
+      </if>
+      <if test="decimalLength != null">
+        decimal_length = #{decimalLength,jdbcType=INTEGER},
+      </if>
       <if test="paperPolicyId != null">
         paper_policy_id = #{paperPolicyId,jdbcType=BIGINT},
       </if>
@@ -158,6 +167,15 @@
       <if test="judgeScore != null">
         judge_score,
       </if>
+      <if test="receiptCount != null">
+        receipt_count,
+      </if>
+      <if test="numberLength != null">
+        number_length,
+      </if>
+      <if test="decimalLength != null">
+        decimal_length,
+      </if>
       <if test="paperPolicyId != null">
         paper_policy_id,
       </if>
@@ -255,6 +273,15 @@
       </if>
       <if test="judgeScore != null">
         #{judgeScore,jdbcType=DOUBLE},
+      </if>
+      <if test="receiptCount != null">
+        #{receiptCount,jdbcType=INTEGER},
+      </if>
+      <if test="numberLength != null">
+        #{numberLength,jdbcType=INTEGER},
+      </if>
+      <if test="decimalLength != null">
+        #{decimalLength,jdbcType=INTEGER},
       </if>
       <if test="paperPolicyId != null">
         #{paperPolicyId,jdbcType=BIGINT},

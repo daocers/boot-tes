@@ -241,6 +241,44 @@ CREATE TABLE tes_judge(
 ) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='单选题';
 
 
+-- 凭条信息
+DROP TABLE IF EXISTS tes_receipt;
+CREATE TABLE tes_receipt(
+  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
+  no int(11) not null default -1 comment '序号',
+  number int(11) not null default 0 comment '数字',
+  scene_id bigint(21) not null default -1 comment '场次id',
+  status INT(2) noT NULL DEFAULT '-1' COMMENT '1 可用',
+  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '创建者id',
+  create_time DATETIME noT NULL DEFAULT  CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '更新人id',
+  update_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (id)
+) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='凭条信息';
+
+
+-- 翻打凭条的答题记录,每张拼条一条记录
+drop  table if exists tes_receipt_answer;
+create table tes_receipt_answer(
+  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
+  receipt_id bigint(21) not null default -1 comment '凭条页的id',
+  no int(11) not null default -1 comment '序号',
+  number int(11) not null default 0 comment '数字',
+  answer int(11) not null default -1 comment '答案',
+  scene_id bigint(21) not null default -1 comment '场次id',
+  user_id bigint(21) not null default -1 comment '答题人id',
+  status INT(2) noT NULL DEFAULT '-1' COMMENT '1 可用',
+
+  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '创建者id',
+  create_time DATETIME noT NULL DEFAULT  CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '更新人id',
+  update_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (id)
+) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='凭条信息';
+
+
 DROP TABLE IF EXISTS tes_paper;
 
 CREATE TABLE tes_paper (
@@ -320,6 +358,10 @@ CREATE TABLE tes_scene (
   multi_score DOUBLE(3,1) noT NULL DEFAULT 0.00 COMMENT '多选题分值',
   judge_count INT(11) noT NULL DEFAULT -1 COMMENT '判断题数量',
   judge_score DOUBLE(3,1) noT NULL DEFAULT 0.00 COMMENT '判断题分值',
+
+  receipt_count int(11) not null default 0 comment '凭条数量（页数）',
+  number_length int(2) not null default 0 comment '数字的长度，用于控制难度',
+  decimal_length int(1) not null default 0 comment '小数位，用于展示几位小数，库里面存储的都是整数',
 
   paper_policy_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '试卷策略id',
   paper_generate_type INT(11) noT NULL DEFAULT '-1' COMMENT '试卷生成方式',
