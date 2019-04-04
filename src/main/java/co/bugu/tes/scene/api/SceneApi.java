@@ -7,6 +7,7 @@ import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.questionBank.domain.QuestionBank;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
+import co.bugu.tes.receipt.service.IReceiptService;
 import co.bugu.tes.scene.agent.SceneAgent;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.dto.MyJoinDto;
@@ -54,6 +55,8 @@ public class SceneApi {
     IQuestionBankService bankService;
     @Autowired
     SceneAgent sceneAgent;
+    @Autowired
+    IReceiptService receiptService;
 
 
     @RequestMapping("/myOpen")
@@ -193,6 +196,7 @@ public class SceneApi {
             if (null == sceneId) {
                 logger.debug("保存， saveScene, 参数： {}", JSON.toJSONString(scene, true));
                 sceneId = sceneService.add(scene, branchIds, departmentIds, stationIds);
+                receiptService.save(sceneId, scene.getReceiptCount(), scene.getNumberLength());
                 logger.info("新增 成功， id: {}", sceneId);
             } else {
                 Scene obj = sceneService.findById(sceneId);
@@ -200,6 +204,7 @@ public class SceneApi {
                     return RespDto.fail("本场考试已经开场或取消，不能修改");
                 }
                 sceneService.updateById(scene, branchIds, departmentIds, stationIds);
+                receiptService.save(sceneId, scene.getReceiptCount(), scene.getNumberLength());
                 logger.debug("更新成功", JSON.toJSONString(scene, true));
             }
             return RespDto.success(sceneId != null);

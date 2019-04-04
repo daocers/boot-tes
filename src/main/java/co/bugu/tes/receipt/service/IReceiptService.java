@@ -42,7 +42,7 @@ public interface IReceiptService {
      *
      * @param pageNum  页码，从1 开始
      * @param pageSize 每页多少条
-     * @param receipt     查询条件
+     * @param receipt  查询条件
      * @return
      */
     List<Receipt> findByCondition(Integer pageNum, Integer pageSize, Receipt receipt);
@@ -52,7 +52,7 @@ public interface IReceiptService {
      *
      * @param pageNum  页码，从1 开始
      * @param pageSize 每页多少条
-     * @param receipt     查询条件
+     * @param receipt  查询条件
      * @return
      */
     PageInfo<Receipt> findByConditionWithPage(Integer pageNum, Integer pageSize, Receipt receipt);
@@ -73,4 +73,13 @@ public interface IReceiptService {
      */
     int deleteById(Long receiptId, Long operatorId);
 
+    /**
+     * 保存凭条信息
+     *
+     * @param
+     * @return
+     * @author daocers
+     * @data 2019/4/4 16:50
+     */
+    List<Receipt> save(Long sceneId, Integer receiptCount, Integer numberLength);
 }

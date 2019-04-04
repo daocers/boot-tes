@@ -12,6 +12,8 @@ import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.tes.receipt.service.IReceiptService;
+import co.bugu.tes.receiptRecord.service.IReceiptRecordService;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.dto.SceneDto;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
@@ -55,6 +57,9 @@ public class SceneAgent {
     IJoinInfoService joinInfoService;
     @Autowired
     IBranchService branchService;
+    @Autowired
+    IReceiptService receiptService;
+
 
     public SceneDto findById(Long sceneId) {
         Scene scene = sceneService.findById(sceneId);

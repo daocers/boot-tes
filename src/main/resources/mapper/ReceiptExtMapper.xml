@@ -2,29 +2,50 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="co.bugu.tes.receipt.dao.ReceiptDao">
     <resultMap id="BaseResultMap" type="co.bugu.tes.receipt.domain.Receipt">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="scene_id" jdbcType="BIGINT" property="sceneId" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="type" jdbcType="INTEGER" property="type" />
-    <result column="is_del" jdbcType="INTEGER" property="isDel" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
-    <result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-  </resultMap>
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="no" jdbcType="INTEGER" property="no"/>
+        <result column="number" jdbcType="INTEGER" property="number"/>
+        <result column="scene_id" jdbcType="BIGINT" property="sceneId"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="create_user_id" jdbcType="BIGINT" property="createUserId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
     <sql id="Base_Column_List">
-    id, scene_id, content, type, is_del, update_time, update_user_id, create_user_id, 
-    create_time
+    id, no, number, scene_id, status, is_del, create_user_id, create_time, update_user_id,
+    update_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tes_receipt
-    where id = #{id,jdbcType=BIGINT}
-  </select>
+        select
+        <include refid="Base_Column_List"/>
+        from tes_receipt
+        where id = #{id,jdbcType=BIGINT}
+    </select>
     <select id="findByObject" parameterType="co.bugu.tes.receipt.domain.Receipt" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tes_receipt
-      </select>
+        select
+        <include refid="Base_Column_List"/>
+        from tes_receipt
+        <where>
+            is_del = 1
+            <if test="sceneId != null">
+                and scene_id = #{sceneId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="deleteBySceneId" parameterType="long">
+        update tes_receipt set is_del = 2 where scene_id = #{sceneId}
+    </select>
+
+
+    <insert id="batchAdd" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        insert into tes_receipt
+        (no, number, scene_id, status, is_del) values
+        <foreach collection="list" separator="," item="item">
+            (#{item.no}, #{item.number}, #{item.sceneId}, #{item.status}, #{item.isDel})
+        </foreach>
+    </insert>
 </mapper>

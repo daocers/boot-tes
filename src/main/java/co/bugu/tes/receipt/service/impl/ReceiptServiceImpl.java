@@ -8,13 +8,16 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author daocers
@@ -100,6 +103,34 @@ public class ReceiptServiceImpl implements IReceiptService {
 
         logger.debug("将 {} 条 数据删除", num);
         return num;
+    }
+
+    @Override
+    public List<Receipt> save(Long sceneId, Integer receiptCount, Integer numberLength) {
+        Receipt receipt = new Receipt();
+        receipt.setSceneId(sceneId);
+        List<Receipt> list = receiptDao.findByObject(receipt);
+        if (CollectionUtils.isNotEmpty(list)) {
+            receiptDao.deleteBySceneId(sceneId);
+        }
+
+        double max = Math.pow(10, numberLength);
+        Long maxNum = Math.round(max);
+        Random random = new Random();
+        int bound = maxNum.intValue();
+        List<Receipt> receipts = new ArrayList<>();
+        for (int i = 0; i < receiptCount; i++) {
+            Integer num = random.nextInt(bound);
+            Receipt item = new Receipt();
+            item.setSceneId(sceneId);
+            item.setNo(i);
+            item.setNumber(num);
+            item.setIsDel(1);
+            item.setStatus(1);
+            receipts.add(item);
+        }
+        receiptDao.batchAdd(receipts);
+        return receipts;
     }
 
 }

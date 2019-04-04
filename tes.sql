@@ -241,43 +241,6 @@ CREATE TABLE tes_judge(
 ) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='单选题';
 
 
--- 凭条信息
-DROP TABLE IF EXISTS tes_receipt;
-CREATE TABLE tes_receipt(
-  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
-  no int(11) not null default -1 comment '序号',
-  number int(11) not null default 0 comment '数字',
-  scene_id bigint(21) not null default -1 comment '场次id',
-  status INT(2) noT NULL DEFAULT '-1' COMMENT '1 可用',
-  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
-  create_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '创建者id',
-  create_time DATETIME noT NULL DEFAULT  CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '更新人id',
-  update_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (id)
-) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='凭条信息';
-
-
--- 翻打凭条的答题记录,每张拼条一条记录
-drop  table if exists tes_receipt_answer;
-create table tes_receipt_answer(
-  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
-  receipt_id bigint(21) not null default -1 comment '凭条页的id',
-  no int(11) not null default -1 comment '序号',
-  number int(11) not null default 0 comment '数字',
-  answer int(11) not null default -1 comment '答案',
-  scene_id bigint(21) not null default -1 comment '场次id',
-  user_id bigint(21) not null default -1 comment '答题人id',
-  status INT(2) noT NULL DEFAULT '-1' COMMENT '1 可用',
-
-  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
-  create_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '创建者id',
-  create_time DATETIME noT NULL DEFAULT  CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '更新人id',
-  update_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (id)
-) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='凭条信息';
-
 
 DROP TABLE IF EXISTS tes_paper;
 
@@ -469,20 +432,60 @@ CREATE TABLE tes_join_info (
 
 
 
--- 翻打凭条
-drop table if exists tes_receipt;
-CREATE TABLE tes_receipt (
+-- -- 翻打凭条
+-- drop table if exists tes_receipt;
+-- CREATE TABLE tes_receipt (
+--   id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
+--   scene_id bigint(21) not null comment '场次id',
+--   content varchar(11)  COLLATE utf8mb4_unicode_ci  noT NULL COMMENT '内容信息，一个随机数字',
+--   type INT(11) noT NULL DEFAULT -1 COMMENT '管理员类型， 1 部门， 2 机构， 3 岗位',
+--   is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+--   update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+--   update_user_id BIGINT(21)  noT NULL DEFAULT '-1'  COMMENT '更新人id',
+--   create_user_id BIGINT(21) noT NULL DEFAULT '-1'  COMMENT '创建人id',
+--   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+--   PRIMARY KEY(id)
+-- ) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='参考人员';
+
+
+
+-- 凭条信息
+DROP TABLE IF EXISTS tes_receipt;
+CREATE TABLE tes_receipt(
   id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
-  scene_id bigint(21) not null comment '场次id',
-  content varchar(11)  COLLATE utf8mb4_unicode_ci  noT NULL COMMENT '内容信息，一个随机数字',
-  type INT(11) noT NULL DEFAULT -1 COMMENT '管理员类型， 1 部门， 2 机构， 3 岗位',
+  no int(11) not null default -1 comment '序号',
+  number int(11) not null default 0 comment '数字',
+  scene_id bigint(21) not null default -1 comment '场次id',
+  status INT(2) noT NULL DEFAULT '-1' COMMENT '1 可用',
   is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
-  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
-  update_user_id BIGINT(21)  noT NULL DEFAULT '-1'  COMMENT '更新人id',
-  create_user_id BIGINT(21) noT NULL DEFAULT '-1'  COMMENT '创建人id',
-  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  PRIMARY KEY(id)
-) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='参考人员';
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '创建者id',
+  create_time DATETIME noT NULL DEFAULT  CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '更新人id',
+  update_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (id)
+) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='凭条信息';
+
+
+-- 翻打凭条的答题记录,每张拼条一条记录
+drop  table if exists tes_receipt_answer;
+create table tes_receipt_answer(
+  id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
+  receipt_id bigint(21) not null default -1 comment '凭条页的id',
+  no int(11) not null default -1 comment '序号',
+  number int(11) not null default 0 comment '数字',
+  answer int(11) not null default -1 comment '答案',
+  scene_id bigint(21) not null default -1 comment '场次id',
+  user_id bigint(21) not null default -1 comment '答题人id',
+  status INT(2) noT NULL DEFAULT '-1' COMMENT '1 可用',
+
+  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '创建者id',
+  create_time DATETIME noT NULL DEFAULT  CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '更新人id',
+  update_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (id)
+) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='凭条信息';
+
 
 
 -- 翻打凭条
