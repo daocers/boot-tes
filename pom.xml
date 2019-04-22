@@ -55,20 +55,6 @@
       <artifactId>spring-boot-starter-aop</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.dangdang</groupId>
-      <artifactId>sharding-jdbc-core</artifactId>
-      <version>1.5.4.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.dangdang</groupId>
-      <artifactId>sharding-jdbc-config-spring</artifactId>
-      <version>1.5.4.1</version>
-    </dependency>
-
-
-
     <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
     <dependency>
       <groupId>mysql</groupId>
@@ -187,18 +173,6 @@
       <artifactId>metrics-core</artifactId>
       <version>4.0.5</version>
     </dependency>
-
-
-    <dependency>
-      <groupId>com.dianping.cat</groupId>
-      <artifactId>cat-client</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <!--<dependency>-->
-      <!--<groupId>org.springframework.boot</groupId>-->
-      <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
-      <!--<scope>provided</scope>-->
-    <!--</dependency>-->
 
 
     <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
