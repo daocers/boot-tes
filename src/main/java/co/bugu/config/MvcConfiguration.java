@@ -1,5 +1,6 @@
 package co.bugu.config;
 
+import co.bugu.config.interceptor.RequestInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -19,7 +20,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
 
 
 //          测试环境，去掉权限和token校验
-//        registry.addInterceptor(new RequestInterceptor()).addPathPatterns("/**").order(0);
+        registry.addInterceptor(new RequestInterceptor()).addPathPatterns("/**").order(0);
 //        registry.addInterceptor(new PermissionInterceptor()).addPathPatterns("/**").order(1);
     }
 

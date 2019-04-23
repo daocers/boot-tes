@@ -2,7 +2,6 @@ package co.bugu.tes.single.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
-import co.bugu.tes.single.PublicFlagEnum;
 import co.bugu.tes.single.dao.SingleDao;
 import co.bugu.tes.single.domain.Single;
 import co.bugu.tes.single.service.ISingleService;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,6 +110,7 @@ public class SingleServiceImpl implements ISingleService {
         Date now = new Date();
         List<Single> singles = new ArrayList<>(data.size());
         for(List<String> list: data){
+            int size = list.size();
             Single single = new Single();
             single.setIsDel(DelFlagEnum.NO.getCode());
             single.setUpdateTime(now);
@@ -134,13 +133,33 @@ public class SingleServiceImpl implements ISingleService {
             single.setContent(JSON.toJSONString(content, true));
             single.setAnswer(list.get(6));
             single.setExtraInfo(list.get(7));
-//            todo 处理属性值
 
-            single.setAttr1(1);
-            single.setAttr2(1);
-            single.setAttr3(1);
-            single.setAttr4(1);
-            single.setAttr5(1);
+//            根据实际情况添加属性
+            if(size > 8){
+                single.setAttr1(Integer.valueOf(list.get(8)));
+            }else{
+                single.setAttr1(-1);
+            }
+            if(size > 9){
+                single.setAttr2(Integer.valueOf(list.get(9)));
+            }else{
+                single.setAttr2(-1);
+            }
+            if(size > 10){
+                single.setAttr3(Integer.valueOf(list.get(10)));
+            }else{
+                single.setAttr3(-1);
+            }
+            if(size > 11){
+                single.setAttr4(Integer.valueOf(list.get(11)));
+            }else{
+                single.setAttr4(-1);
+            }
+            if(size > 12){
+                single.setAttr5(Integer.valueOf(list.get(12)));
+            }else{
+                single.setAttr5(-1);
+            }
             singles.add(single);
 
         }

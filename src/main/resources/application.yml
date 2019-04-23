@@ -33,7 +33,7 @@ hn:
 server:
   servlet:
     context-path: /hn
-  port: 10000
+  port: 9999
 
 bugu:
   init:

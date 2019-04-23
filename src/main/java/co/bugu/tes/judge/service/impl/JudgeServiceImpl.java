@@ -5,8 +5,6 @@ import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.judge.dao.JudgeDao;
 import co.bugu.tes.judge.domain.Judge;
 import co.bugu.tes.judge.service.IJudgeService;
-import co.bugu.tes.multi.domain.Multi;
-import co.bugu.tes.single.domain.Single;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -113,6 +111,7 @@ public class JudgeServiceImpl implements IJudgeService {
         Date now = new Date();
         List<Judge> judges = new ArrayList<>(data.size());
         for(List<String> list: data){
+            int size = list.size();
             Judge judge = new Judge();
             judge.setIsDel(DelFlagEnum.NO.getCode());
             judge.setUpdateTime(now);
@@ -128,13 +127,34 @@ public class JudgeServiceImpl implements IJudgeService {
             judge.setPublicFlag(publicFlag);
             judge.setAnswer(list.get(1));
             judge.setExtraInfo(list.get(2));
-//            todo 处理属性值
 
-            judge.setAttr1(1);
-            judge.setAttr2(1);
-            judge.setAttr3(1);
-            judge.setAttr4(1);
-            judge.setAttr5(1);
+            //            根据实际情况添加属性
+            if(size > 8){
+                judge.setAttr1(Integer.valueOf(list.get(8)));
+            }else{
+                judge.setAttr1(-1);
+            }
+            if(size > 9){
+                judge.setAttr2(Integer.valueOf(list.get(9)));
+            }else{
+                judge.setAttr2(-1);
+            }
+            if(size > 10){
+                judge.setAttr3(Integer.valueOf(list.get(10)));
+            }else{
+                judge.setAttr3(-1);
+            }
+            if(size > 11){
+                judge.setAttr4(Integer.valueOf(list.get(11)));
+            }else{
+                judge.setAttr4(-1);
+            }
+            if(size > 12){
+                judge.setAttr5(Integer.valueOf(list.get(12)));
+            }else{
+                judge.setAttr5(-1);
+            }
+            
             judges.add(judge);
 
         }
