@@ -466,7 +466,7 @@ CREATE TABLE tes_receipt(
 ) ENGINE=INnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='凭条信息';
 
 
--- 翻打凭条的答题记录,每张拼条一条记录
+-- 翻打凭条的答题记录,每个考生每张拼条一条记录
 drop  table if exists tes_receipt_answer;
 create table tes_receipt_answer(
   id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
@@ -488,13 +488,14 @@ create table tes_receipt_answer(
 
 
 
--- 翻打凭条
+-- 翻打凭条 测试结果
 drop table if exists tes_receipt_record;
 CREATE TABLE tes_receipt_record (
   id BIGINT(21) noT NULL AUTO_INCREMENT COMMENT '主键',
   scene_id bigint(21) not null default -1 comment '场次id',
-  size int(11) not null default -1 comment '测试的张数',
-  seconds int(11) not null default -1 comment '使用的张数',
+  user_id bigint(21) not null default -1 comment '考生id',
+  count int(11) not null default -1 comment '测试的张数',
+  seconds int(11) not null default -1 comment '使用的时间，单位：秒',
   right_count int(11) not null default -1 comment '正确数量',
   false_count int(11) not null default -1 comment '错误数量',
   rate double(5, 2) not null default 0.00 comment '正确率',
@@ -505,3 +506,5 @@ CREATE TABLE tes_receipt_record (
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY(id)
 ) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='翻打凭条记录';
+
+

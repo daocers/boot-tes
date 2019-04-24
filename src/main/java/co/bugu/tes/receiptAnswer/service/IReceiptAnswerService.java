@@ -73,4 +73,13 @@ public interface IReceiptAnswerService {
      */
     int deleteById(Long receiptAnswerId, Long operatorId);
 
+    /**
+     * 批量添加数据
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/4/24 11:35
+     */
+    List<ReceiptAnswer> batchAdd(List<ReceiptAnswer> list);
 }

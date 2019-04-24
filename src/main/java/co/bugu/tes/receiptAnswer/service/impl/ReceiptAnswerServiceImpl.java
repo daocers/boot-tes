@@ -102,4 +102,10 @@ public class ReceiptAnswerServiceImpl implements IReceiptAnswerService {
         return num;
     }
 
+    @Override
+    public List<ReceiptAnswer> batchAdd(List<ReceiptAnswer> list) {
+        receiptAnswerDao.batchAdd(list);
+        return list;
+    }
+
 }

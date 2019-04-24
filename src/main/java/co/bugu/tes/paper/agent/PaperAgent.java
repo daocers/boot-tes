@@ -14,6 +14,7 @@ import co.bugu.tes.paper.enums.AnswerFlagEnum;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.enums.QuestionTypeEnum;
 import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.tes.receiptAnswer.service.IReceiptAnswerService;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.single.domain.Single;
@@ -54,6 +55,10 @@ public class PaperAgent {
     IPaperService paperService;
     @Autowired
     IAnswerService answerService;
+
+
+    @Autowired
+    IReceiptAnswerService receiptAnswerService;
 
 
     /**
@@ -294,4 +299,5 @@ public class PaperAgent {
             throw new Exception("计算成绩失败");
         }
     }
+
 }

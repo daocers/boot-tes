@@ -4,7 +4,8 @@
     <resultMap id="BaseResultMap" type="co.bugu.tes.receiptRecord.domain.ReceiptRecord">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="scene_id" jdbcType="BIGINT" property="sceneId"/>
-        <result column="size" jdbcType="INTEGER" property="size"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
         <result column="seconds" jdbcType="INTEGER" property="seconds"/>
         <result column="right_count" jdbcType="INTEGER" property="rightCount"/>
         <result column="false_count" jdbcType="INTEGER" property="falseCount"/>
@@ -16,7 +17,7 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, scene_id, size, seconds, right_count, false_count, rate, is_del, update_time, 
+    id, scene_id, user_id, count, seconds, right_count, false_count, rate, is_del, update_time,
     update_user_id, create_user_id, create_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -36,6 +37,9 @@
             </if>
             <if test="sceneId != null">
                 and scene_id = #{sceneId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
             </if>
         </where>
     </select>

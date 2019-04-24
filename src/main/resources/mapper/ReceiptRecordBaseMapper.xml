@@ -7,8 +7,11 @@
             <if test="sceneId != null">
                 scene_id = #{sceneId,jdbcType=BIGINT},
             </if>
-            <if test="size != null">
-                size = #{size,jdbcType=INTEGER},
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="count != null">
+                count = #{count,jdbcType=INTEGER},
             </if>
             <if test="seconds != null">
                 seconds = #{seconds,jdbcType=INTEGER},
@@ -51,8 +54,11 @@
             <if test="sceneId != null">
                 scene_id,
             </if>
-            <if test="size != null">
-                size,
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="count != null">
+                count,
             </if>
             <if test="seconds != null">
                 seconds,
@@ -86,8 +92,11 @@
             <if test="sceneId != null">
                 #{sceneId,jdbcType=BIGINT},
             </if>
-            <if test="size != null">
-                #{size,jdbcType=INTEGER},
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=INTEGER},
             </if>
             <if test="seconds != null">
                 #{seconds,jdbcType=INTEGER},
