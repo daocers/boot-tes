@@ -34,6 +34,15 @@ public class ReceiptAnswerAgent {
     @Autowired
     ISceneService sceneService;
 
+
+    /**
+     * 提交凭条作答记录
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/4/25 18:41
+     */
     public boolean commitReceiptPaper(Long sceneId, Integer receiptCount, Long userId, Integer seconds, List<Integer> answers) {
 //        1获取本场的凭条信息
 

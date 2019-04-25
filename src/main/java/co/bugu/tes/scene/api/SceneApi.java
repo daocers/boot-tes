@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,6 +58,14 @@ public class SceneApi {
     SceneAgent sceneAgent;
     @Autowired
     IReceiptService receiptService;
+
+//    凭条小数点位数，默认2
+    @Value("${tes.receipt.decimalLength:2}")
+    private Integer decimalLength;
+//    凭条数字的长度，默认6
+    @Value("${tes.receipt.numberLength:6}")
+    private Integer numberLength;
+
 
 
     @RequestMapping("/myOpen")
@@ -173,6 +182,14 @@ public class SceneApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveScene(@RequestBody SceneDto sceneDto) {
         try {
+            if(sceneDto.getReceiptCount() != null){
+                if(null == sceneDto.getNumberLength()){
+                    sceneDto.setNumberLength(numberLength);
+                }
+                if(null == sceneDto.getDecimalLength()){
+                    sceneDto.setDecimalLength(decimalLength);
+                }
+            }
             Scene scene = new Scene();
             BeanUtils.copyProperties(sceneDto, scene);
             List<Long> branchIds = sceneDto.getBranchIds();
@@ -196,7 +213,6 @@ public class SceneApi {
             if (null == sceneId) {
                 logger.debug("保存， saveScene, 参数： {}", JSON.toJSONString(scene, true));
                 sceneId = sceneService.add(scene, branchIds, departmentIds, stationIds);
-                receiptService.save(sceneId, scene.getReceiptCount(), scene.getNumberLength());
                 logger.info("新增 成功， id: {}", sceneId);
             } else {
                 Scene obj = sceneService.findById(sceneId);
@@ -204,8 +220,13 @@ public class SceneApi {
                     return RespDto.fail("本场考试已经开场或取消，不能修改");
                 }
                 sceneService.updateById(scene, branchIds, departmentIds, stationIds);
-                receiptService.save(sceneId, scene.getReceiptCount(), scene.getNumberLength());
                 logger.debug("更新成功", JSON.toJSONString(scene, true));
+            }
+            if(null != scene.getReceiptCount()){
+                if(null == scene.getNumberLength()){
+                    scene.setNumberLength(10);
+                }
+                receiptService.save(sceneId, scene.getReceiptCount(), scene.getNumberLength());
             }
             return RespDto.success(sceneId != null);
         } catch (Exception e) {
