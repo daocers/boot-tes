@@ -55,7 +55,7 @@ public class ReceiptServiceImpl implements IReceiptService {
     @Override
     public List<Receipt> findByCondition(Receipt receipt) {
         logger.debug("receipt findByCondition, 参数： {}", JSON.toJSONString(receipt, true));
-        PageHelper.orderBy(ORDER_BY);
+        PageHelper.orderBy("no");
         List<Receipt> receipts = receiptDao.findByObject(receipt);
 
         logger.debug("查询结果， {}", JSON.toJSONString(receipts, true));

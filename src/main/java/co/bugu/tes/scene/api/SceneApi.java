@@ -7,6 +7,7 @@ import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.questionBank.domain.QuestionBank;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
+import co.bugu.tes.receipt.domain.Receipt;
 import co.bugu.tes.receipt.service.IReceiptService;
 import co.bugu.tes.scene.agent.SceneAgent;
 import co.bugu.tes.scene.domain.Scene;
@@ -23,6 +24,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -59,13 +62,12 @@ public class SceneApi {
     @Autowired
     IReceiptService receiptService;
 
-//    凭条小数点位数，默认2
+    //    凭条小数点位数，默认2
     @Value("${tes.receipt.decimalLength:2}")
     private Integer decimalLength;
-//    凭条数字的长度，默认6
+    //    凭条数字的长度，默认6
     @Value("${tes.receipt.numberLength:6}")
     private Integer numberLength;
-
 
 
     @RequestMapping("/myOpen")
@@ -182,11 +184,11 @@ public class SceneApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveScene(@RequestBody SceneDto sceneDto) {
         try {
-            if(sceneDto.getReceiptCount() != null){
-                if(null == sceneDto.getNumberLength()){
+            if (sceneDto.getReceiptCount() != null) {
+                if (null == sceneDto.getNumberLength()) {
                     sceneDto.setNumberLength(numberLength);
                 }
-                if(null == sceneDto.getDecimalLength()){
+                if (null == sceneDto.getDecimalLength()) {
                     sceneDto.setDecimalLength(decimalLength);
                 }
             }
@@ -222,8 +224,8 @@ public class SceneApi {
                 sceneService.updateById(scene, branchIds, departmentIds, stationIds);
                 logger.debug("更新成功", JSON.toJSONString(scene, true));
             }
-            if(null != scene.getReceiptCount()){
-                if(null == scene.getNumberLength()){
+            if (null != scene.getReceiptCount()) {
+                if (null == scene.getNumberLength()) {
                     scene.setNumberLength(10);
                 }
                 receiptService.save(sceneId, scene.getReceiptCount(), scene.getNumberLength());
@@ -275,6 +277,30 @@ public class SceneApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+
+    /**
+     * 获取相关场次的翻打凭条信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/4/26 14:19
+     */
+    @RequestMapping(value = "/getReceiptNumberList", method = RequestMethod.GET)
+    public RespDto<List<Integer>> getReceiptNumberList(Long sceneId) {
+        logger.info("getReceiptNumber, sceneId: {}", sceneId);
+        Receipt query = new Receipt();
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        query.setSceneId(sceneId);
+        List<Receipt> receipts = receiptService.findByCondition(query);
+        if (CollectionUtils.isEmpty(receipts)) {
+            logger.info("sceneId： {}没有找到凭条信息", sceneId);
+            return RespDto.success(new ArrayList<>());
+        }
+        List<Integer> numbers = Lists.transform(receipts, item -> item.getNumber());
+        return RespDto.success(numbers);
     }
 }
 

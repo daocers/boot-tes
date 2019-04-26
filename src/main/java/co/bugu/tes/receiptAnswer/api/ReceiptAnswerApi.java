@@ -5,12 +5,10 @@ import co.bugu.tes.receipt.service.IReceiptService;
 import co.bugu.tes.receiptAnswer.agent.ReceiptAnswerAgent;
 import co.bugu.tes.receiptAnswer.domain.ReceiptAnswer;
 import co.bugu.tes.receiptAnswer.service.IReceiptAnswerService;
-import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.service.ISceneService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,37 +70,6 @@ public class ReceiptAnswerApi {
     }
 
 
-    /**
-     * 提交凭条试卷
-     * 练习试卷也可以通过本接口提交，sceneId传-1
-     *
-     * @param
-     * @return
-     * @auther daocers
-     * @date 2019/4/24 11:52
-     */
-    @RequestMapping(value = "/commitReceiptPaper")
-    public RespDto<Boolean> commitReceiptPaper(Long sceneId, Long userId, Integer receiptCount, Integer seconds, @RequestBody List<Integer> answers) {
-        Preconditions.checkArgument(null != seconds, "耗时不能为空");
-        Preconditions.checkArgument(null != userId);
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(answers));
-
-        if (null == sceneId || sceneId <= 0) {
-            sceneId = -1L;
-            Preconditions.checkArgument(receiptCount > 0, "凭条张数不能为空且必须大于0");
-        } else {
-            Scene scene = sceneService.findById(sceneId);
-            if (!receiptCount.equals(scene.getReceiptCount())) {
-                logger.warn("客户端传值receiptCount有误，sceneId：{}， receiptCount: {}", sceneId, receiptCount);
-                receiptCount = scene.getReceiptCount();
-            }
-
-        }
-        boolean res = receiptAnswerAgent.commitReceiptPaper(sceneId, receiptCount, userId, seconds, answers);
-
-
-        return RespDto.success(res);
-    }
 
     /**
      * 保存
