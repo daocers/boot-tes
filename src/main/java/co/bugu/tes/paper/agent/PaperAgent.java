@@ -288,7 +288,8 @@ public class PaperAgent {
 //            需要百分比
             score = score / totalScore * 100;
         }
-        paper.setOriginalScore(totalScore);
+        paper.setOriginalScore(yourScore);
+        paper.setScore(score);
         paper.setStatus(PaperStatusEnum.MARKED.getCode());
         paper.setUpdateTime(new Date());
         paper.setScore(score);
