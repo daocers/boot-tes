@@ -340,7 +340,11 @@ public class ExamApi {
         Long userId = UserUtil.getCurrentUser().getId();
         Preconditions.checkArgument(null != seconds, "耗时不能为空");
         Preconditions.checkArgument(null != userId);
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(answers));
+//        Preconditions.checkArgument(CollectionUtils.isNotEmpty(answers));
+        if(CollectionUtils.isEmpty(answers)){
+            logger.warn("没有提交凭条答案， sceneId:{}", sceneId);
+            return RespDto.success();
+        }
 
         if (null == sceneId || sceneId <= 0) {
             sceneId = -1L;
@@ -444,9 +448,9 @@ public class ExamApi {
     public RespDto<Boolean> canAccess(Long sceneId, String authCode) {
         Date now = new Date();
         Scene scene = sceneService.findById(sceneId);
-        if (!scene.getAuthCode().equals(authCode)) {
-            return RespDto.fail("授权码错误");
-        }
+//        if (!scene.getAuthCode().equals(authCode)) {
+//            return RespDto.fail("授权码错误");
+//        }
         if (scene.getStatus() == SceneStatusEnum.READY.getCode()) {
             return RespDto.fail("本场考试未开始");
         }
@@ -463,7 +467,19 @@ public class ExamApi {
             return RespDto.fail("迟到太久，参加下一场吧");
         }
 
-        return RespDto.success();
+        Paper query = new Paper();
+        query.setSceneId(sceneId);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        List<Paper> papers = paperService.findByCondition(query);
+        if (CollectionUtils.isNotEmpty(papers)) {
+            for (Paper paper : papers) {
+                int status = paper.getStatus();
+                if (status == PaperStatusEnum.COMMITED.getCode() || status == PaperStatusEnum.MARKED.getCode()) {
+                    return RespDto.fail("试卷已经提交啦");
+                }
+            }
+        }
+        return RespDto.success(true);
 
     }
 }

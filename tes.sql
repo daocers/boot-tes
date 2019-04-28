@@ -508,3 +508,29 @@ CREATE TABLE tes_receipt_record (
 ) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='翻打凭条记录';
 
 
+/* 试卷策略 */
+DROP TABLE IF EXISTS tes_paper_policy;
+CREATE TABLE tes_paper_policy (
+  id BIGINT(21) AUTO_INCREMENT noT NULL COMMENT '主键',
+  name VARCHAR(100) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '角色名称',
+  code VARCHAR(50) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '角色编码',
+  memo VARCHAR(100) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '备忘录',
+  single_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '单选信息',
+  multi_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '多选信息',
+  judge_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '判断题信息',
+
+  receipt_count INT(3) noT NULL DEFAULT '-1' COMMENT '凭条张数',
+  number_length INT(2) noT NULL DEFAULT '-1' COMMENT '凭条数字长度',
+  branch_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '机构id',
+  station_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '岗位id',
+  department_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '部门id',
+
+
+  status INT(2) noT NULL DEFAULT '-1' COMMENT '状态',
+  is_del INT(1) noT NULL DEFAULT '-1' COMMENT '删除标志',
+  create_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '创建人id',
+  create_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_user_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '更新用户id',
+  update_time DATETIME noT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (id)
+) ENGINE=INnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色信息';

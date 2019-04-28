@@ -230,10 +230,16 @@ public class SceneAgent {
 
 
 //        todo 查找通用的，只输入授权码就可以登录的考试
+        query.setTargetId(-1L);
+        query.setType(-1);
+        List<JoinInfo> listOfAuthCode = joinInfoService.findByUserInfo(query);
+        if (CollectionUtils.isNotEmpty(listOfAuthCode)) {
+            sceneIds.addAll(Lists.transform(listOfAuthCode, item -> item.getSceneId()));
+        }
 
         List<Scene> scenes = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(sceneIds)) {
-            for(Long sceneId: sceneIds){
+            for (Long sceneId : sceneIds) {
                 Scene scene = sceneService.findById(sceneId);
                 scenes.add(scene);
             }

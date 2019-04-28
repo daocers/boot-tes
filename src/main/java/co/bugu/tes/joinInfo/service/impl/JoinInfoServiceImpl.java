@@ -187,6 +187,19 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
                 list.add(info);
             }
         }
+
+//        如果都为空，直接添加一条数据占位，表示不按照部门，岗位，分行等数据区分
+        if(CollectionUtils.isEmpty(branchIds) && CollectionUtils.isEmpty(stationIds) && CollectionUtils.isEmpty(departmentIds)){
+            JoinInfo info = new JoinInfo();
+            info.setIsDel(DelFlagEnum.NO.getCode());
+            info.setSceneId(sceneId);
+            info.setCreateUserId(userId);
+            info.setUpdateUserId(userId);
+            info.setOpenTime(scene.getOpenTime());
+            joinInfoDao.insert(info);
+            list.add(info);
+            return list;
+        }
         if (CollectionUtils.isNotEmpty(list)) {
             joinInfoDao.batchAdd(list);
         }

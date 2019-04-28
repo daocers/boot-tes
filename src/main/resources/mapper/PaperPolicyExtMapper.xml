@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.paperPolicy.dao.PaperPolicyDao">
+    <resultMap id="BaseResultMap" type="co.bugu.tes.paperPolicy.domain.PaperPolicy">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="single_info" jdbcType="VARCHAR" property="singleInfo" />
+    <result column="multi_info" jdbcType="VARCHAR" property="multiInfo" />
+    <result column="judge_info" jdbcType="VARCHAR" property="judgeInfo" />
+    <result column="receipt_count" jdbcType="INTEGER" property="receiptCount" />
+    <result column="number_length" jdbcType="INTEGER" property="numberLength" />
+    <result column="branch_id" jdbcType="BIGINT" property="branchId" />
+    <result column="station_id" jdbcType="BIGINT" property="stationId" />
+    <result column="department_id" jdbcType="BIGINT" property="departmentId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_del" jdbcType="INTEGER" property="isDel" />
+    <result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+    <sql id="Base_Column_List">
+    id, name, code, memo, single_info, multi_info, judge_info, receipt_count, number_length, 
+    branch_id, station_id, department_id, status, is_del, create_user_id, create_time, 
+    update_user_id, update_time
+  </sql>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tes_paper_policy
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="findByObject" parameterType="co.bugu.tes.paperPolicy.domain.PaperPolicy" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tes_paper_policy
+      </select>
+</mapper>

@@ -302,5 +302,25 @@ public class SceneApi {
         List<Integer> numbers = Lists.transform(receipts, item -> item.getNumber());
         return RespDto.success(numbers);
     }
+
+
+    /**
+     * 校验授权码
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/4/28 15:11
+     */
+    @RequestMapping(value = "/checkAuthCode", method = RequestMethod.POST)
+    public RespDto<Boolean> checkAuthCode(String authCode, Long sceneId) {
+        logger.info("开始交验验证码， sceneId: {}, authCode: {}", sceneId, authCode);
+        Scene scene = sceneService.findById(sceneId);
+        if (scene.getAuthCode().equals(authCode)) {
+            return RespDto.success(true);
+        } else {
+            return RespDto.fail("授权码错误");
+        }
+    }
 }
 
