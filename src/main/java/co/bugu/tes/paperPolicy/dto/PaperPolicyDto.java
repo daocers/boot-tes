@@ -14,11 +14,19 @@ public class PaperPolicyDto {
 
     private String memo;
 
-//    private String singleInfo;
-//
-//    private String multiInfo;
-//
-//    private String judgeInfo;
+    private String singleInfo;
+
+    private String multiInfo;
+
+    private String judgeInfo;
+
+    private Double singleScore;
+    private Double multiScore;
+    private Double judgeScore;
+
+    private Integer singleCount;
+    private Integer multiCount;
+    private Integer judgeCount;
 
     private Integer receiptCount;
 
@@ -30,9 +38,9 @@ public class PaperPolicyDto {
 
     private Long departmentId;
 
-    private List<ItemDto> singleInfo;
-    private List<ItemDto> multiInfo;
-    private List<ItemDto> judgeInfo;
+    private List<ItemDto> singleList;
+    private List<ItemDto> multiList;
+    private List<ItemDto> judgeList;
 
 
 }

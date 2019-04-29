@@ -518,7 +518,12 @@ CREATE TABLE tes_paper_policy (
   single_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '单选信息',
   multi_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '多选信息',
   judge_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci noT NULL DEFAULT '' COMMENT '判断题信息',
-
+  single_count int(11) not null default 0 comment '单选题数量',
+  multi_count int(11) not null default 0 comment '多选题数量',
+  judge_count int(11) not null default 0 comment '判断题数量',
+    single_score double(5, 1)  not null default 0 comment '单选题分值',
+    multi_score double(5, 1)  not null default 0 comment '多选题分值',
+    judge_score double(5, 1)  not null default 0 comment '判断题分值',
   receipt_count INT(3) noT NULL DEFAULT '-1' COMMENT '凭条张数',
   number_length INT(2) noT NULL DEFAULT '-1' COMMENT '凭条数字长度',
   branch_id BIGINT(21) noT NULL DEFAULT '-1' COMMENT '机构id',

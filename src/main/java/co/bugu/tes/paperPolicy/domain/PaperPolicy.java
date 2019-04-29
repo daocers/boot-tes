@@ -20,6 +20,14 @@ public class PaperPolicy {
 
     private String judgeInfo;
 
+    private Double singleScore;
+    private Double multiScore;
+    private Double judgeScore;
+
+    private Integer singleCount;
+    private Integer multiCount;
+    private Integer judgeCount;
+
     private Integer receiptCount;
 
     private Integer numberLength;
