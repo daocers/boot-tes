@@ -127,32 +127,32 @@ public class PaperPolicyApi {
         dto.setMultiList(multiList);
         dto.setJudgeList(judgeList);
 
-        if(CollectionUtils.isNotEmpty(singleList)){
+        if (CollectionUtils.isNotEmpty(singleList)) {
             int count = 0;
-            for(ItemDto item: singleList){
+            for (ItemDto item : singleList) {
                 count += item.getCount();
             }
             dto.setSingleCount(count);
-        }else{
+        } else {
             dto.setSingleCount(0);
         }
-        if(CollectionUtils.isNotEmpty(multiList)){
+        if (CollectionUtils.isNotEmpty(multiList)) {
             int count = 0;
-            for(ItemDto item: multiList){
+            for (ItemDto item : multiList) {
                 count += item.getCount();
             }
             dto.setMultiCount(count);
-        }else{
+        } else {
             dto.setMultiCount(0);
         }
 
-        if(CollectionUtils.isNotEmpty(judgeList)){
+        if (CollectionUtils.isNotEmpty(judgeList)) {
             int count = 0;
-            for(ItemDto item: judgeList){
+            for (ItemDto item : judgeList) {
                 count += item.getCount();
             }
             dto.setJudgeCount(count);
-        }else{
+        } else {
             dto.setJudgeCount(0);
         }
 
@@ -169,7 +169,7 @@ public class PaperPolicyApi {
         while (iter.hasNext()) {
             ItemDto dto = iter.next();
 
-            if ( dto.getCount() != null) {
+            if (dto.getCount() != null) {
                 Integer diff = dto.getDifficulty();
                 Integer busi = dto.getBusiType();
                 if (null == diff) {
@@ -246,6 +246,14 @@ public class PaperPolicyApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+
+    @RequestMapping(value = "/findAll")
+    public RespDto<List<PaperPolicy>> findAll() {
+        logger.info("findAll ..");
+        List<PaperPolicy> list = paperPolicyService.findByCondition(new PaperPolicy());
+        return RespDto.success(list);
     }
 }
 

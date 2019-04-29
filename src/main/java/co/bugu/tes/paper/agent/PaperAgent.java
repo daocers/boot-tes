@@ -14,13 +14,18 @@ import co.bugu.tes.paper.enums.AnswerFlagEnum;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.enums.QuestionTypeEnum;
 import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.tes.paperPolicy.domain.PaperPolicy;
+import co.bugu.tes.paperPolicy.dto.ItemDto;
+import co.bugu.tes.paperPolicy.service.IPaperPolicyService;
 import co.bugu.tes.receiptAnswer.service.IReceiptAnswerService;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.single.domain.Single;
 import co.bugu.tes.single.service.ISingleService;
 import co.bugu.util.UserUtil;
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +65,9 @@ public class PaperAgent {
 
     @Autowired
     IReceiptAnswerService receiptAnswerService;
+
+    @Autowired
+    IPaperPolicyService paperPolicyService;
 
 
     /**
@@ -172,14 +181,79 @@ public class PaperAgent {
     /**
      * 策略模式出题
      *
-     * @param
+     * @param paperGenerateType 出题方式，统一还是随机
      * @return
      * @auther daocers
      * @date 2018/11/25 21:37
      */
     private List<AnswerDto4GenPaper> getQuestionIdListByPolicy(Long paperPolicyId, Integer paperGenerateType, Long bankId, Integer questionType, Integer count) {
-//        todo 策略模式待开发
-        return null;
+//        todo 区分试卷出题方式
+        PaperPolicy paperPolicy = paperPolicyService.findById(paperPolicyId);
+
+        List<AnswerDto4GenPaper> res = new ArrayList<>();
+        if (questionType == QuestionTypeEnum.SINGLE.getCode()) {
+            List<ItemDto> singleList = JSON.parseArray(paperPolicy.getSingleInfo(), ItemDto.class);
+            if (CollectionUtils.isNotEmpty(singleList)) {
+                for (ItemDto item : singleList) {
+                    Single query = new Single();
+                    query.setBankId(bankId);
+                    query.setAttr1(item.getBusiType());
+                    query.setAttr2(item.getDifficulty());
+                    List<Single> singles = singleService.findByCondition(query);
+                    if (singles.size() >= item.getCount()) {
+                        List<AnswerDto4GenPaper> list = Lists.transform(singles, single -> {
+                            AnswerDto4GenPaper dto = new AnswerDto4GenPaper();
+                            BeanUtils.copyProperties(single, dto);
+                            return dto;
+                        });
+                        res.addAll(list.subList(0, item.getCount()));
+                    }
+                }
+            }
+        } else if (questionType == QuestionTypeEnum.MULTI.getCode()) {
+            List<ItemDto> multiList = JSON.parseArray(paperPolicy.getMultiInfo(), ItemDto.class);
+
+            if (CollectionUtils.isNotEmpty(multiList)) {
+                for (ItemDto item : multiList) {
+                    Multi query = new Multi();
+                    query.setBankId(bankId);
+                    query.setAttr1(item.getBusiType());
+                    query.setAttr2(item.getDifficulty());
+                    List<Multi> multis = multiService.findByCondition(query);
+                    if (multis.size() >= item.getCount()) {
+                        List<AnswerDto4GenPaper> list = Lists.transform(multiList, multi -> {
+                            AnswerDto4GenPaper dto = new AnswerDto4GenPaper();
+                            BeanUtils.copyProperties(multi, dto);
+                            return dto;
+                        });
+                        res.addAll(list.subList(0, item.getCount()));
+                    }
+                }
+            }
+        } else if (questionType == QuestionTypeEnum.JUDGE.getCode()) {
+            List<ItemDto> judgeList = JSON.parseArray(paperPolicy.getMultiInfo(), ItemDto.class);
+
+            if (CollectionUtils.isNotEmpty(judgeList)) {
+                for (ItemDto item : judgeList) {
+                    Judge query = new Judge();
+                    query.setBankId(bankId);
+                    query.setAttr1(item.getBusiType());
+                    query.setAttr2(item.getDifficulty());
+                    List<Judge> judges = judgeService.findByCondition(query);
+                    if (judges.size() >= item.getCount()) {
+                        List<AnswerDto4GenPaper> list = Lists.transform(judges, single -> {
+                            AnswerDto4GenPaper dto = new AnswerDto4GenPaper();
+                            BeanUtils.copyProperties(judges, dto);
+                            return dto;
+                        });
+                        res.addAll(list.subList(0, item.getCount()));
+                    }
+                }
+            }
+        } else {
+            logger.warn("无效的试题类型, {}***", questionType);
+        }
+        return res;
     }
 
     /**
