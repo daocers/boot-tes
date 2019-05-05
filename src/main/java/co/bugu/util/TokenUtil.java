@@ -36,7 +36,7 @@ public class TokenUtil {
             return pwd;
         } catch (NoSuchAlgorithmException e) {
             logger.error("密码加密失败", e);
-            throw new UserException("加密失败", UserException.ERR_UNKNOW);
+            throw new UserException("用户数据异常", UserException.TOKEN_ERR);
         }
     }
 

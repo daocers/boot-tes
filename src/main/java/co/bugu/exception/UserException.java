@@ -7,14 +7,8 @@ package co.bugu.exception;
  */
 
 public class UserException extends Exception {
-    //    用户未登录
-    public static final int NO_LOGIN = -1;
-    //    登陆失败
-    public static final int ERR_LOGIN = -2;
     //    无效session
-    public static final int INVALID_TOKEN = -3;
-    //    未知异常
-    public static final int ERR_UNKNOW = -4;
+    public static final int TOKEN_ERR = -1;
 
     private int code;
 

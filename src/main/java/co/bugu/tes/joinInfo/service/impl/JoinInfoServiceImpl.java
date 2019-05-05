@@ -196,6 +196,9 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
             info.setCreateUserId(userId);
             info.setUpdateUserId(userId);
             info.setOpenTime(scene.getOpenTime());
+            info.setTargetId(-1L);
+            info.setTargetCode("");
+            info.setTargetName("");
             joinInfoDao.insert(info);
             list.add(info);
             return list;

@@ -48,11 +48,11 @@ public class UserUtil {
     public static User getCurrentUser() throws UserException {
         String token = ThreadLocalUtil.getUserToken();
         if (StringUtils.isEmpty(token)) {
-            throw new UserException("用户token不存在", UserException.INVALID_TOKEN);
+            throw new UserException("用户token不存在", UserException.TOKEN_ERR);
         }
         Long userId = userTokenCache.getIfPresent(token);
         if (null == userId) {
-            throw new UserException("登录已过期，请重新登录", UserException.INVALID_TOKEN);
+            throw new UserException("登录已过期，请重新登录", UserException.TOKEN_ERR);
         }
         if (null == userService) {
             userService = ApplicationContextUtil.getClass(IUserService.class);

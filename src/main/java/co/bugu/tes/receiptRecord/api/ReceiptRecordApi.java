@@ -4,6 +4,7 @@ import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.receiptRecord.domain.ReceiptRecord;
 import co.bugu.tes.receiptRecord.service.IReceiptRecordService;
+import co.bugu.tes.user.domain.User;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
@@ -71,6 +72,8 @@ public class ReceiptRecordApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
+            User user = UserUtil.getCurrentUser();
+            receiptRecord.setUserId(user.getId());
             PageInfo<ReceiptRecord> pageInfo = receiptRecordService.findByConditionWithPage(pageNum, pageSize, receiptRecord);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
             return RespDto.success(pageInfo);
@@ -94,6 +97,8 @@ public class ReceiptRecordApi {
             Long receiptRecordId = receiptRecord.getId();
             Long userId = UserUtil.getCurrentUser().getId();
             receiptRecord.setUpdateUserId(userId);
+            receiptRecord.setUserId(userId);
+            receiptRecord.setCount(receiptRecord.getFalseCount() + receiptRecord.getRightCount());
             if (null == receiptRecordId) {
                 logger.debug("保存， saveReceiptRecord, 参数： {}", JSON.toJSONString(receiptRecord, true));
                 receiptRecord.setIsDel(DelFlagEnum.NO.getCode());
@@ -101,6 +106,8 @@ public class ReceiptRecordApi {
                 receiptRecordId = receiptRecordService.add(receiptRecord);
                 logger.info("新增 成功， id: {}", receiptRecordId);
             } else {
+//                原则上无法到达这里
+                logger.warn("理论不可达的请求，请查看：{}", JSON.toJSONString(receiptRecord, true));
                 receiptRecordService.updateById(receiptRecord);
                 logger.debug("更新成功", JSON.toJSONString(receiptRecord, true));
             }

@@ -3,6 +3,8 @@ package co.bugu.tes.receipt.api;
 import co.bugu.common.RespDto;
 import co.bugu.tes.receipt.domain.Receipt;
 import co.bugu.tes.receipt.service.IReceiptService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -69,8 +71,11 @@ public class ReceiptApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveReceipt(@RequestBody Receipt receipt) {
         try {
+            User user  = UserUtil.getCurrentUser();
             Long receiptId = receipt.getId();
+            receipt.setUpdateUserId(user.getId());
             if(null == receiptId){
+                receipt.setCreateUserId(user.getId());
                 logger.debug("保存， saveReceipt, 参数： {}", JSON.toJSONString(receipt, true));
                 receiptId = receiptService.add(receipt);
                 logger.info("新增 成功， id: {}", receiptId);

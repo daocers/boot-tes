@@ -48,7 +48,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         }
 //        除了登录接口，其他都需要token信息
         if (StringUtils.isEmpty(token)) {
-            throw new UserException("请求参数异常，没有token信息", UserException.INVALID_TOKEN);
+            throw new UserException("请求参数异常，没有token信息", UserException.TOKEN_ERR);
         }
         boolean valid = UserUtil.checkToken(token);
         if (valid) {
@@ -57,7 +57,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         } else {
             response.setCharacterEncoding("utf-8");
             Writer writer = response.getWriter();
-            writer.write(JSON.toJSONString(RespDto.fail(UserException.INVALID_TOKEN, "非法token")));
+            writer.write(JSON.toJSONString(RespDto.fail(UserException.TOKEN_ERR, "Token已失效")));
             writer.close();
             logger.error("token不合法， token: {}", token);
             return false;
