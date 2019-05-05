@@ -11,6 +11,8 @@ import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.dao.UserDao;
 import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
+import co.bugu.tes.userRoleX.domain.UserRoleX;
+import co.bugu.tes.userRoleX.service.IUserRoleXService;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
@@ -40,6 +42,8 @@ public class UserServiceImpl implements IUserService {
     IBranchService branchService;
     @Autowired
     IStationService stationService;
+    @Autowired
+    IUserRoleXService userRoleXService;
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -122,7 +126,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User> batchAdd(List<List<String>> data) throws UserException {
+    public List<User> batchAdd(List<List<String>> data, Long roleId) throws UserException {
         logger.info("批量添加用户信息， {}", JSON.toJSONString(data, true));
         if (CollectionUtils.isNotEmpty(data)) {
             List<User> userList = new ArrayList<>();
@@ -177,6 +181,19 @@ public class UserServiceImpl implements IUserService {
                     userList.add(user);
                 }
                 userDao.batchAdd(userList);
+
+                List<UserRoleX> xList = new ArrayList<>();
+                for (User user : userList) {
+                    UserRoleX x = new UserRoleX();
+                    x.setIsDel(DelFlagEnum.NO.getCode());
+                    x.setUserId(user.getId());
+                    x.setCreateUserId(userId);
+                    x.setUpdateUserId(userId);
+                    x.setNo(1);
+                    x.setRoleId(roleId);
+                    xList.add(x);
+                }
+                userRoleXService.batchAdd(xList);
                 return userList;
 
             }

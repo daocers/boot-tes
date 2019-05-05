@@ -82,5 +82,5 @@ public interface IUserService {
      * @auther daocers
      * @date 2019/1/5 11:26
      */
-    List<User> batchAdd(List<List<String>> data) throws UserException;
+    List<User> batchAdd(List<List<String>> data, Long roleId) throws UserException;
 }

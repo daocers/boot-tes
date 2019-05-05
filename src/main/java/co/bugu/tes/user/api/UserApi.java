@@ -223,7 +223,7 @@ public class UserApi {
      * @date 2018-11-19 17:51
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public RespDto<Boolean> saveUser(@RequestBody User user) {
+    public RespDto<Long> saveUser(@RequestBody User user) {
         try {
 
 
@@ -247,7 +247,7 @@ public class UserApi {
                 userService.updateById(user);
                 logger.debug("更新成功", JSON.toJSONString(user, true));
             }
-            return RespDto.success(userId != null);
+            return RespDto.success(userId);
         } catch (Exception e) {
             logger.error("保存 user 失败", e);
             return RespDto.fail();
@@ -378,7 +378,7 @@ public class UserApi {
      * @date 2019-01-05 11:21:00
      */
     @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
-    public RespDto<Boolean> batchAdd(MultipartFile file) {
+    public RespDto<Boolean> batchAdd(MultipartFile file, Long roleId) {
         String tmpPath = UserApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
         File tmpDir = new File(tmpPath);
         if (!tmpDir.exists()) {
@@ -390,7 +390,7 @@ public class UserApi {
             List<List<String>> data = ExcelUtil.getData(target);
             logger.info("批量导入用户，", JSON.toJSONString(data, true));
             data.remove(0);
-            List<User> users = userService.batchAdd(data);
+            List<User> users = userService.batchAdd(data, roleId);
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("批量添加用户失败", e);
