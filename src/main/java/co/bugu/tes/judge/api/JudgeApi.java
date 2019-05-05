@@ -6,7 +6,9 @@ import co.bugu.tes.judge.service.IJudgeService;
 import co.bugu.tes.question.agent.QuestionAgent;
 import co.bugu.tes.question.dto.QuestionListDto;
 import co.bugu.tes.single.api.SingleApi;
+import co.bugu.tes.user.domain.User;
 import co.bugu.util.ExcelUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
@@ -97,9 +99,15 @@ public class JudgeApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveJudge(@RequestBody Judge judge) {
         try {
+            User user = UserUtil.getCurrentUser();
             Long judgeId = judge.getId();
+            judge.setUpdateUserId(user.getId());
             if (null == judgeId) {
                 logger.debug("保存， saveJudge, 参数： {}", JSON.toJSONString(judge, true));
+                judge.setCreateUserId(user.getId());
+                judge.setDepartmentId(user.getDepartmentId());
+                judge.setBranchId(user.getBranchId());
+                judge.setStationId(user.getStationId());
                 judgeId = judgeService.add(judge);
                 logger.info("新增 成功， id: {}", judgeId);
             } else {
@@ -204,7 +212,8 @@ public class JudgeApi {
             List<List<String>> data = ExcelUtil.getData(target);
             logger.info("批量导入试题，", JSON.toJSONString(data, true));
             data.remove(0);
-            List<Judge> judges = judgeService.batchAdd(data, 1L, questionBankId, 1L, 1L, 1L, 1);
+            User user = UserUtil.getCurrentUser();
+            List<Judge> judges = judgeService.batchAdd(data, user.getId(), questionBankId, user.getStationId(), user.getBranchId(), user.getDepartmentId(), 1);
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("批量添加判断题失败", e);

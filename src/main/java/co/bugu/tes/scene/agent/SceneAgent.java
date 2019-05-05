@@ -39,7 +39,7 @@ import java.util.*;
 public class SceneAgent {
     private Logger logger = LoggerFactory.getLogger(SceneAgent.class);
 
-    @Value("${hn.tes.auto-close-scene-delay}")
+    @Value("${bugu.init.auto-close-scene-delay}")
     Integer autoCloseSceneDelay;
 
     @Autowired

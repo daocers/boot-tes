@@ -22,7 +22,7 @@ public class UserUtil {
     //    最大1000人，最后访问30分钟之后失效
     private static Cache<String, Long> userTokenCache = CacheBuilder.newBuilder()
             .concurrencyLevel(3)
-            .maximumSize(1000)
+            .maximumSize(1000)  //控制多少人登录，用来区分不同版本的使用人数
             .expireAfterAccess(30, TimeUnit.MINUTES)
             .initialCapacity(100)
             .build();

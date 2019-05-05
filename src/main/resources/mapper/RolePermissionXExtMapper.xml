@@ -29,6 +29,9 @@
         from tes_role_permission_x
         <where>
             is_del = 1
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
         </where>
     </select>
 

@@ -203,11 +203,13 @@ public class PermissionAgent {
                 } else {
                     pIds = Lists.transform(rolePermissionXList, item -> item.getPermissionId());
                     roleIdPermIdsCache.put(roleId, pIds);
-//                    添加到结果中
-                    res.addAll(pIds);
+//
                 }
 
             }
+
+//            添加到结果中
+            res.addAll(pIds);
         }
         return res;
 

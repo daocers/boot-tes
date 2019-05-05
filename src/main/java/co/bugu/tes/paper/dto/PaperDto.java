@@ -1,5 +1,7 @@
 package co.bugu.tes.paper.dto;
 
+import lombok.Data;
+
 import java.util.Date;
 
 /**
@@ -7,11 +9,12 @@ import java.util.Date;
  * @Date 2018/11/28:11:21
  * @Description:
  */
+@Data
 public class PaperDto {
     private Long id;
-    private String username;
-
     private String userName;
+
+    private String name;
     private String sceneName;
     private String sceneCode;
 
@@ -32,119 +35,5 @@ public class PaperDto {
     private Long userId;
 
     private Integer status;
-
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-
-    public String getSceneCode() {
-        return sceneCode;
-    }
-
-    public void setSceneCode(String sceneCode) {
-        this.sceneCode = sceneCode;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getSceneName() {
-        return sceneName;
-    }
-
-    public void setSceneName(String sceneName) {
-        this.sceneName = sceneName;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Integer getAnswerFlag() {
-        return answerFlag;
-    }
-
-    public void setAnswerFlag(Integer answerFlag) {
-        this.answerFlag = answerFlag;
-    }
-
-    public Date getBeginTime() {
-        return beginTime;
-    }
-
-    public void setBeginTime(Date beginTime) {
-        this.beginTime = beginTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public Double getOriginalScore() {
-        return originalScore;
-    }
-
-    public void setOriginalScore(Double originalScore) {
-        this.originalScore = originalScore;
-    }
-
-    public Double getScore() {
-        return score;
-    }
-
-    public void setScore(Double score) {
-        this.score = score;
-    }
-
-    public Long getSceneId() {
-        return sceneId;
-    }
-
-    public void setSceneId(Long sceneId) {
-        this.sceneId = sceneId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
 }

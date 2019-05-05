@@ -1,6 +1,7 @@
 package co.bugu.tes.single.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.prop.TesConfig;
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.single.dao.SingleDao;
 import co.bugu.tes.single.domain.Single;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author daocers
@@ -26,6 +28,9 @@ import java.util.List;
 public class SingleServiceImpl implements ISingleService {
     @Autowired
     SingleDao singleDao;
+
+    @Autowired
+    TesConfig config;
 
     private Logger logger = LoggerFactory.getLogger(SingleServiceImpl.class);
 
@@ -109,6 +114,9 @@ public class SingleServiceImpl implements ISingleService {
 //        todo  校验数据完整性
         Date now = new Date();
         List<Single> singles = new ArrayList<>(data.size());
+        Map<String, Integer> diffMap = config.getDifficultyInfo();
+        Map<String, Integer> busiMap = config.getBusiTypeInfo();
+
         for(List<String> list: data){
             int size = list.size();
             Single single = new Single();
@@ -136,12 +144,12 @@ public class SingleServiceImpl implements ISingleService {
 
 //            根据实际情况添加属性
             if(size > 8){
-                single.setAttr1(Integer.valueOf(list.get(8)));
+                single.setAttr1(busiMap.get(list.get(8)));
             }else{
                 single.setAttr1(-1);
             }
             if(size > 9){
-                single.setAttr2(Integer.valueOf(list.get(9)));
+                single.setAttr2(diffMap.get(list.get(9)));
             }else{
                 single.setAttr2(-1);
             }

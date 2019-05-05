@@ -1,6 +1,7 @@
 package co.bugu.tes.multi.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.prop.TesConfig;
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.multi.dao.MultiDao;
 import co.bugu.tes.multi.domain.Multi;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author daocers
@@ -27,6 +29,8 @@ public class MultiServiceImpl implements IMultiService {
     @Autowired
     MultiDao multiDao;
 
+    @Autowired
+    TesConfig config;
     private Logger logger = LoggerFactory.getLogger(MultiServiceImpl.class);
 
     private static String ORDER_BY = "update_time DESC";
@@ -110,6 +114,8 @@ public class MultiServiceImpl implements IMultiService {
 //        todo  校验数据完整性
         Date now = new Date();
         List<Multi> multis = new ArrayList<>(data.size());
+        Map<String, Integer> busiMap = config.getBusiTypeInfo();
+        Map<String, Integer> diffMap = config.getDifficultyInfo();
         for(List<String> list: data){
             int size = list.size();
             Multi multi = new Multi();
@@ -137,12 +143,12 @@ public class MultiServiceImpl implements IMultiService {
 
 //            根据实际情况添加属性
             if(size > 8){
-                multi.setAttr1(Integer.valueOf(list.get(8)));
+                multi.setAttr1(busiMap.get(list.get(8)));
             }else{
                 multi.setAttr1(-1);
             }
             if(size > 9){
-                multi.setAttr2(Integer.valueOf(list.get(9)));
+                multi.setAttr2(diffMap.get(list.get(9)));
             }else{
                 multi.setAttr2(-1);
             }

@@ -9,8 +9,10 @@ import co.bugu.tes.questionBank.service.IQuestionBankService;
 import co.bugu.tes.single.domain.Single;
 import co.bugu.tes.single.service.ISingleService;
 import co.bugu.tes.station.service.IStationService;
+import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.util.ExcelUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
@@ -114,7 +116,8 @@ public class SingleApi {
             List<List<String>> data = ExcelUtil.getData(target);
             logger.info("批量导入试题，", JSON.toJSONString(data, true));
             data.remove(0);
-            List<Single> singles = singleService.batchAdd(data, 1L, questionBankId, 1L, 1L, 1L, 1);
+            User user = UserUtil.getCurrentUser();
+            List<Single> singles = singleService.batchAdd(data, user.getId(), questionBankId, user.getStationId(), user.getBranchId(), user.getDepartmentId(), 1);
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("批量添加单选题失败", e);
@@ -175,8 +178,15 @@ public class SingleApi {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public RespDto<Boolean> saveSingle(@RequestBody Single single) {
         try {
+            User user = UserUtil.getCurrentUser();
+            single.setUpdateUserId(user.getId());
+
             Long singleId = single.getId();
             if (null == singleId) {
+                single.setCreateUserId(user.getId());
+                single.setStationId(user.getStationId());
+                single.setBranchId(user.getBranchId());
+                single.setDepartmentId(user.getDepartmentId());
                 logger.debug("保存， saveSingle, 参数： {}", JSON.toJSONString(single, true));
                 singleId = singleService.add(single);
                 logger.info("新增 成功， id: {}", singleId);

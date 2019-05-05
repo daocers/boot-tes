@@ -137,44 +137,38 @@ public class PaperApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            String username = paperDto.getUsername();
-            String sceneCode = paperDto.getSceneCode();
-            String name = paperDto.getUserName();
 
-//            筛选用户
-            User user = new User();
-            List<User> userList = null;
-            if (StringUtils.isNotEmpty(username)) {
+            Long userId = null;
+            String username = paperDto.getUserName();
+            if(StringUtils.isNotEmpty(username)){
+                User user = new User();
                 user.setUsername(username);
-            } else if (StringUtils.isNotEmpty(name)) {
-                user.setName(name);
-            } else {
-                user = null;
-            }
-            if (user != null) {
-                userList = userService.findByCondition(user);
-                if (CollectionUtils.isNotEmpty(userList)) {
-                    user = userList.get(0);
-                } else {
-                    return RespDto.success(new PageInfo<>(new ArrayList<>()));
+                user.setName(paperDto.getName());
+                List<User> users = userService.findByCondition(user);
+                if(CollectionUtils.isEmpty(users)){
+                    return RespDto.fail("没有找到用户");
+                }else{
+                    userId = users.get(0).getId();
                 }
-            } else {
-                user = new User();
+            }
+            String sceneCode = paperDto.getSceneCode();
+            Long sceneId = paperDto.getSceneId();
+            if(null == sceneId){
+                if(StringUtils.isNotEmpty(sceneCode)){
+                    Scene scene = new Scene();
+                    scene.setCode(sceneCode);
+                    List<Scene> scenes = sceneService.findByCondition(scene);
+                    if(CollectionUtils.isEmpty(scenes)){
+                        return RespDto.fail("没有该场次信息");
+                    }
+                    sceneId = scenes.get(0).getId();
+                }
             }
 
-//            筛选场次
-            Scene scene = new Scene();
-            if (StringUtils.isNotEmpty(sceneCode)) {
-                scene.setCode(sceneCode);
-                List<Scene> list = sceneService.findByCondition(scene);
-                if (CollectionUtils.isNotEmpty(list)) {
-                    scene = list.get(0);
-                }
-            }
 
             Paper paper = new Paper();
-            paper.setUserId(user.getId());
-            paper.setSceneId(scene.getId());
+            paper.setUserId(userId);
+            paper.setSceneId(sceneId);
 
             PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, paper);
             PageInfo<PaperDto> res = new PageInfo<>();

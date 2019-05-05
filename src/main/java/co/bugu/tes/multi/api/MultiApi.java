@@ -6,7 +6,9 @@ import co.bugu.tes.multi.service.IMultiService;
 import co.bugu.tes.question.agent.QuestionAgent;
 import co.bugu.tes.question.dto.QuestionListDto;
 import co.bugu.tes.single.api.SingleApi;
+import co.bugu.tes.user.domain.User;
 import co.bugu.util.ExcelUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
@@ -98,7 +100,14 @@ public class MultiApi {
     public RespDto<Boolean> saveMulti(@RequestBody Multi multi) {
         try {
             Long multiId = multi.getId();
+            User user = UserUtil.getCurrentUser();
+
+            multi.setUpdateUserId(user.getId());
             if (null == multiId) {
+                multi.setCreateUserId(user.getId());
+                multi.setBranchId(user.getBranchId());
+                multi.setStationId(user.getStationId());
+                multi.setDepartmentId(user.getDepartmentId());
                 logger.debug("保存， saveMulti, 参数： {}", JSON.toJSONString(multi, true));
                 multiId = multiService.add(multi);
                 logger.info("新增 成功， id: {}", multiId);
@@ -200,11 +209,12 @@ public class MultiApi {
 //        String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
         File target = new File("e:/test.xlsx");
         try {
+            User user = UserUtil.getCurrentUser();
             file.transferTo(target);
             List<List<String>> data = ExcelUtil.getData(target);
             logger.info("批量导入试题，", JSON.toJSONString(data, true));
             data.remove(0);
-            List<Multi> multis = multiService.batchAdd(data, 1L, questionBankId, 1L, 1L, 1L, 1);
+            List<Multi> multis = multiService.batchAdd(data, user.getId(), questionBankId, user.getStationId(), user.getBranchId(), user.getDepartmentId(), 1);
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("批量添加多选题失败", e);

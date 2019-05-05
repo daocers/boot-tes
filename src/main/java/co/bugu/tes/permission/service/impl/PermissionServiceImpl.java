@@ -1,8 +1,6 @@
 package co.bugu.tes.permission.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
-import co.bugu.tes.branch.domain.Branch;
-import co.bugu.tes.branch.dto.BranchTreeDto;
 import co.bugu.tes.permission.dao.PermissionDao;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.dto.PermissionTreeDto;
@@ -24,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -133,7 +130,7 @@ public class PermissionServiceImpl implements IPermissionService {
         rolePermissionX.setIsDel(DelFlagEnum.NO.getCode());
         List<RolePermissionX> xList = rolePermissionXService.findByCondition(rolePermissionX);
         if (CollectionUtils.isEmpty(xList)) {
-            return null;
+            return new ArrayList<>();
         } else {
             List<Long> res = Lists.transform(xList, new Function<RolePermissionX, Long>() {
                 @Override

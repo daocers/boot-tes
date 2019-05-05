@@ -1,6 +1,7 @@
 package co.bugu.tes.judge.service.impl;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.prop.TesConfig;
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.judge.dao.JudgeDao;
 import co.bugu.tes.judge.domain.Judge;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author daocers
@@ -26,6 +28,9 @@ import java.util.List;
 public class JudgeServiceImpl implements IJudgeService {
     @Autowired
     JudgeDao judgeDao;
+
+    @Autowired
+    TesConfig config;
 
     private Logger logger = LoggerFactory.getLogger(JudgeServiceImpl.class);
 
@@ -110,6 +115,9 @@ public class JudgeServiceImpl implements IJudgeService {
 //        todo  校验数据完整性
         Date now = new Date();
         List<Judge> judges = new ArrayList<>(data.size());
+
+        Map<String, Integer> busiMap = config.getBusiTypeInfo();
+        Map<String, Integer> diffMap = config.getDifficultyInfo();
         for(List<String> list: data){
             int size = list.size();
             Judge judge = new Judge();
@@ -129,28 +137,28 @@ public class JudgeServiceImpl implements IJudgeService {
             judge.setExtraInfo(list.get(2));
 
             //            根据实际情况添加属性
-            if(size > 8){
-                judge.setAttr1(Integer.valueOf(list.get(8)));
+            if(size > 3){
+                judge.setAttr1(busiMap.get(list.get(3)));
             }else{
                 judge.setAttr1(-1);
             }
-            if(size > 9){
-                judge.setAttr2(Integer.valueOf(list.get(9)));
+            if(size > 4){
+                judge.setAttr2(diffMap.get(list.get(4)));
             }else{
                 judge.setAttr2(-1);
             }
-            if(size > 10){
-                judge.setAttr3(Integer.valueOf(list.get(10)));
+            if(size > 5){
+                judge.setAttr3(Integer.valueOf(list.get(5)));
             }else{
                 judge.setAttr3(-1);
             }
-            if(size > 11){
-                judge.setAttr4(Integer.valueOf(list.get(11)));
+            if(size > 6){
+                judge.setAttr4(Integer.valueOf(list.get(6)));
             }else{
                 judge.setAttr4(-1);
             }
-            if(size > 12){
-                judge.setAttr5(Integer.valueOf(list.get(12)));
+            if(size > 7){
+                judge.setAttr5(Integer.valueOf(list.get(7)));
             }else{
                 judge.setAttr5(-1);
             }
