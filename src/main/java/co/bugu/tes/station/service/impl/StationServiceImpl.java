@@ -55,6 +55,7 @@ public class StationServiceImpl implements IStationService {
     public int updateById(Station station) {
         logger.debug("station updateById, 参数： {}", JSON.toJSONString(station, true));
         Preconditions.checkNotNull(station.getId(), "id不能为空");
+        stationCache.invalidate(station.getId());
         station.setUpdateTime(new Date());
         return stationDao.updateById(station);
     }
@@ -108,6 +109,7 @@ public class StationServiceImpl implements IStationService {
     @Override
     public int deleteById(Long stationId, Long operatorId) {
         logger.debug("station 删除， 参数 stationId : {}", stationId);
+        stationCache.invalidate(stationId);
         Station station = new Station();
         station.setId(stationId);
         station.setIsDel(DelFlagEnum.YES.getCode());

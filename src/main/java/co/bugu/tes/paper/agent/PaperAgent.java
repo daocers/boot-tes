@@ -1,6 +1,7 @@
 package co.bugu.tes.paper.agent;
 
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.answer.domain.Answer;
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.answer.service.IAnswerService;
@@ -286,7 +287,12 @@ public class PaperAgent {
             answer.setAnswer(dto.getRealAnswer());
             answer.setTimeLeft(dto.getLeftTimeInfo());
             answer.setUpdateTime(now);
-            answerService.updateById(answer);
+            answer.setUserId(userId);
+            if(dto.getAnswerId() == null){
+                answerService.add(answer);
+            }else{
+                answerService.updateById(answer);
+            }
         }
     }
 
@@ -298,12 +304,14 @@ public class PaperAgent {
      * @auther daocers
      * @date 2018/11/27 16:50
      */
-    public Integer commitQuestion(QuestionDto dto) {
+    public Integer commitQuestion(QuestionDto dto) throws UserException {
+        Long userId = UserUtil.getCurrentUser().getId();
         Answer answer = new Answer();
         answer.setId(dto.getAnswerId());
         answer.setAnswer(dto.getRealAnswer());
         answer.setTimeLeft(dto.getLeftTimeInfo());
         answer.setUpdateTime(new Date());
+        answer.setUserId(userId);
         int num = answerService.updateById(answer);
         return num;
     }

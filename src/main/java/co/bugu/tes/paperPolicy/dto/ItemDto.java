@@ -13,4 +13,5 @@ public class ItemDto {
     private Float score;
     private Integer busiType;
     private Integer difficulty;
+    private Integer realCount;
 }

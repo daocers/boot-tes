@@ -1,11 +1,18 @@
 package co.bugu.tes.paperPolicy.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.tes.branch.service.IBranchService;
+import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.paperPolicy.agent.PaperPolicyAgent;
 import co.bugu.tes.paperPolicy.domain.PaperPolicy;
 import co.bugu.tes.paperPolicy.dto.ItemDto;
+import co.bugu.tes.paperPolicy.dto.PaperPolicyCheckDto;
 import co.bugu.tes.paperPolicy.dto.PaperPolicyDto;
 import co.bugu.tes.paperPolicy.service.IPaperPolicyService;
+import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
+import co.bugu.util.CodeUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
@@ -38,6 +45,18 @@ public class PaperPolicyApi {
     @Autowired
     IPaperPolicyService paperPolicyService;
 
+    @Autowired
+    IBranchService branchService;
+    @Autowired
+    IStationService stationService;
+    @Autowired
+    IDepartmentService departmentService;
+    @Autowired
+    IUserService userService;
+
+    @Autowired
+    PaperPolicyAgent paperPolicyAgent;
+
     /**
      * 条件查询
      *
@@ -67,6 +86,16 @@ public class PaperPolicyApi {
                     dto.setSingleList(JSON.parseArray(item.getSingleInfo(), ItemDto.class));
                     dto.setMultiList(JSON.parseArray(item.getMultiInfo(), ItemDto.class));
                     dto.setJudgeList(JSON.parseArray(item.getJudgeInfo(), ItemDto.class));
+                    dto.setStationName(stationService.findById(dto.getStationId()).getName());
+                    dto.setDepartmentName(departmentService.findById(dto.getDepartmentId()).getName());
+                    dto.setBranchName(branchService.findById(dto.getBranchId()).getName());
+                    dto.setCreateUserName(userService.findById(item.getCreateUserId()).getName());
+                    if (dto.getReceiptCount() == -1) {
+                        dto.setReceiptCount(null);
+                    }
+                    if (dto.getNumberLength() == -1) {
+                        dto.setNumberLength(null);
+                    }
                     return dto;
                 });
                 res.setList(list);
@@ -106,7 +135,13 @@ public class PaperPolicyApi {
             paperPolicy.setUpdateUserId(user.getId());
             Long paperPolicyId = paperPolicyDto.getId();
             if (null == paperPolicyId) {
+//         以创建时候的归属为准，修改时候不再更换归属
+                paperPolicy.setBranchId(user.getBranchId());
+                paperPolicy.setStationId(user.getStationId());
+                paperPolicy.setDepartmentId(user.getDepartmentId());
+                paperPolicy.setCode(CodeUtil.getPaperPolicyCode());
                 paperPolicyId = paperPolicyService.add(paperPolicy);
+
             } else {
                 paperPolicyService.updateById(paperPolicy);
             }
@@ -254,6 +289,20 @@ public class PaperPolicyApi {
         logger.info("findAll ..");
         List<PaperPolicy> list = paperPolicyService.findByCondition(new PaperPolicy());
         return RespDto.success(list);
+    }
+
+    /**
+     * 校验策略是否可用
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/6 14:34
+     */
+    @RequestMapping(value = "/checkPolicy")
+    public RespDto<PaperPolicyCheckDto> checkPolicy(Long paperPolicyId, Long bankId) throws Exception {
+        PaperPolicyCheckDto dto = paperPolicyAgent.checkPolciy(paperPolicyId, bankId);
+        return RespDto.success(dto);
     }
 }
 

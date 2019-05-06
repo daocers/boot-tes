@@ -18,6 +18,7 @@ public class CodeUtil {
     private static AtomicLong stationIndex = new AtomicLong(1L);
     private static AtomicLong paperIndex = new AtomicLong(1L);
     private static AtomicLong questionIndex = new AtomicLong(1L);
+    private static AtomicLong paperPolciyIndex = new AtomicLong(1L);
 
 
     static {
@@ -42,6 +43,10 @@ public class CodeUtil {
 
     public static void setQuestionIndex(AtomicLong questionIndex) {
         CodeUtil.questionIndex = questionIndex;
+    }
+
+    public static void setPaperPolciyIndex(AtomicLong paperPolicyIndex){
+        CodeUtil.questionIndex = paperPolicyIndex;
     }
 
     /**
@@ -125,5 +130,10 @@ public class CodeUtil {
     public static String getDepartmentCode() {
         Long index = departIndex.getAndIncrement();
         return "D" + dateInfo + getSameLengthInfo(index, 3);
+    }
+
+    public static String getPaperPolicyCode(){
+        Long index = paperPolciyIndex.getAndIncrement();
+        return "PP" + dateInfo + getSameLengthInfo(index, 3);
     }
 }

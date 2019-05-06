@@ -18,6 +18,8 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author daocers
@@ -49,6 +52,9 @@ public class UserServiceImpl implements IUserService {
 
     private static String ORDER_BY = "update_time DESC";
 
+    Cache<Long, User> userCache = CacheBuilder.newBuilder().concurrencyLevel(5).maximumSize(1000)
+            .expireAfterWrite(30, TimeUnit.MINUTES).build();
+
     @Value("${bugu.init.password:888888}")
     private String initPassword;
 
@@ -67,6 +73,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public int updateById(User user) {
         logger.debug("user updateById, 参数： {}", JSON.toJSONString(user, true));
+        userCache.invalidate(user.getId());
         Preconditions.checkNotNull(user.getId(), "id不能为空");
         user.setUpdateTime(new Date());
         return userDao.updateById(user);
@@ -105,7 +112,15 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User findById(Long userId) {
         logger.debug("user findById, 参数 userId: {}", userId);
-        User user = userDao.selectById(userId);
+        User user = userCache.getIfPresent(userId);
+        if(user != null){
+            return user;
+        }
+        user = userDao.selectById(userId);
+        if(user == null){
+            user = new User();
+        }
+        userCache.put(userId, user);
 
         logger.debug("查询结果： {}", JSON.toJSONString(user, true));
         return user;
@@ -114,6 +129,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public int deleteById(Long userId, Long operatorId) {
         logger.debug("user 删除， 参数 userId : {}", userId);
+        userCache.invalidate(userId);
         User user = new User();
         user.setId(userId);
         user.setIsDel(DelFlagEnum.YES.getCode());

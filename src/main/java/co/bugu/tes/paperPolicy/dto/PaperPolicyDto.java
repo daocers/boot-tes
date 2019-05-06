@@ -43,4 +43,11 @@ public class PaperPolicyDto {
     private List<ItemDto> judgeList;
 
 
+    private String branchName;
+    private String stationName;
+    private String departmentName;
+
+    private String createUserName;
+
+
 }

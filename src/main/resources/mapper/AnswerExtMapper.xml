@@ -12,13 +12,14 @@
         <result column="time_used" jdbcType="INTEGER" property="timeUsed"/>
         <result column="time_left" jdbcType="VARCHAR" property="timeLeft"/>
         <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="create_user_id" jdbcType="BIGINT" property="createUserId"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, paper_id, question_id, question_type, scene_id, right_answer, answer, time_used, time_left,
+    id, paper_id, question_id, question_type, scene_id, right_answer, answer, time_used, time_left, user_id,
     is_del, create_user_id, create_time, update_user_id, update_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -42,14 +43,17 @@
             <if test="questionType != null">
                 and question_type = #{questionType}
             </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
         </where>
     </select>
 
     <insert id="batchAdd" parameterType="list" useGeneratedKeys="true" keyProperty="id">
-        insert into tes_answer(paper_id, right_answer, question_id, question_type, scene_id,
+        insert into tes_answer(paper_id, right_answer, question_id, question_type, scene_id, user_id,
         is_del, create_user_id, create_time, update_user_id, update_time) values
         <foreach collection="list" separator="," item="item">
-            (#{item.paperId}, #{item.rightAnswer}, #{item.questionId}, #{item.questionType}, #{item.sceneId}, 1,
+            (#{item.paperId}, #{item.rightAnswer}, #{item.questionId}, #{item.questionType}, #{item.sceneId}, #{item.userId}, 1,
             #{item.createUserId},
             #{item.createTime}, #{item.updateUserId}, #{item.updateTime})
         </foreach>

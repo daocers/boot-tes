@@ -87,6 +87,7 @@ public class BranchServiceImpl implements IBranchService {
     public int updateById(Branch branch) {
         logger.debug("branch updateById, 参数： {}", JSON.toJSONString(branch, true));
         Preconditions.checkNotNull(branch.getId(), "id不能为空");
+        branchCache.invalidate(branch.getId());
         branch.setUpdateTime(new Date());
         return branchDao.updateById(branch);
     }
@@ -141,6 +142,7 @@ public class BranchServiceImpl implements IBranchService {
     @Override
     public int deleteById(Long branchId, Long operatorId) {
         logger.debug("branch 删除， 参数 branchId : {}", branchId);
+        branchCache.invalidate(branchId);
         Branch branch = new Branch();
         branch.setId(branchId);
         branch.setIsDel(DelFlagEnum.YES.getCode());

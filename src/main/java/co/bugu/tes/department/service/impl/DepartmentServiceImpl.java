@@ -59,6 +59,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public int updateById(Department department) {
         logger.debug("department updateById, 参数： {}", JSON.toJSONString(department, true));
         Preconditions.checkNotNull(department.getId(), "id不能为空");
+        departmentCache.invalidate(department.getId());
         department.setUpdateTime(new Date());
         return departmentDao.updateById(department);
     }
@@ -114,6 +115,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public int deleteById(Long departmentId, Long operatorId) {
         logger.debug("department 删除， 参数 departmentId : {}", departmentId);
+        departmentCache.invalidate(departmentId);
         Department department = new Department();
         department.setId(departmentId);
         department.setIsDel(DelFlagEnum.YES.getCode());

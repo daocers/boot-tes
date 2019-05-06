@@ -5,7 +5,9 @@ import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.service.IPaperService;
+import co.bugu.tes.paperPolicy.agent.PaperPolicyAgent;
 import co.bugu.tes.paperPolicy.domain.PaperPolicy;
+import co.bugu.tes.paperPolicy.dto.PaperPolicyCheckDto;
 import co.bugu.tes.paperPolicy.service.IPaperPolicyService;
 import co.bugu.tes.questionBank.domain.QuestionBank;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
@@ -66,6 +68,9 @@ public class SceneApi {
 
     @Autowired
     IPaperPolicyService paperPolicyService;
+
+    @Autowired
+    PaperPolicyAgent paperPolicyAgent;
 
     //    凭条小数点位数，默认2
     @Value("${tes.receipt.decimalLength:2}")
@@ -204,21 +209,35 @@ public class SceneApi {
             List<Long> stationIds = sceneDto.getStationIds();
 
             Long paperPolicyId = scene.getPaperPolicyId();
-            if(null != paperPolicyId && paperPolicyId > 0){
+            if (null != paperPolicyId && paperPolicyId > 0) {
                 PaperPolicy paperPolicy = paperPolicyService.findById(paperPolicyId);
-                if(null == paperPolicy){
+                if (null == paperPolicy) {
                     logger.warn("不存在的试卷策略， id：{}", paperPolicyId);
                     return RespDto.fail("试卷策略不存在");
-                }else{
+                } else {
                     scene.setSingleCount(paperPolicy.getSingleCount());
                     scene.setSingleScore(paperPolicy.getSingleScore());
                     scene.setMultiCount(paperPolicy.getMultiCount());
                     scene.setMultiScore(paperPolicy.getMultiScore());
                     scene.setJudgeCount(paperPolicy.getJudgeCount());
                     scene.setJudgeScore(paperPolicy.getJudgeScore());
-                    scene.setReceiptCount(paperPolicy.getReceiptCount());
-                    scene.setNumberLength(paperPolicy.getNumberLength());
+
+//                    以前端传入为主
+//                    scene.setReceiptCount(paperPolicy.getReceiptCount());
+//                    scene.setNumberLength(paperPolicy.getNumberLength());
                 }
+            }
+            PaperPolicyCheckDto checkDto = null;
+            if (paperPolicyId == null) {
+                checkDto = paperPolicyAgent.checkSimple(scene.getSingleCount(), scene.getMultiCount(), scene.getJudgeCount(), scene.getQuestionBankId());
+            } else {
+                checkDto = paperPolicyAgent.checkPolciy(paperPolicyId, scene.getQuestionBankId());
+
+            }
+
+            if (!checkDto.getValid()) {
+                logger.warn("题库试题不满足，PaperPolicyCheckDto: {}", JSON.toJSONString(checkDto, true));
+                return RespDto.fail("选择的题库中试题数量不足");
             }
 
             Date now = new Date();

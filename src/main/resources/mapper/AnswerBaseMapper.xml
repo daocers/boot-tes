@@ -28,6 +28,9 @@
       <if test="timeLeft != null">
         time_left = #{timeLeft,jdbcType=VARCHAR},
       </if>
+      <if test="userId != null">
+        user_id = #{userId},
+      </if>
       <if test="isDel != null">
         is_del = #{isDel,jdbcType=INTEGER},
       </if>
@@ -77,6 +80,9 @@
       <if test="timeLeft != null">
         time_left,
       </if>
+      <if test="userId != null">
+        user_id,
+      </if>
       <if test="isDel != null">
         is_del,
       </if>
@@ -117,6 +123,9 @@
       </if>
       <if test="timeLeft != null">
         #{timeLeft,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId},
       </if>
       <if test="isDel != null">
         #{isDel,jdbcType=INTEGER},
