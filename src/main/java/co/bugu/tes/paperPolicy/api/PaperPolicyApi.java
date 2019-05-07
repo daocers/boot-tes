@@ -1,6 +1,7 @@
 package co.bugu.tes.paperPolicy.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.paperPolicy.agent.PaperPolicyAgent;
@@ -9,6 +10,8 @@ import co.bugu.tes.paperPolicy.dto.ItemDto;
 import co.bugu.tes.paperPolicy.dto.PaperPolicyCheckDto;
 import co.bugu.tes.paperPolicy.dto.PaperPolicyDto;
 import co.bugu.tes.paperPolicy.service.IPaperPolicyService;
+import co.bugu.tes.paperPolicyCondition.domain.PaperPolicyCondition;
+import co.bugu.tes.paperPolicyCondition.service.IPaperPolicyConditionService;
 import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
@@ -56,6 +59,9 @@ public class PaperPolicyApi {
 
     @Autowired
     PaperPolicyAgent paperPolicyAgent;
+
+    @Autowired
+    IPaperPolicyConditionService paperPolicyConditionService;
 
     /**
      * 条件查询
@@ -292,6 +298,32 @@ public class PaperPolicyApi {
     }
 
     /**
+     * 查找所有可用的策略
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/7 13:50
+     */
+    @RequestMapping(value = "/findAvailable")
+    public RespDto<List<PaperPolicy>> findAvailable(Long bankId) {
+        PaperPolicyCondition query = new PaperPolicyCondition();
+        query.setBankId(bankId);
+        query.setStatus(BaseStatusEnum.ENABLE.getCode());
+        List<PaperPolicyCondition> conditions = paperPolicyConditionService.findByCondition(query);
+        if (CollectionUtils.isEmpty(conditions)) {
+            logger.warn("没有符合的试卷策略  ");
+            return RespDto.success(new ArrayList<>());
+        }
+        List<PaperPolicy> list = Lists.transform(conditions, item -> {
+            Long paperPolicyId = item.getPaperPolicyId();
+            PaperPolicy policy = paperPolicyService.findById(paperPolicyId);
+            return policy;
+        });
+        return RespDto.success(list);
+    }
+
+    /**
      * 校验策略是否可用
      *
      * @param
@@ -301,7 +333,7 @@ public class PaperPolicyApi {
      */
     @RequestMapping(value = "/checkPolicy")
     public RespDto<PaperPolicyCheckDto> checkPolicy(Long paperPolicyId, Long bankId) throws Exception {
-        PaperPolicyCheckDto dto = paperPolicyAgent.checkPolciy(paperPolicyId, bankId);
+        PaperPolicyCheckDto dto = paperPolicyAgent.checkPolicy(paperPolicyId, bankId);
         return RespDto.success(dto);
     }
 }

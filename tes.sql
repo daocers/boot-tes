@@ -574,3 +574,23 @@ CREATE TABLE tes_paper_policy (
   update_time DATETIME not NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (id)
 ) ENGINE=INnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色信息';
+
+
+-- 试卷策略可用性
+drop table if exists tes_paper_policy_condition;
+CREATE TABLE tes_paper_policy_condition (
+  id BIGINT(21) not NULL AUTO_INCREMENT COMMENT '主键',
+  bank_id bigint(21) not null default -1 comment '场次id',
+  paper_policy_id bigint(21) not null default -1 comment '考生id',
+  status int(11) not null default -1 comment '策略状态',
+  paper_policy_name VARCHAR(1000) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '策略名称',
+  single_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '单选信息',
+  multi_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '多选信息',
+  judge_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '判断题信息',
+  is_del INT(1) not NULL DEFAULT '-1' COMMENT '删除标志',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  not NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) not NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='试卷策略状况';

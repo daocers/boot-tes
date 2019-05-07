@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.statistics.dao.StatisticsDao">
+    <resultMap id="BaseResultMap" type="co.bugu.tes.statistics.dto.Stat">
+        <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="no" jdbcType="INTEGER" property="no"/>
+    </resultMap>
+
+    <select id="getDailyJoinUser" resultType="map">
+        SELECT COUNT(*) as count, DATE_FORMAT(begin_time, '%j') AS no FROM tes_paper WHERE is_del = 1 GROUP BY no
+    </select>
+
+    <select id="getWeeklyJoinUser" resultType="map">
+        SELECT COUNT(*) as count, DATE_FORMAT(begin_time, '%u') AS no FROM tes_paper WHERE is_del = 1 GROUP BY no
+    </select>
+
+    <select id="getMonthlyJoinUser" resultType="map">
+        SELECT COUNT(*) as count, DATE_FORMAT(begin_time, '%c') AS no FROM tes_paper WHERE is_del = 1 GROUP BY no
+    </select>
+    
+    <select id="getSceneQuestionCountList" resultType="map">
+        SELECT count(*) AS count, scene_id as sceneId FROM tes_answer GROUP BY scene_id
+    </select>
+
+    <select id="getSceneQuestionWrongCountList" resultType="map">
+        select count(*) as count, scene_id as sceneId from tes_answer where right_answer = answer group by scene_id
+    </select>
+
+    <select id="getQuestionWrongCountList" resultType="map">
+        SELECT COUNT(*) AS count, question_id AS questionId FROM tes_answer WHERE right_answer != answer GROUP BY question_id
+    </select>
+
+    <select id="getQuestionAnswerInfo" resultType="co.bugu.tes.statistics.dto.AnswerStatDto" parameterType="long">
+        SELECT COUNT(*) AS count, question_id AS questionId , answer, right_answer as rightAnswer FROM tes_answer WHERE question_id = #{id} GROUP BY question_id, answer
+    </select>
+</mapper>

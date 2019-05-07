@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.paperPolicyCondition.dao.PaperPolicyConditionDao">
+    <resultMap id="BaseResultMap" type="co.bugu.tes.paperPolicyCondition.domain.PaperPolicyCondition">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="bank_id" jdbcType="BIGINT" property="bankId"/>
+        <result column="paper_policy_id" jdbcType="BIGINT" property="paperPolicyId"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="paper_policy_name" jdbcType="VARCHAR" property="paperPolicyName"/>
+        <result column="single_info" jdbcType="VARCHAR" property="singleInfo"/>
+        <result column="multi_info" jdbcType="VARCHAR" property="multiInfo"/>
+        <result column="judge_info" jdbcType="VARCHAR" property="judgeInfo"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
+        <result column="create_user_id" jdbcType="BIGINT" property="createUserId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, bank_id, paper_policy_id, status, paper_policy_name, single_info, multi_info, 
+    judge_info, is_del, update_time, update_user_id, create_user_id, create_time
+  </sql>
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tes_paper_policy_condition
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="findByObject" parameterType="co.bugu.tes.paperPolicyCondition.domain.PaperPolicyCondition"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tes_paper_policy_condition
+        <where>
+            is_del = 1
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="bankId != null">
+                and bank_id = #{bankId}
+            </if>
+            <if test="paperPolicyId != null">
+                and paper_policy_id = #{paperPolicyId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="batchAdd" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        insert into tes_paper_policy_condition (bank_id, paper_policy_id, status, paper_policy_name, single_info,
+        multi_info,
+        judge_info, is_del, update_user_id, create_user_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.bankId}, #{item.paperPolicyId}, #{item.status}, #{item.paperPolicyName}, #{item.singleInfo},
+            #{item.multiInfo}
+            , #{item.judgeInfo}, 1, #{item.updateUserId}, #{item.createUserId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteAll">
+        delete from tes_paper_policy_condition
+    </delete>
+</mapper>
