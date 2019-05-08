@@ -1,7 +1,9 @@
 package co.bugu.tes.statistics.service;
 
+import co.bugu.tes.statistics.dto.SceneQuestionStatDto;
+import co.bugu.tes.statistics.dto.UserStatDto;
+
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author daocers
@@ -9,7 +11,7 @@ import java.util.Map;
  * @Description:
  */
 public interface IStatisticsService {
-    List<Integer> getJoinUserCount(Integer type, Integer size);
+    List<UserStatDto> getJoinUserCount(Integer type, Integer size);
 
     /**
      * 场次 答题信息统计
@@ -19,7 +21,7 @@ public interface IStatisticsService {
      * @auther daocers
      * @date 2019/5/7 17:54
      */
-    Map<String, List<Long>> getSceneQuestionStat(Integer size);
+    List<SceneQuestionStatDto> getSceneQuestionStat(Integer size);
 
 
 }

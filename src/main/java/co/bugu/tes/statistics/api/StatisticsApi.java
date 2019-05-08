@@ -1,9 +1,11 @@
 package co.bugu.tes.statistics.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.tes.statistics.dto.UserStatDto;
 import co.bugu.tes.statistics.enums.StatTypeEnum;
 import co.bugu.tes.statistics.service.IStatisticsService;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author daocers
@@ -78,12 +79,12 @@ public class StatisticsApi {
      * @date 2019/5/7 14:27
      */
     @RequestMapping("/getJoinUserCountByWeek")
-    public RespDto<List<Integer>> getJoinUserCountByWeek(Integer size) {
+    public RespDto<List<UserStatDto>> getJoinUserCountByWeek(Integer size) {
         if (size == null) {
             size = 10;
         }
 
-        List<Integer> list = statisticsService.getJoinUserCount(StatTypeEnum.WEEKLY.getCode(), size);
+        List<UserStatDto> list = statisticsService.getJoinUserCount(StatTypeEnum.WEEKLY.getCode(), size);
         return RespDto.success(list);
     }
 
@@ -96,11 +97,12 @@ public class StatisticsApi {
      * @date 2019/5/7 14:28
      */
     @RequestMapping("/getJoinUserCountByMonth")
-    public RespDto<List<Integer>> getJoinUserCountByMonth(Integer size) {
+    public RespDto<List<UserStatDto>> getJoinUserCountByMonth(Integer size) {
         if (null == size) {
             size = 5;
         }
-        List<Integer> list = statisticsService.getJoinUserCount(StatTypeEnum.MONTHLY.getCode(), size);
+        List<UserStatDto> list = statisticsService.getJoinUserCount(StatTypeEnum.MONTHLY.getCode(), size);
+        list = Lists.reverse(list);
         return RespDto.success(list);
     }
 
@@ -113,11 +115,12 @@ public class StatisticsApi {
      * @date 2019/5/7 14:29
      */
     @RequestMapping("/getJoinUserCountByDay")
-    public RespDto<List<Integer>> getJoinUserCountByDay(Integer size) {
+    public RespDto<List<UserStatDto>> getJoinUserCountByDay(Integer size) {
         if (null == size) {
             size = 15;
         }
-        List<Integer> list = statisticsService.getJoinUserCount(StatTypeEnum.DAILY.getCode(), size);
+        List<UserStatDto> list = statisticsService.getJoinUserCount(StatTypeEnum.DAILY.getCode(), size);
+        list = Lists.reverse(list);
         return RespDto.success(list);
     }
 
@@ -130,11 +133,11 @@ public class StatisticsApi {
      * @auther daocers
      * @date 2019/5/7 17:56
      */
-    @RequestMapping("/getSceneQuestionStat")
-    public RespDto<Map<String, List<Long>>> getSceneQuestionStat(Integer size) {
-        Map<String, List<Long>> res = statisticsService.getSceneQuestionStat(size);
-        return RespDto.success(res);
-    }
+//    @RequestMapping("/getSceneQuestionStat")
+//    public RespDto<Map<String, List<Long>>> getSceneQuestionStat(Integer size) {
+//        Map<String, List<Long>> res = statisticsService.getSceneQuestionStat(size);
+//        return RespDto.success(res);
+//    }
 
 
     /**

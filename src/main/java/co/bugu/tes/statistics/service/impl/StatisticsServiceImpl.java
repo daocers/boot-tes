@@ -1,16 +1,20 @@
 package co.bugu.tes.statistics.service.impl;
 
 import co.bugu.tes.statistics.dao.StatisticsDao;
+import co.bugu.tes.statistics.dto.SceneQuestionStatDto;
+import co.bugu.tes.statistics.dto.Stat;
 import co.bugu.tes.statistics.dto.UserStatDto;
 import co.bugu.tes.statistics.enums.StatTypeEnum;
 import co.bugu.tes.statistics.service.IStatisticsService;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -26,17 +30,17 @@ public class StatisticsServiceImpl implements IStatisticsService {
     StatisticsDao statisticsDao;
 
     @Override
-    public List<Integer> getJoinUserCount(Integer type, Integer size) {
+    public List<UserStatDto> getJoinUserCount(Integer type, Integer size) {
         List<UserStatDto> res = new ArrayList<>();
         PageHelper.startPage(1, size, "begin_time desc");
 
-        List<Map<String, Integer>> list = new ArrayList<>();
+        List<Stat> list = new ArrayList<>();
         if (type == StatTypeEnum.DAILY.getCode()) {
             list = statisticsDao.getDailyJoinUser();
         } else if (type == StatTypeEnum.WEEKLY.getCode()) {
-            list = statisticsDao.getWeeklyJoinUser();
+//            list = statisticsDao.getWeeklyJoinUser();
         } else if (type == StatTypeEnum.MONTHLY.getCode()) {
-            list = statisticsDao.getMonthlyJoinUser();
+//            list = statisticsDao.getMonthlyJoinUser();
         }
         res = getUserCountList(list, size);
 
@@ -52,76 +56,67 @@ public class StatisticsServiceImpl implements IStatisticsService {
      * @date 2019/5/7 17:53
      */
     @Override
-    public Map<String, List<Long>> getSceneQuestionStat(Integer size) {
+    public List<SceneQuestionStatDto> getSceneQuestionStat(Integer size) {
         if (null == size) {
             size = 5;
         }
+        List<SceneQuestionStatDto> res = new ArrayList<>();
 
         PageHelper.startPage(1, size, "create_time desc");
-        List<Map<String, Long>> list = statisticsDao.getSceneQuestionCountList();
-        Map<Long, Long> map = new HashMap<>();
-        if (CollectionUtils.isEmpty(list)) {
-            logger.warn("还没有响应的场次考试数据");
-        } else {
-            for (Map<String, Long> item : list) {
-                map.put(item.get("sceneId"), item.get("count"));
+        List<SceneQuestionStatDto> list = statisticsDao.getSceneQuestionCountList();
+
+        List<SceneQuestionStatDto> wrongList = statisticsDao.getSceneQuestionWrongCountList();
+
+        if(CollectionUtils.isEmpty(list)){
+            logger.warn("还没有考试信息");
+            return res;
+        }
+        Map<Long, Integer> sceneWrongMap = new HashMap<>();
+        if(CollectionUtils.isNotEmpty(wrongList)){
+            for(SceneQuestionStatDto wrong: wrongList){
+                sceneWrongMap.put(wrong.getSceneId(), wrong.getWrong());
             }
         }
 
-
-        List<Map<String, Long>> wrongList = statisticsDao.getSceneQuestionWrongCountList();
-        Map<Long, Long> wrongMap = new HashMap<>();
-        if (CollectionUtils.isEmpty(list)) {
-            logger.warn("没有答错的题，这不正常");
-        } else {
-            for (Map<String, Long> item : wrongList) {
-                wrongMap.put(item.get("sceneId"), item.get("count"));
-            }
+        for(SceneQuestionStatDto total : list){
+            Long sceneId = total.getSceneId();
+            total.setWrong(sceneWrongMap.containsKey(sceneId) ? sceneWrongMap.get(sceneId) : 0);
         }
 
-        List<Long> total = new ArrayList<>();
-        List<Long> wrong = new ArrayList<>();
-        List<Long> wRate = new ArrayList<>();
-        for (Map<String, Long> item : list) {
-            Long sceneId = item.get("sceneId");
-            Long tCount = map.get(sceneId);
-            Long wCount = wrongMap.containsKey(sceneId) ? wrongMap.get(sceneId) : 0L;
-            Long rCount = tCount - wCount;
-            total.add(tCount);
-            wrong.add(wCount);
-            wRate.add(rCount * 100 / tCount);
-        }
-
-        Map<String, List<Long>> res = new HashMap<>();
-        res.put("total", total);
-        res.put("wrong", wrong);
-        res.put("rightRate", wRate);
-
+        res = Lists.transform(list, item -> {
+            Long sceneId = item.getSceneId();
+            int wrong = sceneWrongMap.containsKey(sceneId) ? sceneWrongMap.get(sceneId) : 0;
+            item.setWrong(wrong);
+            item.setRightRate((item.getTotal() - wrong) / item.getTotal() * 100);
+            return item;
+        });
         return res;
     }
 
 
-    private List<UserStatDto> getUserCountList(List<Map<String, Integer>> list, Integer size) {
+    private List<UserStatDto> getUserCountList(List<Stat> list, Integer size) {
         List<UserStatDto> res = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         Map<Integer, Integer> map = new HashMap<>();
         if (CollectionUtils.isEmpty(list)) {
             logger.warn("还没有参考人员信息");
         } else {
-            for (Map<String, Integer> item : list) {
-                map.put(item.get("no"), item.get("count"));
+            for (Stat item : list) {
+                map.put(item.getNo(), item.getCount());
             }
         }
 
         calendar.add(Calendar.DAY_OF_YEAR, 0 - size);
 
+        SimpleDateFormat format = new SimpleDateFormat("mm-dd");
         for (int i = 0; i < size; i++) {
             UserStatDto dto = new UserStatDto();
             int day = calendar.get(Calendar.DAY_OF_YEAR);
             dto.setDate(calendar.getTime());
             dto.setJoinCount(map.containsKey(day) ? map.get(day) : 0);
-            dto.setDateStr("");
+            dto.setDateStr(format.format(dto.getDate()));
             res.add(dto);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
         return res;
     }

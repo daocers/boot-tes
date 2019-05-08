@@ -2,6 +2,8 @@ package co.bugu.tes.statistics.dao;
 
 import co.bugu.tes.statistics.dto.AnswerStatDto;
 import co.bugu.tes.statistics.dto.QuestionStat;
+import co.bugu.tes.statistics.dto.SceneQuestionStatDto;
+import co.bugu.tes.statistics.dto.Stat;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -14,15 +16,15 @@ import java.util.Map;
  */
 
 public interface StatisticsDao {
-    List<Map<String, Integer>> getDailyJoinUser();
+    List<Stat> getDailyJoinUser();
 
     List<Map<String, Integer>> getWeeklyJoinUser();
 
     List<Map<String, Integer>> getMonthlyJoinUser();
 
-    List<Map<String, Long>> getSceneQuestionCountList();
+    List<SceneQuestionStatDto> getSceneQuestionCountList();
 
-    List<Map<String, Long>> getSceneQuestionWrongCountList();
+    List<SceneQuestionStatDto> getSceneQuestionWrongCountList();
 
     List<AnswerStatDto> getQuestionAnswerInfo(Long questionId);
 

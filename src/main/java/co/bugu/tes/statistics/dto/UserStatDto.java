@@ -17,4 +17,5 @@ public class UserStatDto {
     private Integer joinCount;
 //    统计类型， 日，周，月
     private Integer statType;
+    private Integer no;
 }

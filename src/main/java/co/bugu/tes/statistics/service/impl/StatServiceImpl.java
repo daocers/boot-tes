@@ -167,7 +167,6 @@ public class StatServiceImpl implements IStatService {
             dto.setDifficulty(diff);
             diffs.add(dto);
         }
-
         questionDistributeDto.setBusiTypeStatDtoList(res);
         questionDistributeDto.setDifficultyStatDtoList(diffs);
         return questionDistributeDto;

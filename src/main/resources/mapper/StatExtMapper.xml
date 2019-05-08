@@ -6,7 +6,7 @@
         <result column="no" jdbcType="INTEGER" property="no"/>
     </resultMap>
 
-    <select id="getDailyJoinUser" resultType="map">
+    <select id="getDailyJoinUser" resultMap="BaseResultMap">
         SELECT COUNT(*) as count, DATE_FORMAT(begin_time, '%j') AS no FROM tes_paper WHERE is_del = 1 GROUP BY no
     </select>
 
@@ -18,12 +18,12 @@
         SELECT COUNT(*) as count, DATE_FORMAT(begin_time, '%c') AS no FROM tes_paper WHERE is_del = 1 GROUP BY no
     </select>
     
-    <select id="getSceneQuestionCountList" resultType="map">
-        SELECT count(*) AS count, scene_id as sceneId FROM tes_answer GROUP BY scene_id
+    <select id="getSceneQuestionCountList" resultType="co.bugu.tes.statistics.dto.SceneQuestionStatDto">
+        SELECT count(*) AS total, scene_id as sceneId FROM tes_answer GROUP BY scene_id
     </select>
 
-    <select id="getSceneQuestionWrongCountList" resultType="map">
-        select count(*) as count, scene_id as sceneId from tes_answer where right_answer = answer group by scene_id
+    <select id="getSceneQuestionWrongCountList" resultType="co.bugu.tes.statistics.dto.SceneQuestionStatDto">
+        select count(*) as wrong, scene_id as sceneId from tes_answer where right_answer = answer group by scene_id
     </select>
 
     <select id="getQuestionWrongCountList" resultType="map">
