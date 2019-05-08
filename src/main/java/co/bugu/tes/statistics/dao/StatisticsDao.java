@@ -1,6 +1,8 @@
 package co.bugu.tes.statistics.dao;
 
 import co.bugu.tes.statistics.dto.AnswerStatDto;
+import co.bugu.tes.statistics.dto.QuestionStat;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -23,4 +25,10 @@ public interface StatisticsDao {
     List<Map<String, Long>> getSceneQuestionWrongCountList();
 
     List<AnswerStatDto> getQuestionAnswerInfo(Long questionId);
+
+    List<QuestionStat> getSingleStat(@Param("bankId") Long bankId);
+
+    List<QuestionStat> getMultiStat(@Param("bankId") Long bankId);
+
+    List<QuestionStat> getJudgeStat(@Param("bankId") Long bankId);
 }

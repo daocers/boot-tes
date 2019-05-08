@@ -33,4 +33,35 @@
     <select id="getQuestionAnswerInfo" resultType="co.bugu.tes.statistics.dto.AnswerStatDto" parameterType="long">
         SELECT COUNT(*) AS count, question_id AS questionId , answer, right_answer as rightAnswer FROM tes_answer WHERE question_id = #{id} GROUP BY question_id, answer
     </select>
+
+
+    <select id="getSingleStat" resultType="co.bugu.tes.statistics.dto.QuestionStat" parameterType="long">
+        SELECT COUNT(*) AS count, bank_id AS bankId, attr_1 AS busiType, attr_2 AS difficulty FROM tes_single
+         <where>
+             <if test="bankId != null">
+                 bank_id = #{bankId}
+             </if>
+         </where>
+         GROUP BY bank_id, attr_1, attr_2
+    </select>
+
+    <select id="getMultiStat" resultType="co.bugu.tes.statistics.dto.QuestionStat" parameterType="long">
+        SELECT COUNT(*) AS count, bank_id AS bankId, attr_1 AS busiType, attr_2 AS difficulty FROM tes_multi
+        <where>
+            <if test="bankId != null">
+                bank_id = #{bankId}
+            </if>
+        </where>
+        GROUP BY bank_id, attr_1, attr_2
+    </select>
+
+    <select id="getJudgeStat" resultType="co.bugu.tes.statistics.dto.QuestionStat" parameterType="long">
+        SELECT COUNT(*) AS count, bank_id AS bankId, attr_1 AS busiType, attr_2 AS difficulty FROM tes_judge
+        <where>
+            <if test="bankId != null">
+                bank_id = #{bankId}
+            </if>
+        </where>
+        GROUP BY bank_id, attr_1, attr_2
+    </select>
 </mapper>

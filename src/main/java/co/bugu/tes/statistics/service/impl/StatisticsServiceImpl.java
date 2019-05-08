@@ -1,6 +1,7 @@
 package co.bugu.tes.statistics.service.impl;
 
 import co.bugu.tes.statistics.dao.StatisticsDao;
+import co.bugu.tes.statistics.dto.UserStatDto;
 import co.bugu.tes.statistics.enums.StatTypeEnum;
 import co.bugu.tes.statistics.service.IStatisticsService;
 import com.github.pagehelper.PageHelper;
@@ -26,7 +27,7 @@ public class StatisticsServiceImpl implements IStatisticsService {
 
     @Override
     public List<Integer> getJoinUserCount(Integer type, Integer size) {
-        List<Integer> res = new ArrayList<>();
+        List<UserStatDto> res = new ArrayList<>();
         PageHelper.startPage(1, size, "begin_time desc");
 
         List<Map<String, Integer>> list = new ArrayList<>();
@@ -100,8 +101,8 @@ public class StatisticsServiceImpl implements IStatisticsService {
     }
 
 
-    private List<Integer> getUserCountList(List<Map<String, Integer>> list, Integer size) {
-        List<Integer> res = new ArrayList<>();
+    private List<UserStatDto> getUserCountList(List<Map<String, Integer>> list, Integer size) {
+        List<UserStatDto> res = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         Map<Integer, Integer> map = new HashMap<>();
         if (CollectionUtils.isEmpty(list)) {
@@ -115,8 +116,12 @@ public class StatisticsServiceImpl implements IStatisticsService {
         calendar.add(Calendar.DAY_OF_YEAR, 0 - size);
 
         for (int i = 0; i < size; i++) {
+            UserStatDto dto = new UserStatDto();
             int day = calendar.get(Calendar.DAY_OF_YEAR);
-            res.add(map.containsKey(day) ? map.get(day) : 0);
+            dto.setDate(calendar.getTime());
+            dto.setJoinCount(map.containsKey(day) ? map.get(day) : 0);
+            dto.setDateStr("");
+            res.add(dto);
         }
         return res;
     }
