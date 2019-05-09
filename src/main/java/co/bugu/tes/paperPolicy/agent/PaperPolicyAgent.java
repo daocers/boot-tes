@@ -149,6 +149,7 @@ public class PaperPolicyAgent {
      */
     public PaperPolicyCheckDto checkSimple(Integer singleCount, Integer multiCount, Integer judgeCount, Long questionBankId) {
         PaperPolicyCheckDto res = new PaperPolicyCheckDto();
+        res.setValid(true);
         Single query = new Single();
         query.setBankId(questionBankId);
 
