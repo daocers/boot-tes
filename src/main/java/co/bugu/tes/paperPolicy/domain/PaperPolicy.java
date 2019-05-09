@@ -28,6 +28,7 @@ public class PaperPolicy {
     private Integer multiCount;
     private Integer judgeCount;
 
+    private Integer receiptScore;
     private Integer receiptCount;
 
     private Integer numberLength;

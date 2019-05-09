@@ -22,6 +22,15 @@
       <if test="score != null">
         score = #{score,jdbcType=DOUBLE},
       </if>
+      <if test="receiptScore != null">
+        receipt_score = #{receiptScore,jdbcType=DOUBLE},
+      </if>
+      <if test="receiptRate != null">
+        receipt_rate = #{receiptRate,jdbcType=DOUBLE},
+      </if>
+      <if test="commonSocre != null">
+        common_socre = #{commonSocre,jdbcType=DOUBLE},
+      </if>
       <if test="sceneId != null">
         scene_id = #{sceneId,jdbcType=BIGINT},
       </if>
@@ -74,6 +83,15 @@
       <if test="score != null">
         score,
       </if>
+      <if test="receiptScore != null">
+        receipt_score,
+      </if>
+      <if test="receiptRate != null">
+        receipt_rate,
+      </if>
+      <if test="commonSocre != null">
+        common_socre,
+      </if>
       <if test="sceneId != null">
         scene_id,
       </if>
@@ -117,6 +135,15 @@
       </if>
       <if test="score != null">
         #{score,jdbcType=DOUBLE},
+      </if>
+      <if test="receiptScore != null">
+        #{receiptScore,jdbcType=DOUBLE},
+      </if>
+      <if test="receiptRate != null">
+        #{receiptRate,jdbcType=DOUBLE},
+      </if>
+      <if test="commonSocre != null">
+        #{commonSocre,jdbcType=DOUBLE},
       </if>
       <if test="sceneId != null">
         #{sceneId,jdbcType=BIGINT},

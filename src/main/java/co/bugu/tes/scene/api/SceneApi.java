@@ -269,6 +269,7 @@ public class SceneApi {
                 if (null == scene.getNumberLength()) {
                     scene.setNumberLength(10);
                 }
+                Preconditions.checkArgument(null != scene.getReceiptScore(), "凭条分数不能为空");
                 receiptService.save(sceneId, scene.getReceiptCount(), scene.getNumberLength());
             }
             return RespDto.success(sceneId != null);

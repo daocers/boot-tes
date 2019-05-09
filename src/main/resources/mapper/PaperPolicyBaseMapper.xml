@@ -40,6 +40,9 @@
             <if test="judgeScore != null">
                 judge_score = #{judgeScore,jdbcType=DOUBLE},
             </if>
+            <if test="receiptScore != null">
+                receipt_score = #{receiptScore,jdbcType=INTEGER},
+            </if>
             <if test="receiptCount != null">
                 receipt_count = #{receiptCount,jdbcType=INTEGER},
             </if>
@@ -120,6 +123,9 @@
             <if test="judgeScore != null">
                 judge_score,
             </if>
+            <if test="receiptScore != null">
+                receipt_score,
+            </if>
             <if test="receiptCount != null">
                 receipt_count,
             </if>
@@ -190,6 +196,9 @@
             </if>
             <if test="judgeScore != null">
                 #{judgeScore,jdbcType=DOUBLE},
+            </if>
+            <if test="receiptScore != null">
+                #{receiptScore,jdbcType=INTEGER},
             </if>
             <if test="receiptCount != null">
                 #{receiptCount,jdbcType=INTEGER},

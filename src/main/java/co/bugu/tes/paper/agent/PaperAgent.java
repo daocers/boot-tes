@@ -1,5 +1,6 @@
 package co.bugu.tes.paper.agent;
 
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.answer.domain.Answer;
@@ -18,6 +19,7 @@ import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.paperPolicy.domain.PaperPolicy;
 import co.bugu.tes.paperPolicy.dto.ItemDto;
 import co.bugu.tes.paperPolicy.service.IPaperPolicyService;
+import co.bugu.tes.receiptAnswer.domain.ReceiptAnswer;
 import co.bugu.tes.receiptAnswer.service.IReceiptAnswerService;
 import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.service.ISceneService;
@@ -35,10 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author daocers
@@ -288,9 +287,9 @@ public class PaperAgent {
             answer.setTimeLeft(dto.getLeftTimeInfo());
             answer.setUpdateTime(now);
             answer.setUserId(userId);
-            if(dto.getAnswerId() == null){
+            if (dto.getAnswerId() == null) {
                 answerService.add(answer);
-            }else{
+            } else {
                 answerService.updateById(answer);
             }
         }
@@ -335,6 +334,8 @@ public class PaperAgent {
             throw new Exception("没有找到该试卷的答案信息");
         }
 
+        Long userId = answers.get(0).getUserId();
+
         int singleCount = scene.getSingleCount();
         int multiCount = scene.getMultiCount();
         int judgeCount = scene.getJudgeCount();
@@ -363,8 +364,53 @@ public class PaperAgent {
                 }
             }
         }
-        double yourScore = (singleScore * 10 * sCount + multiScore * 10 * mCount + judgeScore * 10 * jCount) / 10;
-        double totalScore = (singleScore * 10 * singleCount + multiScore * 10 * multiCount + judgeScore * 10 * judgeCount) / 10;
+
+
+        Integer receiptCount = scene.getReceiptCount();
+        Double rightRate = 0.00;
+        Double yourReceiptScore = 0.00;
+        Integer receiptScore = 0;
+        if (receiptCount != null && receiptCount > 0) {
+            receiptScore = scene.getReceiptScore();
+
+            ReceiptAnswer receiptAnswer = new ReceiptAnswer();
+            receiptAnswer.setUserId(userId);
+            receiptAnswer.setSceneId(scene.getId());
+            receiptAnswer.setStatus(BaseStatusEnum.ENABLE.getCode());
+            receiptAnswer.setIsDel(DelFlagEnum.NO.getCode());
+            List<ReceiptAnswer> receiptAnswers = receiptAnswerService.findByCondition(receiptAnswer);
+            if (CollectionUtils.isEmpty(receiptAnswers)) {
+                logger.warn("没有找到用户 userId：{} 的凭条考试信息", userId);
+                receiptAnswers = new ArrayList<>();
+            } else if (receiptAnswers.size() < receiptCount) {
+                int size = receiptAnswers.size();
+                logger.warn("凭条作答记录不足， userId: {}，应有：{} 张，找到{} 条", new Object[]{userId, receiptCount, size});
+            }
+            Integer right = 0;
+            for (ReceiptAnswer item : receiptAnswers) {
+                Integer number = item.getNumber();
+                Integer answer = item.getAnswer();
+                if (Objects.equals(number, answer)) {
+                    right++;
+                }
+            }
+//        全部答对，满分
+            if (Objects.equals(right, receiptCount)) {
+                yourReceiptScore = receiptScore + 0.00;
+            } else {
+//            计算比例   不是满分最高只能按照满分的
+
+                rightRate = ((double) right * 100) / receiptCount;
+                yourReceiptScore = receiptScore * rightRate / 100 * 0.9;
+            }
+        }
+
+
+        double yourCommonScore = (singleScore * 100 * sCount + multiScore * 100 * mCount + judgeScore * 100 * jCount) / 100;
+
+
+        double yourScore = (singleScore * 100 * sCount + multiScore * 100 * mCount + judgeScore * 100 * jCount + yourReceiptScore * 100) / 100;
+        double totalScore = (singleScore * 100 * singleCount + multiScore * 100 * multiCount + judgeScore * 100 * judgeCount + receiptScore * 100) / 100;
         double score = yourScore;
         if (percentable == 1) {
 //            需要百分比
@@ -372,6 +418,9 @@ public class PaperAgent {
         }
         paper.setOriginalScore(yourScore);
         paper.setScore(score);
+        paper.setReceiptScore(yourReceiptScore);
+        paper.setReceiptRate(rightRate);
+        paper.setCommonSocre(yourCommonScore);
         paper.setStatus(PaperStatusEnum.MARKED.getCode());
         paper.setUpdateTime(new Date());
         paper.setScore(score);

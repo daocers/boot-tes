@@ -15,6 +15,7 @@
         <result column="single_score" jdbcType="DOUBLE" property="singleScore"/>
         <result column="multi_score" jdbcType="DOUBLE" property="multiScore"/>
         <result column="judge_score" jdbcType="DOUBLE" property="judgeScore"/>
+        <result column="receipt_score" jdbcType="INTEGER" property="receiptScore"/>
         <result column="receipt_count" jdbcType="INTEGER" property="receiptCount"/>
         <result column="number_length" jdbcType="INTEGER" property="numberLength"/>
         <result column="branch_id" jdbcType="BIGINT" property="branchId"/>
@@ -28,10 +29,10 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, name, code, memo, single_info, multi_info, judge_info, single_count, multi_count, 
-    judge_count, single_score, multi_score, judge_score, receipt_count, number_length, 
-    branch_id, station_id, department_id, status, is_del, create_user_id, create_time, 
-    update_user_id, update_time
+    id, name, code, memo, single_info, multi_info, judge_info, single_count, multi_count,
+    judge_count, single_score, multi_score, judge_score, receipt_score, receipt_count,
+    number_length, branch_id, station_id, department_id, status, is_del, create_user_id,
+    create_time, update_user_id, update_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
