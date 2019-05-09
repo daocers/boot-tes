@@ -48,7 +48,7 @@ public class QuestionStatApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            List<QuestionStat> list = questionStatService.findByCondition(pageNum, pageSize, questionStat);
+            List<QuestionStat> list = questionStatService.findByCondition(pageNum, pageSize, questionStat, null);
             PageInfo<QuestionStat> pageInfo = new PageInfo<>(list);
             logger.info("查询到数据： {}", JSON.toJSONString(pageInfo, true));
             return RespDto.success(pageInfo);

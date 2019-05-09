@@ -1,5 +1,7 @@
 package co.bugu.tes.scene.dto;
 
+import lombok.Data;
+
 import java.util.Date;
 
 /**
@@ -7,6 +9,7 @@ import java.util.Date;
  * @Date 2018/12/2:23:26
  * @Description:
  */
+@Data
 public class MyOpenDto {
     private Long id;
 
@@ -42,6 +45,17 @@ public class MyOpenDto {
 
     private Double judgeScore;
 
+
+
+    private Integer receiptCount;
+
+    private Integer receiptScore;
+
+    private Integer numberLength;
+
+    private Integer decimalLength;
+
+
     private Long paperPolicyId;
 
     private String paperPolicyName;
@@ -74,267 +88,4 @@ public class MyOpenDto {
 
     private Long createUserId;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getBranchId() {
-        return branchId;
-    }
-
-    public void setBranchId(Long branchId) {
-        this.branchId = branchId;
-    }
-
-    public Long getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Long departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public Long getStationId() {
-        return stationId;
-    }
-
-    public void setStationId(Long stationId) {
-        this.stationId = stationId;
-    }
-
-    public String getAuthCode() {
-        return authCode;
-    }
-
-    public void setAuthCode(String authCode) {
-        this.authCode = authCode;
-    }
-
-    public Integer getChangePaper() {
-        return changePaper;
-    }
-
-    public void setChangePaper(Integer changePaper) {
-        this.changePaper = changePaper;
-    }
-
-    public Integer getDelayMinute() {
-        return delayMinute;
-    }
-
-    public void setDelayMinute(Integer delayMinute) {
-        this.delayMinute = delayMinute;
-    }
-
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public String getCancelReason() {
-        return cancelReason;
-    }
-
-    public void setCancelReason(String cancelReason) {
-        this.cancelReason = cancelReason;
-    }
-
-    public Integer getSingleCount() {
-        return singleCount;
-    }
-
-    public void setSingleCount(Integer singleCount) {
-        this.singleCount = singleCount;
-    }
-
-    public Double getSingleScore() {
-        return singleScore;
-    }
-
-    public void setSingleScore(Double singleScore) {
-        this.singleScore = singleScore;
-    }
-
-    public Integer getMultiCount() {
-        return multiCount;
-    }
-
-    public void setMultiCount(Integer multiCount) {
-        this.multiCount = multiCount;
-    }
-
-    public Double getMultiScore() {
-        return multiScore;
-    }
-
-    public void setMultiScore(Double multiScore) {
-        this.multiScore = multiScore;
-    }
-
-    public Integer getJudgeCount() {
-        return judgeCount;
-    }
-
-    public void setJudgeCount(Integer judgeCount) {
-        this.judgeCount = judgeCount;
-    }
-
-    public Double getJudgeScore() {
-        return judgeScore;
-    }
-
-    public void setJudgeScore(Double judgeScore) {
-        this.judgeScore = judgeScore;
-    }
-
-    public Long getPaperPolicyId() {
-        return paperPolicyId;
-    }
-
-    public void setPaperPolicyId(Long paperPolicyId) {
-        this.paperPolicyId = paperPolicyId;
-    }
-
-    public String getPaperPolicyName() {
-        return paperPolicyName;
-    }
-
-    public void setPaperPolicyName(String paperPolicyName) {
-        this.paperPolicyName = paperPolicyName;
-    }
-
-    public Integer getPaperGenerateType() {
-        return paperGenerateType;
-    }
-
-    public void setPaperGenerateType(Integer paperGenerateType) {
-        this.paperGenerateType = paperGenerateType;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Long getQuestionBankId() {
-        return questionBankId;
-    }
-
-    public void setQuestionBankId(Long questionBankId) {
-        this.questionBankId = questionBankId;
-    }
-
-    public String getQuestionBankName() {
-        return questionBankName;
-    }
-
-    public void setQuestionBankName(String questionBankName) {
-        this.questionBankName = questionBankName;
-    }
-
-    public Integer getUserChoiceType() {
-        return userChoiceType;
-    }
-
-    public void setUserChoiceType(Integer userChoiceType) {
-        this.userChoiceType = userChoiceType;
-    }
-
-    public Double getTotalScore() {
-        return totalScore;
-    }
-
-    public void setTotalScore(Double totalScore) {
-        this.totalScore = totalScore;
-    }
-
-    public Integer getPercentable() {
-        return percentable;
-    }
-
-    public void setPercentable(Integer percentable) {
-        this.percentable = percentable;
-    }
-
-    public String getMetaScoreInfo() {
-        return metaScoreInfo;
-    }
-
-    public void setMetaScoreInfo(String metaScoreInfo) {
-        this.metaScoreInfo = metaScoreInfo;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Date getOpenTime() {
-        return openTime;
-    }
-
-    public void setOpenTime(Date openTime) {
-        this.openTime = openTime;
-    }
-
-    public Date getCloseTime() {
-        return closeTime;
-    }
-
-    public void setCloseTime(Date closeTime) {
-        this.closeTime = closeTime;
-    }
-
-    public Integer getIsDel() {
-        return isDel;
-    }
-
-    public void setIsDel(Integer isDel) {
-        this.isDel = isDel;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getCreateUserId() {
-        return createUserId;
-    }
-
-    public void setCreateUserId(Long createUserId) {
-        this.createUserId = createUserId;
-    }
 }

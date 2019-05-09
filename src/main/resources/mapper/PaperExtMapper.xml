@@ -45,4 +45,9 @@
             </if>
         </where>
     </select>
+
+
+    <select id="getSceneScoreStat" resultMap="BaseResultMap" parameterType="int">
+                  SELECT AVG(score) AS score, scene_id FROM tes_paper GROUP BY scene_id ORDER BY code DESC limit 0, #{size}
+    </select>
 </mapper>

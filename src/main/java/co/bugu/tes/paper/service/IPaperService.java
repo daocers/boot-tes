@@ -84,4 +84,14 @@ public interface IPaperService {
      */
     Long createPaper(Long sceneId, Long userId, List<AnswerDto4GenPaper> sIds, List<AnswerDto4GenPaper> mIds, List<AnswerDto4GenPaper> jIds);
 
+
+    /**
+     * 考试成绩统计，只取score和sceneId字段
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/9 15:56
+     */
+    List<Paper> getSceneScoreStat(int size);
 }

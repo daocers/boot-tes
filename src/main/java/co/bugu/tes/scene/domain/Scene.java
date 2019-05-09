@@ -42,6 +42,8 @@ public class Scene {
 
     private Integer receiptCount;
 
+    private Integer receiptScore;
+
     private Integer numberLength;
 
     private Integer decimalLength;

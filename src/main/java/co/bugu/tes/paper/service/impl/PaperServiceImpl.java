@@ -183,5 +183,11 @@ public class PaperServiceImpl implements IPaperService {
         return paperId;
     }
 
+    @Override
+    public List<Paper> getSceneScoreStat(int size) {
+        List<Paper> papers = paperDao.getSceneScoreStat(size);
+        return papers;
+    }
+
 
 }

@@ -55,6 +55,9 @@
       <if test="receiptCount != null">
         receipt_count = #{receiptCount,jdbcType=INTEGER},
       </if>
+      <if test="receiptScore != null">
+        receipt_score = #{receiptScore,jdbcType=INTEGER},
+      </if>
       <if test="numberLength != null">
         number_length = #{numberLength,jdbcType=INTEGER},
       </if>
@@ -170,6 +173,9 @@
       <if test="receiptCount != null">
         receipt_count,
       </if>
+      <if test="receiptScore != null">
+        receipt_score,
+      </if>
       <if test="numberLength != null">
         number_length,
       </if>
@@ -276,6 +282,9 @@
       </if>
       <if test="receiptCount != null">
         #{receiptCount,jdbcType=INTEGER},
+      </if>
+      <if test="receiptScore != null">
+        #{receiptScore,jdbcType=INTEGER},
       </if>
       <if test="numberLength != null">
         #{numberLength,jdbcType=INTEGER},

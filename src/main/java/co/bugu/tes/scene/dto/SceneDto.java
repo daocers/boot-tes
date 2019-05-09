@@ -47,6 +47,14 @@ public class SceneDto {
 
     private Double judgeScore;
 
+    private Integer receiptCount;
+
+    private Integer receiptScore;
+
+    private Integer numberLength;
+
+    private Integer decimalLength;
+
     private Long paperPolicyId;
 
     private Integer paperGenerateType;
@@ -82,12 +90,5 @@ public class SceneDto {
     private List<Long> branchIds;
     private List<Long> departmentIds;
     private List<Long> stationIds;
-
-
-    private Integer receiptCount;
-
-    private Integer numberLength;
-
-    private Integer decimalLength;
 
 }

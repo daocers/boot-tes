@@ -4,6 +4,7 @@ import co.bugu.util.CodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @Date 2018/11/29:10:08
  * @Description:
  */
-//@Component
+@Component
 public class CodeTask {
     private Logger logger = LoggerFactory.getLogger(CodeTask.class);
 

@@ -40,7 +40,7 @@ public interface IQuestionStatService {
     * @param questionStat 查询条件
     * @return
     */
-    List<QuestionStat> findByCondition(Integer pageNum, Integer pageSize, QuestionStat questionStat);
+    List<QuestionStat> findByCondition(Integer pageNum, Integer pageSize, QuestionStat questionStat, String orderBy);
 
     /**
     * 条件查询 分页

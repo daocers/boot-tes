@@ -9,6 +9,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,12 @@ public class QuestionStatServiceImpl implements IQuestionStatService {
     }
 
     @Override
-    public List<QuestionStat> findByCondition(Integer pageNum, Integer pageSize, QuestionStat questionStat) {
+    public List<QuestionStat> findByCondition(Integer pageNum, Integer pageSize, QuestionStat questionStat, String orderBy) {
         logger.debug("questionStat findByCondition, 参数 pageNum: {}, pageSize: {}, condition: {}", new Object[]{pageNum, pageSize, JSON.toJSONString(questionStat, true)});
-        PageHelper.startPage(pageNum, pageSize, ORDER_BY);
+        if (StringUtils.isEmpty(orderBy)) {
+            orderBy = ORDER_BY;
+        }
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         List<QuestionStat> questionStats = questionStatDao.findByObject(questionStat);
 
         logger.debug("查询结果， {}", JSON.toJSONString(questionStats, true));
@@ -108,7 +112,7 @@ public class QuestionStatServiceImpl implements IQuestionStatService {
     @Override
     public boolean getAnswerAndProcessStat(int size) {
         if (null == lastAnswerId) {
-            List<QuestionStat> questionStats = findByCondition(1, 1, new QuestionStat());
+            List<QuestionStat> questionStats = findByCondition(1, 1, new QuestionStat(), "last_answer_id desc");
             if (CollectionUtils.isEmpty(questionStats)) {
                 lastAnswerId = 0L;
             } else {
@@ -151,9 +155,7 @@ public class QuestionStatServiceImpl implements IQuestionStatService {
                 } else {
                     stat.setWrongCount(stat.getWrongCount() + delta);
                 }
-                stat.setWrongRate(((double) stat.getWrongCount()) / stat.getTotal() * 100);
                 map.put(questionId, stat);
-
 
 
                 Map<String, Integer> answerInfo = answerMap.get(questionId);
@@ -174,11 +176,18 @@ public class QuestionStatServiceImpl implements IQuestionStatService {
                     stat.setUpdateUserId(0L);
                     stat.setIsDel(DelFlagEnum.NO.getCode());
 
-                    List<QuestionStat> list = findByCondition(1, 1, stat);
+                    List<QuestionStat> list = findByCondition(1, 1, stat, "");
                     if (CollectionUtils.isEmpty(list)) {
+                        Map<String, Integer> recordMap = answerMap.get(questionId);
+                        if (recordMap == null) {
+                            recordMap = new HashMap<>();
+                        }
+                        stat.setAnswerRecord(JSON.toJSONString(recordMap));
+                        stat.setWrongRate(((double) stat.getWrongCount()) / stat.getTotal() * 100);
                         questionStatDao.insert(stat);
                     } else {
-                        String answerRecord = list.get(0).getAnswerRecord();
+                        QuestionStat tmp = list.get(0);
+                        String answerRecord = tmp.getAnswerRecord();
                         Map<String, Integer> recordMap = JSON.parseObject(answerRecord, Map.class);
                         Map<String, Integer> answerInfoMap = answerMap.get(questionId);
 
@@ -192,6 +201,11 @@ public class QuestionStatServiceImpl implements IQuestionStatService {
                                 }
                             }
                         }
+                        stat.setTotal(stat.getTotal() + tmp.getTotal());
+                        stat.setWrongCount(stat.getWrongCount() + tmp.getWrongCount());
+                        stat.setRightCount(stat.getRightCount() + tmp.getRightCount());
+                        stat.setWrongRate(((double) stat.getWrongCount()) / stat.getTotal() * 100);
+
                         stat.setAnswerRecord(JSON.toJSONString(recordMap));
                         stat.setId(list.get(0).getId());
                         questionStatDao.updateById(stat);
