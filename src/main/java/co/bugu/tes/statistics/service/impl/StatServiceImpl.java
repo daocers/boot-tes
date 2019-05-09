@@ -113,11 +113,11 @@ public class StatServiceImpl implements IStatService {
     @Override
     public QuestionDistributeDto getQuestionPropStat(Long bankId) {
         QuestionDistributeDto questionDistributeDto = new QuestionDistributeDto();
-        List<QuestionStat> singleStats = getSingleStat(bankId);
-        List<QuestionStat> multiStats = getMultiStat(bankId);
-        List<QuestionStat> judgeStats = getJudgeStat(bankId);
+        List<QuestionDistributeStat> singleStats = getSingleStat(bankId);
+        List<QuestionDistributeStat> multiStats = getMultiStat(bankId);
+        List<QuestionDistributeStat> judgeStats = getJudgeStat(bankId);
 
-        List<QuestionStat> all = new ArrayList<>();
+        List<QuestionDistributeStat> all = new ArrayList<>();
         if (null != singleStats) {
             all.addAll(singleStats);
         }
@@ -135,7 +135,7 @@ public class StatServiceImpl implements IStatService {
         }
         Map<Integer, Integer> busiMap = new HashMap<>();
         Map<Integer, Integer> diffMap = new HashMap<>();
-        for (QuestionStat stat : all) {
+        for (QuestionDistributeStat stat : all) {
             int busiType = stat.getBusiType();
             int diff = stat.getDifficulty();
             int count = stat.getCount();
@@ -178,17 +178,17 @@ public class StatServiceImpl implements IStatService {
     }
 
     @Override
-    public List<QuestionStat> getSingleStat(Long bankId) {
+    public List<QuestionDistributeStat> getSingleStat(Long bankId) {
         return statisticsDao.getSingleStat(bankId);
     }
 
     @Override
-    public List<QuestionStat> getMultiStat(Long bankId) {
+    public List<QuestionDistributeStat> getMultiStat(Long bankId) {
         return statisticsDao.getMultiStat(bankId);
     }
 
     @Override
-    public List<QuestionStat> getJudgeStat(Long bankId) {
+    public List<QuestionDistributeStat> getJudgeStat(Long bankId) {
         return statisticsDao.getJudgeStat(bankId);
     }
 }

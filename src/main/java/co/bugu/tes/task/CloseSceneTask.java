@@ -7,14 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 /**
  * @Author daocers
  * @Date 2018/11/28:11:54
  * @Description:
  */
-@Component
+//@Component
 public class CloseSceneTask {
     private Logger logger = LoggerFactory.getLogger(CloseSceneTask.class);
     @Autowired

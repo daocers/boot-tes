@@ -108,7 +108,7 @@ public class StatisticsServiceImpl implements IStatisticsService {
 
         calendar.add(Calendar.DAY_OF_YEAR, 0 - size);
 
-        SimpleDateFormat format = new SimpleDateFormat("mm-dd");
+        SimpleDateFormat format = new SimpleDateFormat("MM-dd");
         for (int i = 0; i < size; i++) {
             UserStatDto dto = new UserStatDto();
             int day = calendar.get(Calendar.DAY_OF_YEAR);

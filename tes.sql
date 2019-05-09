@@ -594,3 +594,29 @@ CREATE TABLE tes_paper_policy_condition (
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY(id)
 ) ENGINE=INnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='试卷策略状况';
+
+
+
+-- 试题统计
+DROP TABLE IF EXISTS tes_question_stat;
+CREATE TABLE tes_question_stat (
+  id BIGINT(21) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  bank_id BIGINT(21) NOT NULL DEFAULT -1 COMMENT '场次id',
+  question_type INT(11) NOT NULL DEFAULT -1 COMMENT '试题类型',
+  question_id BIGINT(21) NOT NULL DEFAULT -1 COMMENT '试题id',
+  right_answer VARCHAR(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '正确答案',
+  answer VARCHAR(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '实际答案',
+  answer_record VARCHAR(1000) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '答案分布',
+  total INT(11) NOT NULL DEFAULT -1 COMMENT '总使用次数',
+  right_count INT(11) NOT NULL DEFAULT -1 COMMENT '答对总次数',
+  wrong_count INT(11) NOT NULL DEFAULT  -1 COMMENT '答错总数',
+  wrong_rate DOUBLE(5, 2) NOT NULL DEFAULT 0.00 COMMENT '错误率',
+    last_answer_id BIGINT(21) NOT NULL DEFAULT -1 COMMENT '上次处理的answer_id',
+  is_del INT(1) NOT NULL DEFAULT '-1' COMMENT '删除标志',
+  update_time DATETIME  DEFAULT CURRENT_TIMESTAMP  COMMENT '更新时间',
+  update_user_id BIGINT(21)  NOT NULL DEFAULT '-1'  COMMENT '更新人id',
+  create_user_id BIGINT(21) NOT NULL DEFAULT '-1'  COMMENT '创建人id',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY(id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='试题错误率统计';
+

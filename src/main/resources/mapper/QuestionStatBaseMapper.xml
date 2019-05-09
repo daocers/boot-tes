@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.bugu.tes.questionStat.dao.QuestionStatDao">
+    <update id="updateById" parameterType="co.bugu.tes.questionStat.domain.QuestionStat">
+        update tes_question_stat
+        <set>
+            <if test="bankId != null">
+                bank_id = #{bankId,jdbcType=BIGINT},
+            </if>
+            <if test="questionType != null">
+                question_type = #{questionType,jdbcType=INTEGER},
+            </if>
+            <if test="questionId != null">
+                question_id = #{questionId,jdbcType=BIGINT},
+            </if>
+            <if test="rightAnswer != null">
+                right_answer = #{rightAnswer,jdbcType=VARCHAR},
+            </if>
+            <if test="answer != null">
+                answer = #{answer,jdbcType=VARCHAR},
+            </if>
+            <if test="answerRecord != null">
+                answer_record = #{answerRecord,jdbcType=VARCHAR},
+            </if>
+            <if test="total != null">
+                total = #{total,jdbcType=INTEGER},
+            </if>
+            <if test="rightCount != null">
+                right_count = #{rightCount,jdbcType=INTEGER},
+            </if>
+            <if test="wrongCount != null">
+                wrong_count = #{wrongCount,jdbcType=INTEGER},
+            </if>
+            <if test="wrongRate != null">
+                wrong_rate = #{wrongRate,jdbcType=DOUBLE},
+            </if>
+            <if test="lastAnswerId != null">
+                last_answer_id = #{lastAnswerId,jdbcType=BIGINT},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                update_user_id = #{updateUserId,jdbcType=BIGINT},
+            </if>
+            <if test="createUserId != null">
+                create_user_id = #{createUserId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <delete id="deleteById" parameterType="java.lang.Long">
+    delete from tes_question_stat
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="co.bugu.tes.questionStat.domain.QuestionStat"
+            useGeneratedKeys="true">
+        insert into tes_question_stat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bankId != null">
+                bank_id,
+            </if>
+            <if test="questionType != null">
+                question_type,
+            </if>
+            <if test="questionId != null">
+                question_id,
+            </if>
+            <if test="rightAnswer != null">
+                right_answer,
+            </if>
+            <if test="answer != null">
+                answer,
+            </if>
+            <if test="answerRecord != null">
+                answer_record,
+            </if>
+            <if test="total != null">
+                total,
+            </if>
+            <if test="rightCount != null">
+                right_count,
+            </if>
+            <if test="wrongCount != null">
+                wrong_count,
+            </if>
+            <if test="wrongRate != null">
+                wrong_rate,
+            </if>
+            <if test="lastAnswerId != null">
+                last_answer_id,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bankId != null">
+                #{bankId,jdbcType=BIGINT},
+            </if>
+            <if test="questionType != null">
+                #{questionType,jdbcType=INTEGER},
+            </if>
+            <if test="questionId != null">
+                #{questionId,jdbcType=BIGINT},
+            </if>
+            <if test="rightAnswer != null">
+                #{rightAnswer,jdbcType=VARCHAR},
+            </if>
+            <if test="answer != null">
+                #{answer,jdbcType=VARCHAR},
+            </if>
+            <if test="answerRecord != null">
+                #{answerRecord,jdbcType=VARCHAR},
+            </if>
+            <if test="total != null">
+                #{total,jdbcType=INTEGER},
+            </if>
+            <if test="rightCount != null">
+                #{rightCount,jdbcType=INTEGER},
+            </if>
+            <if test="wrongCount != null">
+                #{wrongCount,jdbcType=INTEGER},
+            </if>
+            <if test="wrongRate != null">
+                #{wrongRate,jdbcType=DOUBLE},
+            </if>
+            <if test="lastAnswerId != null">
+                #{lastAnswerId,jdbcType=BIGINT},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=BIGINT},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+</mapper>

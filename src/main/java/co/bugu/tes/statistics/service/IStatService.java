@@ -54,9 +54,9 @@ public interface IStatService {
     List<DifficultyStatDto> getDifficultyStat(Long bankId);
 
 
-    List<QuestionStat> getSingleStat(Long bankId);
+    List<QuestionDistributeStat> getSingleStat(Long bankId);
 
-    List<QuestionStat> getMultiStat(Long bankId);
+    List<QuestionDistributeStat> getMultiStat(Long bankId);
 
-    List<QuestionStat> getJudgeStat(Long bankId);
+    List<QuestionDistributeStat> getJudgeStat(Long bankId);
 }

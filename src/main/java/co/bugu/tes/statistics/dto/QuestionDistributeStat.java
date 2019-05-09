@@ -9,7 +9,7 @@ import lombok.Data;
  * @Description:
  */
 @Data
-public class QuestionStat {
+public class QuestionDistributeStat {
     private Integer count;
     private Integer busiType;
     private Integer difficulty;
