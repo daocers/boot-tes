@@ -40,6 +40,6 @@ public class Paper {
 
     private Double receiptRate;
 
-    private Double commonSocre;
+    private Double commonScore;
 
 }

@@ -20,10 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -182,14 +179,17 @@ public class PermissionAgent {
      * @date 2018/11/30 10:54
      */
     public List<Long> findPermissionIdsByUserId(Long userId) {
+        List<Long> res = new ArrayList<>();
+
+
         UserRoleX query = new UserRoleX();
         query.setUserId(userId);
         List<UserRoleX> xList = userRoleXService.findByCondition(query);
         if (CollectionUtils.isEmpty(xList)) {
-            return new ArrayList<>();
+            return res;
         }
 
-        List<Long> res = new ArrayList<>();
+        Collection<Long> set = new HashSet<>();
         for (UserRoleX x : xList) {
             Long roleId = x.getRoleId();
             List<Long> pIds = roleIdPermIdsCache.getIfPresent(roleId);
@@ -209,8 +209,9 @@ public class PermissionAgent {
             }
 
 //            添加到结果中
-            res.addAll(pIds);
+            set.addAll(pIds);
         }
+        res.addAll(set);
         return res;
 
     }

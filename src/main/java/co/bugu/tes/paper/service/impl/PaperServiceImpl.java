@@ -141,6 +141,7 @@ public class PaperServiceImpl implements IPaperService {
             answer.setPaperId(paperId);
             answer.setCreateUserId(userId);
             answer.setUpdateUserId(userId);
+            answer.setUserId(userId);
             answer.setCreateTime(now);
             answer.setUpdateTime(now);
             answer.setQuestionId(dto.getId());
@@ -156,6 +157,7 @@ public class PaperServiceImpl implements IPaperService {
             answer.setPaperId(paperId);
             answer.setCreateUserId(userId);
             answer.setUpdateUserId(userId);
+            answer.setUserId(userId);
             answer.setCreateTime(now);
             answer.setUpdateTime(now);
             answer.setQuestionId(dto.getId());
@@ -171,6 +173,7 @@ public class PaperServiceImpl implements IPaperService {
             answer.setPaperId(paperId);
             answer.setCreateUserId(userId);
             answer.setUpdateUserId(userId);
+            answer.setUserId(userId);
             answer.setCreateTime(now);
             answer.setUpdateTime(now);
             answer.setQuestionId(dto.getId());

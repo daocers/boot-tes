@@ -219,9 +219,9 @@ public class PaperAgent {
                     query.setBankId(bankId);
                     query.setAttr1(item.getBusiType());
                     query.setAttr2(item.getDifficulty());
-                    List<Multi> multis = multiService.findByCondition(query);
-                    if (multis.size() >= item.getCount()) {
-                        List<AnswerDto4GenPaper> list = Lists.transform(multiList, multi -> {
+                    List<Multi> multies = multiService.findByCondition(query);
+                    if (multies.size() >= item.getCount()) {
+                        List<AnswerDto4GenPaper> list = Lists.transform(multies, multi -> {
                             AnswerDto4GenPaper dto = new AnswerDto4GenPaper();
                             BeanUtils.copyProperties(multi, dto);
                             return dto;
@@ -241,9 +241,9 @@ public class PaperAgent {
                     query.setAttr2(item.getDifficulty());
                     List<Judge> judges = judgeService.findByCondition(query);
                     if (judges.size() >= item.getCount()) {
-                        List<AnswerDto4GenPaper> list = Lists.transform(judges, single -> {
+                        List<AnswerDto4GenPaper> list = Lists.transform(judges, judge -> {
                             AnswerDto4GenPaper dto = new AnswerDto4GenPaper();
-                            BeanUtils.copyProperties(judges, dto);
+                            BeanUtils.copyProperties(judge, dto);
                             return dto;
                         });
                         res.addAll(list.subList(0, item.getCount()));
@@ -420,7 +420,7 @@ public class PaperAgent {
         paper.setScore(score);
         paper.setReceiptScore(yourReceiptScore);
         paper.setReceiptRate(rightRate);
-        paper.setCommonSocre(yourCommonScore);
+        paper.setCommonScore(yourCommonScore);
         paper.setStatus(PaperStatusEnum.MARKED.getCode());
         paper.setUpdateTime(new Date());
         paper.setScore(score);

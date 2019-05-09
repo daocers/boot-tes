@@ -341,7 +341,7 @@ public class ExamApi {
         Preconditions.checkArgument(null != seconds, "耗时不能为空");
         Preconditions.checkArgument(null != userId);
 //        Preconditions.checkArgument(CollectionUtils.isNotEmpty(answers));
-        if(CollectionUtils.isEmpty(answers)){
+        if (CollectionUtils.isEmpty(answers)) {
             logger.warn("没有提交凭条答案， sceneId:{}", sceneId);
             return RespDto.success();
         }
@@ -445,7 +445,7 @@ public class ExamApi {
      * @date 2018/11/29 22:38
      */
     @RequestMapping(value = "/canAccess")
-    public RespDto<Boolean> canAccess(Long sceneId, String authCode) {
+    public RespDto<Boolean> canAccess(Long sceneId, String authCode) throws UserException {
         Date now = new Date();
         Scene scene = sceneService.findById(sceneId);
 //        if (!scene.getAuthCode().equals(authCode)) {
@@ -470,6 +470,7 @@ public class ExamApi {
         Paper query = new Paper();
         query.setSceneId(sceneId);
         query.setIsDel(DelFlagEnum.NO.getCode());
+        query.setUserId(UserUtil.getCurrentUser().getId());
         List<Paper> papers = paperService.findByCondition(query);
         if (CollectionUtils.isNotEmpty(papers)) {
             for (Paper paper : papers) {

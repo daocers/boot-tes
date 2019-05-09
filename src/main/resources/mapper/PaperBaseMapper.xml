@@ -28,8 +28,8 @@
       <if test="receiptRate != null">
         receipt_rate = #{receiptRate,jdbcType=DOUBLE},
       </if>
-      <if test="commonSocre != null">
-        common_socre = #{commonSocre,jdbcType=DOUBLE},
+      <if test="commonScore != null">
+        common_score = #{commonScore,jdbcType=DOUBLE},
       </if>
       <if test="sceneId != null">
         scene_id = #{sceneId,jdbcType=BIGINT},
@@ -89,8 +89,8 @@
       <if test="receiptRate != null">
         receipt_rate,
       </if>
-      <if test="commonSocre != null">
-        common_socre,
+      <if test="commonScore != null">
+        common_score,
       </if>
       <if test="sceneId != null">
         scene_id,
@@ -142,8 +142,8 @@
       <if test="receiptRate != null">
         #{receiptRate,jdbcType=DOUBLE},
       </if>
-      <if test="commonSocre != null">
-        #{commonSocre,jdbcType=DOUBLE},
+      <if test="commonScore != null">
+        #{commonScore,jdbcType=DOUBLE},
       </if>
       <if test="sceneId != null">
         #{sceneId,jdbcType=BIGINT},

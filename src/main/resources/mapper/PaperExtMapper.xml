@@ -11,7 +11,7 @@
         <result column="score" jdbcType="DOUBLE" property="score"/>
         <result column="receipt_score" jdbcType="DOUBLE" property="receiptScore"/>
         <result column="receipt_rate" jdbcType="DOUBLE" property="receiptRate"/>
-        <result column="common_socre" jdbcType="DOUBLE" property="commonSocre"/>
+        <result column="common_score" jdbcType="DOUBLE" property="commonScore"/>
         <result column="scene_id" jdbcType="BIGINT" property="sceneId"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
@@ -23,7 +23,7 @@
     </resultMap>
     <sql id="Base_Column_List">
     id, code, answer_flag, begin_time, end_time, original_score, score, receipt_score,
-    receipt_rate, common_socre, scene_id, user_id, status, is_del, create_time, create_user_id,
+    receipt_rate, common_score, scene_id, user_id, status, is_del, create_time, create_user_id,
     update_time, update_user_id
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">

@@ -228,7 +228,7 @@ public class SceneApi {
                 }
             }
             PaperPolicyCheckDto checkDto = null;
-            if (paperPolicyId == null && paperPolicyId > 0) {
+            if (paperPolicyId == null ||  paperPolicyId <= 0) {
                 checkDto = paperPolicyAgent.checkSimple(scene.getSingleCount(), scene.getMultiCount(), scene.getJudgeCount(), scene.getQuestionBankId());
             } else {
                 checkDto = paperPolicyAgent.checkPolicy(paperPolicyId, scene.getQuestionBankId());
