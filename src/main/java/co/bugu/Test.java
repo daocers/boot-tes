@@ -1,12 +1,5 @@
 package co.bugu;
 
-import co.bugu.common.RespDto;
-import com.alibaba.fastjson.JSON;
-import com.github.pagehelper.PageInfo;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class Test {
     public static void main(String[] args) {
         System.out.println("good");
@@ -27,16 +20,21 @@ public class Test {
 //            pool.shutdown();
 //
 //        }
-        PageInfo<String> res = new PageInfo<>();
-        List<String> list = new ArrayList<>();
-        list.add("ab");
-        list.add("dfd");
-        res.setList(list);
-        System.out.println(JSON.toJSONString(res, true));
-        System.out.println(JSON.toJSONString(RespDto.success(res), true));
+//        PageInfo<String> res = new PageInfo<>();
+//        List<String> list = new ArrayList<>();
+//        list.add("ab");
+//        list.add("dfd");
+//        res.setList(list);
+//        System.out.println(JSON.toJSONString(res, true));
+//        System.out.println(JSON.toJSONString(RespDto.success(res), true));
+        test();
 
     }
 
+
+    public static  void test(String... names){
+        System.out.println(names.length);
+    }
 
 }
 

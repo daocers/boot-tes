@@ -42,6 +42,10 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public RespDto handle(Exception e){
         logger.error("系统异常", e);
-        return RespDto.fail(-10000, "系统异常，请联系管理员");
+        String errMsg = e.getMessage();
+        if(StringUtils.isEmpty(errMsg)){
+            errMsg = "系统异常，请联系管理员";
+        }
+        return RespDto.fail(-10000, errMsg);
     }
 }

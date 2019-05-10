@@ -84,7 +84,7 @@ public interface ISingleService {
      * @auther daocers
      * @date 2018/11/21 11:41
      */
-    List<Single> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
+    List<Single> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) throws Exception;
 
     /**
      * 

@@ -109,14 +109,15 @@ public class MultiServiceImpl implements IMultiService {
     }
 
     @Override
-    public List<Multi> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) {
+    public List<Multi> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) throws Exception {
 
 //        todo  校验数据完整性
         Date now = new Date();
         List<Multi> multis = new ArrayList<>(data.size());
         Map<String, Integer> busiMap = config.getBusiTypeInfo();
         Map<String, Integer> diffMap = config.getDifficultyInfo();
-        for(List<String> list: data){
+        int line = 2;
+        for (List<String> list : data) {
             int size = list.size();
             Multi multi = new Multi();
             multi.setIsDel(DelFlagEnum.NO.getCode());
@@ -141,33 +142,45 @@ public class MultiServiceImpl implements IMultiService {
             multi.setAnswer(list.get(6));
             multi.setExtraInfo(list.get(7));
 
-//            根据实际情况添加属性
-            if(size > 8){
+
+            //            根据实际情况添加属性
+            if (size > 8) {
+                if (!busiMap.containsKey(list.get(8))) {
+                    logger.warn("第八列属性不合法，请检查");
+                    throw new Exception("第" + line + "行第八列属性不合法");
+                }
                 multi.setAttr1(busiMap.get(list.get(8)));
-            }else{
+            } else {
+
                 multi.setAttr1(-1);
             }
-            if(size > 9){
+            if (size > 9) {
+                if (!diffMap.containsKey(list.get(9))) {
+                    logger.warn("第九列属性不合法，请检查");
+                    throw new Exception("第" + line + "行第九列属性不合法");
+                }
                 multi.setAttr2(diffMap.get(list.get(9)));
-            }else{
+            } else {
                 multi.setAttr2(-1);
             }
-            if(size > 10){
+
+            if (size > 10) {
                 multi.setAttr3(Integer.valueOf(list.get(10)));
-            }else{
+            } else {
                 multi.setAttr3(-1);
             }
-            if(size > 11){
+            if (size > 11) {
                 multi.setAttr4(Integer.valueOf(list.get(11)));
-            }else{
+            } else {
                 multi.setAttr4(-1);
             }
-            if(size > 12){
+            if (size > 12) {
                 multi.setAttr5(Integer.valueOf(list.get(12)));
-            }else{
+            } else {
                 multi.setAttr5(-1);
             }
             multis.add(multi);
+            line++;
 
         }
 

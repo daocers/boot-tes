@@ -110,13 +110,14 @@ public class SingleServiceImpl implements ISingleService {
     }
 
     @Override
-    public List<Single> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) {
+    public List<Single> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) throws Exception {
 //        todo  校验数据完整性
         Date now = new Date();
         List<Single> singles = new ArrayList<>(data.size());
         Map<String, Integer> diffMap = config.getDifficultyInfo();
         Map<String, Integer> busiMap = config.getBusiTypeInfo();
 
+        int line = 2;
         for(List<String> list: data){
             int size = list.size();
             Single single = new Single();
@@ -144,11 +145,20 @@ public class SingleServiceImpl implements ISingleService {
 
 //            根据实际情况添加属性
             if(size > 8){
+                if(!busiMap.containsKey(list.get(8))){
+                    logger.warn("第八列属性不合法，请检查");
+                    throw new Exception("第" + line + "行第八列属性不合法");
+                }
                 single.setAttr1(busiMap.get(list.get(8)));
             }else{
+
                 single.setAttr1(-1);
             }
             if(size > 9){
+                if(!diffMap.containsKey(list.get(9))){
+                    logger.warn("第九列属性不合法，请检查");
+                    throw new Exception("第" + line + "行第九列属性不合法");
+                }
                 single.setAttr2(diffMap.get(list.get(9)));
             }else{
                 single.setAttr2(-1);
@@ -169,6 +179,7 @@ public class SingleServiceImpl implements ISingleService {
                 single.setAttr5(-1);
             }
             singles.add(single);
+            line++;
 
         }
 

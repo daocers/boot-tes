@@ -1,5 +1,7 @@
 package co.bugu.tes.exam.dto;
 
+import lombok.Data;
+
 /**
  * 通用试题dto
  *
@@ -7,82 +9,21 @@ package co.bugu.tes.exam.dto;
  * @Date 2018/11/25:20:10
  * @Description:
  */
+@Data
 public class QuestionDto {
     private Long answerId;
     private Integer questionType;
     private String title;
     private String content;
     private String answer;
-//    实际答案
+    //    实际答案
     private String realAnswer;
     private String leftTimeInfo;
 
 
-//    正确答案
+    //    正确答案
     private String rightAnswer;
-    public String getRightAnswer() {
-        return rightAnswer;
-    }
 
-    public void setRightAnswer(String rightAnswer) {
-        this.rightAnswer = rightAnswer;
-    }
-
-
-    public Long getAnswerId() {
-        return answerId;
-    }
-
-    public void setAnswerId(Long answerId) {
-        this.answerId = answerId;
-    }
-
-
-    public Integer getQuestionType() {
-        return questionType;
-    }
-
-    public void setQuestionType(Integer questionType) {
-        this.questionType = questionType;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public String getRealAnswer() {
-        return realAnswer;
-    }
-
-    public void setRealAnswer(String realAnswer) {
-        this.realAnswer = realAnswer;
-    }
-
-    public String getLeftTimeInfo() {
-        return leftTimeInfo;
-    }
-
-    public void setLeftTimeInfo(String leftTimeInfo) {
-        this.leftTimeInfo = leftTimeInfo;
-    }
+    // 做题人id
+    private Long userId;
 }

@@ -82,7 +82,7 @@ public interface IMultiService {
      * @auther daocers
      * @date 2018/11/21 17:33
      */
-    List<Multi> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
+    List<Multi> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) throws Exception;
 
     /**
      * 

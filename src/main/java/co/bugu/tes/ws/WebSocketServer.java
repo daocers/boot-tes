@@ -1,9 +1,11 @@
 package co.bugu.tes.ws;
 
+import co.bugu.common.RespDto;
 import co.bugu.tes.answer.service.IAnswerService;
 import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.util.ApplicationContextUtil;
+import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -40,19 +42,34 @@ public class WebSocketServer {
         paperAgent = ApplicationContextUtil.getClass(PaperAgent.class);
 
         logger.debug("连接成功");
-        Map<String, String> res = new HashMap<>();
-        res.put("code", "0");
-        res.put("message", "ok");
-        session.getBasicRemote().sendText(JSON.toJSONString(res));
-        List<String> userIdInfo = session.getRequestParameterMap().get("userId");
-        List<String> sceneInfo = session.getRequestParameterMap().get("sceneId");
-        Long userId = Long.parseLong(userIdInfo.get(0));
-        Long sceneId = Long.parseLong(sceneInfo.get(0));
-//      存入session
-        WebSocketSessionUtil.add(userId, session);
 
-        WebSocketSessionUtil.addOnlineUser(userId, session);
-        WebSocketSessionUtil.addSceneUser(sceneId, userId);
+//        List<String> userIdInfo = session.getRequestParameterMap().get("userId");
+        List<String> sceneInfo = session.getRequestParameterMap().get("sceneId");
+        List<String> tokenInfo = session.getRequestParameterMap().get("token");
+//        Long userId = Long.parseLong(userIdInfo.get(0));
+        Long sceneId = Long.parseLong(sceneInfo.get(0));
+        String token = tokenInfo.get(0);
+        Long userId = UserUtil.getUserIdByToken(token);
+
+//        token和userId匹配
+        if (null != userId && userId > 0) {
+
+            session.getBasicRemote().sendText(JSON.toJSONString(RespDto.success()));
+
+            //      存入session
+            WebSocketSessionUtil.add(userId, session);
+
+            WebSocketSessionUtil.addOnlineUser(userId, session);
+            WebSocketSessionUtil.addSceneUser(sceneId, userId);
+
+            return;
+        } else {
+//            token 和userId不匹配
+            session.getBasicRemote().sendText(JSON.toJSONString(RespDto.fail(-1, "非法用户信息，请联系管理员")));
+            session.close();
+        }
+
+
     }
 
     /**
@@ -71,6 +88,16 @@ public class WebSocketServer {
         if (StringUtils.isEmpty(message)) {
             return;
         }
+
+//        List<String> userIdInfo = session.getRequestParameterMap().get("userId");
+//        Long userId = Long.parseLong(userIdInfo.get(0));
+        List<String> sceneInfo = session.getRequestParameterMap().get("sceneId");
+        Long sceneId = Long.parseLong(sceneInfo.get(0));
+        List<String> tokenInfo = session.getRequestParameterMap().get("token");
+        String token = tokenInfo.get(0);
+        Long userId = UserUtil.getUserIdByToken(token);
+
+
         JSONObject jsonObject = JSON.parseObject(message);
         Integer type = jsonObject.getInteger("type");
         if (type == MessageTypeEnum.GET_QUESTION.getCode()) {
@@ -81,6 +108,7 @@ public class WebSocketServer {
             logger.info("提交试题");
             QuestionDto dto = jsonObject.getObject("content", QuestionDto.class);
             logger.debug("提交的试题信息", JSON.toJSONString(dto, true));
+            dto.setUserId(userId);
             int num = paperAgent.commitQuestion(dto);
             res.put("count", num + "");
 
@@ -91,10 +119,6 @@ public class WebSocketServer {
             logger.info("强制提交试卷");
             logger.info("此处消息应该是服务端在考试结束后发往客户端，客户端发起非法");
         } else if (type == MessageTypeEnum.CLIENT_CLOSE.getCode()) {
-            List<String> userIdInfo = session.getRequestParameterMap().get("userId");
-            Long userId = Long.parseLong(userIdInfo.get(0));
-            List<String> sceneInfo = session.getRequestParameterMap().get("sceneId");
-            Long sceneId = Long.parseLong(sceneInfo.get(0));
 
 //            清空在内存中的引用
             WebSocketSessionUtil.remove(userId);
@@ -102,6 +126,7 @@ public class WebSocketServer {
 
             WebSocketSessionUtil.removeOnlineUser(userId);
             WebSocketSessionUtil.removeSceneUser(sceneId, userId);
+            session.close(new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "客户端发起"));
         } else {
             logger.warn("无效消息, {}", message);
         }

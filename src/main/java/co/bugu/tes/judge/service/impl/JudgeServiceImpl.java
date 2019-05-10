@@ -110,7 +110,7 @@ public class JudgeServiceImpl implements IJudgeService {
     }
 
     @Override
-    public List<Judge> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) {
+    public List<Judge> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) throws Exception {
 
 //        todo  校验数据完整性
         Date now = new Date();
@@ -118,7 +118,8 @@ public class JudgeServiceImpl implements IJudgeService {
 
         Map<String, Integer> busiMap = config.getBusiTypeInfo();
         Map<String, Integer> diffMap = config.getDifficultyInfo();
-        for(List<String> list: data){
+        int line = 2;
+        for (List<String> list : data) {
             int size = list.size();
             Judge judge = new Judge();
             judge.setIsDel(DelFlagEnum.NO.getCode());
@@ -137,33 +138,46 @@ public class JudgeServiceImpl implements IJudgeService {
             judge.setExtraInfo(list.get(2));
 
             //            根据实际情况添加属性
-            if(size > 3){
+
+            //            根据实际情况添加属性
+            if (size > 3) {
+                if (!busiMap.containsKey(list.get(3))) {
+                    logger.warn("第三列属性不合法，请检查");
+                    throw new Exception("第" + line + "行第三列属性不合法");
+                }
                 judge.setAttr1(busiMap.get(list.get(3)));
-            }else{
+            } else {
+
                 judge.setAttr1(-1);
             }
-            if(size > 4){
-                judge.setAttr2(diffMap.get(list.get(4)));
-            }else{
+            if (size > 4) {
+                if (!diffMap.containsKey(list.get(4))) {
+                    logger.warn("第四列属性不合法，请检查");
+                    throw new Exception("第" + line + "行第四列属性不合法");
+                }
+                judge.setAttr2(diffMap.get(list.get(9)));
+            } else {
                 judge.setAttr2(-1);
             }
-            if(size > 5){
+
+            if (size > 5) {
                 judge.setAttr3(Integer.valueOf(list.get(5)));
-            }else{
+            } else {
                 judge.setAttr3(-1);
             }
-            if(size > 6){
+            if (size > 6) {
                 judge.setAttr4(Integer.valueOf(list.get(6)));
-            }else{
+            } else {
                 judge.setAttr4(-1);
             }
-            if(size > 7){
+            if (size > 7) {
                 judge.setAttr5(Integer.valueOf(list.get(7)));
-            }else{
+            } else {
                 judge.setAttr5(-1);
             }
-            
+
             judges.add(judge);
+            line++;
 
         }
 

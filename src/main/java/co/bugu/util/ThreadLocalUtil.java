@@ -8,6 +8,9 @@ package co.bugu.util;
 public class ThreadLocalUtil {
     private static ThreadLocal<String> userToken = new ThreadLocal<>();
 
+    private static ThreadLocal<Long> userIdLocal = new ThreadLocal<>();
+
+
     /**
      * 设置当前用户token
      *
@@ -30,5 +33,14 @@ public class ThreadLocalUtil {
      */
     public static String getUserToken() {
         return userToken.get();
+    }
+
+
+    public static Long getUserId() {
+        return userIdLocal.get();
+    }
+
+    public static void setUserId(Long userId) {
+        userIdLocal.set(userId);
     }
 }

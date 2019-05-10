@@ -304,13 +304,12 @@ public class PaperAgent {
      * @date 2018/11/27 16:50
      */
     public Integer commitQuestion(QuestionDto dto) throws UserException {
-        Long userId = UserUtil.getCurrentUser().getId();
         Answer answer = new Answer();
         answer.setId(dto.getAnswerId());
         answer.setAnswer(dto.getRealAnswer());
         answer.setTimeLeft(dto.getLeftTimeInfo());
         answer.setUpdateTime(new Date());
-        answer.setUserId(userId);
+        answer.setUserId(dto.getUserId());
         int num = answerService.updateById(answer);
         return num;
     }

@@ -83,7 +83,7 @@ public interface IJudgeService {
      * @auther daocers
      * @date 2018/11/21 17:34
      */
-    List<Judge> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag);
+    List<Judge> batchAdd(List<List<String>> data, long userId, Long bankId, Long stationId, Long branchId, Long departmentId, Integer publicFlag) throws Exception;
 
     /**
      * 获取指定题型的id列表

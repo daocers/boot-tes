@@ -14,6 +14,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,7 +218,13 @@ public class JudgeApi {
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("批量添加判断题失败", e);
-            return RespDto.fail("批量添加判断题失败");
+            String msg = e.getMessage();
+            if (StringUtils.isEmpty(msg)) {
+                msg = "批量添加判断题失败";
+            }
+            return RespDto.fail(msg);
+        } finally {
+            target.delete();
         }
 
     }

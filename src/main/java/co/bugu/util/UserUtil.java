@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,6 +30,39 @@ public class UserUtil {
 
     static IUserService userService;
 
+
+    /**
+     * 校验token和userId是否匹配
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/10 11:09
+     */
+    public static Boolean checkToken(Long userId, String token) {
+        Long id = userTokenCache.getIfPresent(token);
+        if (id == null) {
+//            token无效
+            logger.warn("token： {}无效", token);
+            return false;
+        }
+        if (Objects.equals(id, userId)) {
+            return true;
+        } else {
+            logger.warn("userId：{} 和token： {}不匹配", new Object[]{userId, token});
+            return false;
+        }
+
+    }
+
+    /**
+     * 校验token是否合法
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/10 11:05
+     */
     public static Boolean checkToken(String token) {
         Long userId = userTokenCache.getIfPresent(token);
         if (null == userId) {
@@ -99,5 +133,19 @@ public class UserUtil {
      */
     public static Long getTokenCount() {
         return userTokenCache.size();
+    }
+
+
+    /**
+     * 通过token获取用户id
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/10 11:53
+     */
+    public static Long getUserIdByToken(String token) {
+        Long userId = userTokenCache.getIfPresent(token);
+        return userId;
     }
 }

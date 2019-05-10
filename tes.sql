@@ -529,7 +529,7 @@ CREATE TABLE tes_paper_policy (
     single_score double(5, 1)  not null default 0 comment '单选题分值',
     multi_score double(5, 1)  not null default 0 comment '多选题分值',
     judge_score double(5, 1)  not null default 0 comment '判断题分值',
-    receipt_score INT(11) DEFAULT -1 NOT NULL COMMENT '凭条总分',
+    receipt_score INT(11) DEFAULT 0 NOT NULL COMMENT '凭条总分',
   receipt_count INT(3) not NULL DEFAULT '-1' COMMENT '凭条张数',
   number_length INT(2) not NULL DEFAULT '-1' COMMENT '凭条数字长度',
   branch_id BIGINT(21) not NULL DEFAULT '-1' COMMENT '机构id',
@@ -546,39 +546,6 @@ CREATE TABLE tes_paper_policy (
   PRIMARY KEY (id)
 ) ENGINE=INnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色信息';
 
-
-
-/* 统计数据 */
-DROP TABLE IF EXISTS tes_paper_policy;
-CREATE TABLE tes_paper_policy (
-  id BIGINT(21) AUTO_INCREMENT not NULL COMMENT '主键',
-  name VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '角色名称',
-  code VARCHAR(50) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '角色编码',
-  memo VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '备忘录',
-  single_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '单选信息',
-  multi_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '多选信息',
-  judge_info VARCHAR(1000) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '判断题信息',
-  single_count int(11) not null default 0 comment '单选题数量',
-  multi_count int(11) not null default 0 comment '多选题数量',
-  judge_count int(11) not null default 0 comment '判断题数量',
-    single_score double(5, 1)  not null default 0 comment '单选题分值',
-    multi_score double(5, 1)  not null default 0 comment '多选题分值',
-    judge_score double(5, 1)  not null default 0 comment '判断题分值',
-  receipt_count INT(3) not NULL DEFAULT '-1' COMMENT '凭条张数',
-  number_length INT(2) not NULL DEFAULT '-1' COMMENT '凭条数字长度',
-  branch_id BIGINT(21) not NULL DEFAULT '-1' COMMENT '机构id',
-  station_id BIGINT(21) not NULL DEFAULT '-1' COMMENT '岗位id',
-  department_id BIGINT(21) not NULL DEFAULT '-1' COMMENT '部门id',
-
-
-  status INT(2) not NULL DEFAULT '-1' COMMENT '状态',
-  is_del INT(1) not NULL DEFAULT '-1' COMMENT '删除标志',
-  create_user_id BIGINT(21) not NULL DEFAULT '-1' COMMENT '创建人id',
-  create_time DATETIME not NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_user_id BIGINT(21) not NULL DEFAULT '-1' COMMENT '更新用户id',
-  update_time DATETIME not NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (id)
-) ENGINE=INnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色信息';
 
 
 -- 试卷策略可用性

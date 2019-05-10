@@ -18,6 +18,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +108,7 @@ public class SingleApi {
     public RespDto<Boolean> batchAdd(MultipartFile file, Long questionBankId) {
         String tmpPath = SingleApi.class.getClassLoader().getResource("models").getPath() + "/tmp";
         File tmpDir = new File(tmpPath);
-        if(!tmpDir.exists()){
+        if (!tmpDir.exists()) {
             tmpDir.mkdirs();
         }
         File target = new File(tmpDir, file.getOriginalFilename());
@@ -121,8 +122,12 @@ public class SingleApi {
             return RespDto.success(true);
         } catch (Exception e) {
             logger.error("批量添加单选题失败", e);
-            return RespDto.fail("批量添加单选题失败");
-        }finally {
+            String msg = e.getMessage();
+            if (StringUtils.isEmpty(msg)) {
+                msg = "批量添加单选题失败";
+            }
+            return RespDto.fail(msg);
+        } finally {
             target.delete();
         }
 
