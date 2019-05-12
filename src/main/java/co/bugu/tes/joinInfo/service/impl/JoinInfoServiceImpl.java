@@ -47,7 +47,7 @@ public class JoinInfoServiceImpl implements IJoinInfoService {
 
     private Logger logger = LoggerFactory.getLogger(JoinInfoServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(JoinInfo joinInfo) {

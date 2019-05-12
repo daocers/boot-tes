@@ -54,4 +54,8 @@
     <select id="getSceneScoreStat" resultMap="BaseResultMap" parameterType="int">
                   SELECT AVG(score) AS score, scene_id FROM tes_paper GROUP BY scene_id ORDER BY code DESC limit 0, #{size}
     </select>
+
+    <select id="getSceneMonitor" resultType="co.bugu.tes.paper.dao.vo.SceneMonitorVo" parameterType="long">
+        select count(*) as count, status from tes_paper where scene_id = #{id} group by status
+    </select>
 </mapper>

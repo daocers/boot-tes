@@ -40,7 +40,7 @@ public class ManagerServiceImpl implements IManagerService {
 
     private Logger logger = LoggerFactory.getLogger(ManagerServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(Manager manager) {

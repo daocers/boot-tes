@@ -230,17 +230,22 @@ public class StationApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public RespDto<Boolean> delete(Long id, Long operatorId) {
-        try {
-            logger.debug("准备删除， 参数: {}", id);
-            Preconditions.checkArgument(id != null, "id不能为空");
-            int count = stationService.deleteById(id, operatorId);
+    public RespDto<Boolean> delete(Long id) throws UserException,  Exception {
+        logger.debug("准备删除， 参数: {}", id);
+        Preconditions.checkArgument(id != null, "id不能为空");
+        Long userId = UserUtil.getCurrentUser().getId();
 
-            return RespDto.success(count == 1);
-        } catch (Exception e) {
-            logger.error("删除 失败", e);
-            return RespDto.fail();
+        User query = new User();
+        query.setStationId(id);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        PageInfo<User> userPageInfo = userService.findByConditionWithPage(1, 1, query);
+        if (userPageInfo.getSize() > 0) {
+            throw new Exception("当前岗位有用户，不能删除");
         }
+
+        int count = stationService.deleteById(id, userId);
+
+        return RespDto.success(count == 1);
     }
 
     @RequestMapping(value = "/findAll")

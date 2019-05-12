@@ -28,7 +28,7 @@ public class AnswerServiceImpl implements IAnswerService {
 
     private Logger logger = LoggerFactory.getLogger(AnswerServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id";
 
     @Override
     public long add(Answer answer) {

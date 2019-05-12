@@ -7,6 +7,8 @@ import co.bugu.tes.branch.domain.Branch;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
+import co.bugu.tes.question.agent.QuestionAgent;
+import co.bugu.tes.question.dto.QuestionCountDto;
 import co.bugu.tes.questionBank.domain.QuestionBank;
 import co.bugu.tes.questionBank.dto.QuestionBankDto;
 import co.bugu.tes.questionBank.service.IQuestionBankService;
@@ -58,6 +60,8 @@ public class QuestionBankApi {
     IBranchService branchService;
     @Autowired
     IStationService stationService;
+    @Autowired
+    QuestionAgent questionAgent;
 
     @RequestMapping(value = "/findAll")
     public RespDto<List<QuestionBank>> findAll() throws UserException {
@@ -190,17 +194,19 @@ public class QuestionBankApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public RespDto<Boolean> delete(Long id, Long operatorId) {
-        try {
-            logger.debug("准备删除， 参数: {}", id);
-            Preconditions.checkArgument(id != null, "id不能为空");
-            int count = questionBankService.deleteById(id, operatorId);
+    public RespDto<Boolean> delete(Long id) throws UserException, Exception {
+        logger.debug("准备删除， 参数: {}", id);
+        Preconditions.checkArgument(id != null, "id不能为空");
 
-            return RespDto.success(count == 1);
-        } catch (Exception e) {
-            logger.error("删除 失败", e);
-            return RespDto.fail();
+        Long userId = UserUtil.getCurrentUser().getId();
+
+        QuestionCountDto dto = questionAgent.getQuestionCount(id);
+        if (dto.getTotal() > 0) {
+            throw new Exception("本题库已有试题，不能删除");
         }
+        int count = questionBankService.deleteById(id, userId);
+
+        return RespDto.success(count == 1);
     }
 }
 

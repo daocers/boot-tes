@@ -30,7 +30,7 @@ public class StationServiceImpl implements IStationService {
 
     private Logger logger = LoggerFactory.getLogger(StationServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
 
     private Cache<Long, Station> stationCache = CacheBuilder.newBuilder()

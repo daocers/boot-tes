@@ -33,7 +33,7 @@ public class MultiServiceImpl implements IMultiService {
     TesConfig config;
     private Logger logger = LoggerFactory.getLogger(MultiServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(Multi multi) {

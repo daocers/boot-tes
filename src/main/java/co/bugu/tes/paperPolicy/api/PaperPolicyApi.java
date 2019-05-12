@@ -2,6 +2,7 @@ package co.bugu.tes.paperPolicy.api;
 
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.paperPolicy.agent.PaperPolicyAgent;
@@ -12,6 +13,9 @@ import co.bugu.tes.paperPolicy.dto.PaperPolicyDto;
 import co.bugu.tes.paperPolicy.service.IPaperPolicyService;
 import co.bugu.tes.paperPolicyCondition.domain.PaperPolicyCondition;
 import co.bugu.tes.paperPolicyCondition.service.IPaperPolicyConditionService;
+import co.bugu.tes.scene.domain.Scene;
+import co.bugu.tes.scene.enums.SceneStatusEnum;
+import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
@@ -63,6 +67,8 @@ public class PaperPolicyApi {
     @Autowired
     IPaperPolicyConditionService paperPolicyConditionService;
 
+    @Autowired
+    ISceneService sceneService;
     /**
      * 条件查询
      *
@@ -276,17 +282,21 @@ public class PaperPolicyApi {
      * @date 2019-04-28 17:08
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public RespDto<Boolean> delete(Long id, Long operatorId) {
-        try {
-            logger.debug("准备删除， 参数: {}", id);
-            Preconditions.checkArgument(id != null, "id不能为空");
-            int count = paperPolicyService.deleteById(id, operatorId);
-
-            return RespDto.success(count == 1);
-        } catch (Exception e) {
-            logger.error("删除 失败", e);
-            return RespDto.fail();
+    public RespDto<Boolean> delete(Long id) throws Exception {
+        logger.debug("准备删除， 参数: {}", id);
+        Preconditions.checkArgument(id != null, "id不能为空");
+        Scene scene = new Scene();
+        scene.setPaperPolicyId(id);
+        scene.setStatus(SceneStatusEnum.READY.getCode());
+        scene.setIsDel(DelFlagEnum.NO.getCode());
+        List<Scene> scenes = sceneService.findByCondition(1, 1, scene);
+        if(CollectionUtils.isNotEmpty(scenes)){
+            throw new Exception("该策略已被场次使用过，不能删除");
         }
+        Long userId = UserUtil.getCurrentUser().getId();
+        int count = paperPolicyService.deleteById(id, userId);
+
+        return RespDto.success(count == 1);
     }
 
 

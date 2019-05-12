@@ -40,6 +40,9 @@
             <if test="name != null and name != ''">
                 and name = #{name}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </select>
 
@@ -52,4 +55,26 @@
             #{item.departmentId}, #{item.stationId}, 1, 1, #{item.createUserId}, #{item.updateUserId})
         </foreach>
     </insert>
+
+    <select id="findUserUnderManage" parameterType="co.bugu.tes.user.domain.User" resultMap="BaseResultMap">
+        select * from tes_user
+        <where>
+            is_del = 1
+
+            <if test="departmentId != null or branchId != null or stationId != null">
+                and (
+                    id = -1
+                    <if test="departmentId != null">
+                        or department_id = #{departmentId}
+                    </if>
+                    <if test="branchId != null">
+                        or branch_id = #{branchId}
+                    </if>
+                    <if test="stationId != null">
+                        or station_id = #{stationId}
+                    </if>
+                )
+            </if>
+        </where>
+    </select>
 </mapper>

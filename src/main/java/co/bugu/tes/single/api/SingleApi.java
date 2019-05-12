@@ -1,6 +1,8 @@
 package co.bugu.tes.single.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.branch.service.IBranchService;
 import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.question.agent.QuestionAgent;
@@ -247,6 +249,25 @@ public class SingleApi {
             logger.error("删除 失败", e);
             return RespDto.fail();
         }
+    }
+
+
+    /**
+     * 禁用试题
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/12 22:34
+     */
+    @RequestMapping(value = "disable", method = RequestMethod.POST)
+    public RespDto<Boolean> disable(Long id) throws UserException {
+        Single single = new Single();
+        single.setStatus(BaseStatusEnum.DISABLE.getCode());
+        single.setId(id);
+        single.setUpdateUserId(UserUtil.getCurrentUser().getId());
+        singleService.updateById(single);
+        return RespDto.success(true);
     }
 }
 

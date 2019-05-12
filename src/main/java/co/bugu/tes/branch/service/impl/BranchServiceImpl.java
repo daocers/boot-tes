@@ -35,7 +35,7 @@ public class BranchServiceImpl implements IBranchService {
 
     private Logger logger = LoggerFactory.getLogger(BranchServiceImpl.class);
 
-    private static String ORDER_BY = "update_time";
+    private static String ORDER_BY = "id desc";
 
     private Cache<Long, Branch> branchCache = CacheBuilder.newBuilder()
             .concurrencyLevel(3)

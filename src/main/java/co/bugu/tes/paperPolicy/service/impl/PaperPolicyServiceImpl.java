@@ -27,7 +27,7 @@ public class PaperPolicyServiceImpl implements IPaperPolicyService {
 
     private static Logger logger = LoggerFactory.getLogger(PaperPolicyServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(PaperPolicy paperPolicy) {

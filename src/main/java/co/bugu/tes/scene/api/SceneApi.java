@@ -18,6 +18,7 @@ import co.bugu.tes.scene.domain.Scene;
 import co.bugu.tes.scene.dto.MyJoinDto;
 import co.bugu.tes.scene.dto.MyOpenDto;
 import co.bugu.tes.scene.dto.SceneDto;
+import co.bugu.tes.scene.dto.SceneMonitorDto;
 import co.bugu.tes.scene.enums.SceneStatusEnum;
 import co.bugu.tes.scene.service.ISceneService;
 import co.bugu.tes.user.domain.User;
@@ -101,7 +102,10 @@ public class SceneApi {
                     if (null != bank) {
                         dto.setQuestionBankName(bank.getName());
                     }
-//                    todo 策略名称待处理，当前暂时未开通策略模式
+                    PaperPolicy paperPolicy = paperPolicyService.findById(scene.getPaperPolicyId());
+                    if (null != paperPolicy) {
+                        dto.setPaperPolicyName(paperPolicy.getName());
+                    }
 
                     return dto;
                 }
@@ -146,6 +150,8 @@ public class SceneApi {
                 dto.setUserId(userId);
                 dto.setScore(paper.getScore());
                 dto.setOriginalScore(paper.getOriginalScore());
+                dto.setCommonScore(paper.getCommonScore());
+                dto.setReceiptScore(paper.getReceiptScore());
 //                dto.setSceneStatus(scene.getStatus());
                 dto.setPaperStatus(paper.getStatus());
                 return dto;
@@ -228,7 +234,7 @@ public class SceneApi {
                 }
             }
             PaperPolicyCheckDto checkDto = null;
-            if (paperPolicyId == null ||  paperPolicyId <= 0) {
+            if (paperPolicyId == null || paperPolicyId <= 0) {
                 checkDto = paperPolicyAgent.checkSimple(scene.getSingleCount(), scene.getMultiCount(), scene.getJudgeCount(), scene.getQuestionBankId());
             } else {
                 checkDto = paperPolicyAgent.checkPolicy(paperPolicyId, scene.getQuestionBankId());
@@ -363,6 +369,43 @@ public class SceneApi {
         } else {
             return RespDto.fail("授权码错误");
         }
+    }
+
+
+    /**
+     * 查询考试中的场次
+     * 管理员专用，开场教师从自己的开场列表中查看
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/11 10:30
+     */
+    @RequestMapping(value = "/findSceneInExaming")
+    public RespDto<PageInfo<SceneMonitorDto>> findSceneInExaming(Integer pageNum, Integer pageSize) throws UserException {
+        Scene query = new Scene();
+        query.setStatus(SceneStatusEnum.ON.getCode());
+        query.setIsDel(DelFlagEnum.NO.getCode());
+
+        PageInfo<Scene> scenePageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
+        PageInfo<SceneMonitorDto> monitorDtoPageInfo = new PageInfo<SceneMonitorDto>();
+        BeanUtils.copyProperties(scenePageInfo, monitorDtoPageInfo);
+
+        if (scenePageInfo.getSize() > 0) {
+            List<SceneMonitorDto> dtos = Lists.transform(scenePageInfo.getList(), item -> {
+                SceneMonitorDto dto = new SceneMonitorDto();
+                BeanUtils.copyProperties(item, dto);
+                Long sceneId = item.getId();
+                SceneMonitorDto dtoTmp = paperService.getSceneMonitor(sceneId);
+                dto.setPaperCount(dtoTmp.getPaperCount());
+                dto.setPaperCommitCount(dtoTmp.getPaperCommitCount());
+                dto.setPaperNoneCommitCount(dtoTmp.getPaperNoneCommitCount());
+                dto.setCommitRate(dtoTmp.getCommitRate());
+                return dto;
+            });
+            monitorDtoPageInfo.setList(dtos);
+        }
+        return RespDto.success(monitorDtoPageInfo);
     }
 }
 

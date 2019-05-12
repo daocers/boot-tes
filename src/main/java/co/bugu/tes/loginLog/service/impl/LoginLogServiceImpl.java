@@ -26,7 +26,7 @@ public class LoginLogServiceImpl implements ILoginLogService {
 
     private Logger logger = LoggerFactory.getLogger(LoginLogServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(LoginLog loginLog) {

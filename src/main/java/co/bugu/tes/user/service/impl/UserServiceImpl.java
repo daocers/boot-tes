@@ -50,7 +50,7 @@ public class UserServiceImpl implements IUserService {
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     Cache<Long, User> userCache = CacheBuilder.newBuilder().concurrencyLevel(5).maximumSize(1000)
             .expireAfterWrite(30, TimeUnit.MINUTES).build();
@@ -216,6 +216,20 @@ public class UserServiceImpl implements IUserService {
 
         }
         return null;
+    }
+
+    @Override
+    public PageInfo<User> findUserUnderManage(Integer pageNum, Integer pageSize, User user) {
+        logger.debug("user findUserUnderManage, 参数 pageNum: {}, pageSize: {}, condition: {}", new Object[]{pageNum, pageSize, JSON.toJSONString(user, true)});
+        if(user.getBranchId() == null && user.getStationId() == null && user.getDepartmentId() == null){
+            logger.warn("不是管理员，请求非法：condition:{}", JSON.toJSONString(user, true));
+            return new PageInfo<>(new ArrayList<>());
+        }
+        PageHelper.startPage(pageNum, pageSize, ORDER_BY);
+        List<User> users = userDao.findUserUnderManage(user);
+
+        logger.debug("查询结果， {}", JSON.toJSONString(users, true));
+        return new PageInfo<>(users);
     }
 
 }

@@ -30,6 +30,7 @@ CREATE TABLE tes_role (
   name VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '角色名称',
   code VARCHAR(50) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '角色编码',
   memo VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '备忘录',
+  type INT(2) not NULL DEFAULT '-1' COMMENT '类型',
   status INT(2) not NULL DEFAULT '-1' COMMENT '状态',
   is_del INT(1) not NULL DEFAULT '-1' COMMENT '删除标志',
   create_user_id BIGINT(21) not NULL DEFAULT '-1' COMMENT '创建人id',

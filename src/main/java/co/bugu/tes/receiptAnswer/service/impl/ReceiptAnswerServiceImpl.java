@@ -108,4 +108,11 @@ public class ReceiptAnswerServiceImpl implements IReceiptAnswerService {
         return list;
     }
 
+    @Override
+    public int delete(ReceiptAnswer answer) {
+        int num = receiptAnswerDao.updateBySceneIdAndUserId(answer);
+
+        return num;
+    }
+
 }

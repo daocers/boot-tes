@@ -34,7 +34,7 @@ public class SingleServiceImpl implements ISingleService {
 
     private Logger logger = LoggerFactory.getLogger(SingleServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(Single single) {

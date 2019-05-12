@@ -31,7 +31,7 @@ public class QuestionStatServiceImpl implements IQuestionStatService {
 
     private static Logger logger = LoggerFactory.getLogger(QuestionStatServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(QuestionStat questionStat) {

@@ -30,7 +30,7 @@ public class ReceiptServiceImpl implements IReceiptService {
 
     private Logger logger = LoggerFactory.getLogger(ReceiptServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id";
 
     @Override
     public long add(Receipt receipt) {

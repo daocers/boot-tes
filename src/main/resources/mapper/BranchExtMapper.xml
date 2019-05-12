@@ -38,6 +38,9 @@
             <if test="superiorCode != null and superiorCode != ''">
                 and superior_code = #{superiorCode}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </select>
 </mapper>

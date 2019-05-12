@@ -34,7 +34,7 @@ public class JudgeServiceImpl implements IJudgeService {
 
     private Logger logger = LoggerFactory.getLogger(JudgeServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(Judge judge) {
@@ -155,7 +155,7 @@ public class JudgeServiceImpl implements IJudgeService {
                     logger.warn("第四列属性不合法，请检查");
                     throw new Exception("第" + line + "行第四列属性不合法");
                 }
-                judge.setAttr2(diffMap.get(list.get(9)));
+                judge.setAttr2(diffMap.get(list.get(4)));
             } else {
                 judge.setAttr2(-1);
             }

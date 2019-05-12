@@ -83,4 +83,14 @@ public interface IUserService {
      * @date 2019/1/5 11:26
      */
     List<User> batchAdd(List<List<String>> data, Long roleId) throws UserException;
+
+    /**
+     * 查找管理的机构中的用户
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/12 14:24
+     */
+    PageInfo<User> findUserUnderManage(Integer pageNum, Integer pageSize, User user);
 }

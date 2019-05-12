@@ -127,6 +127,7 @@ public class WebSocketServer {
             WebSocketSessionUtil.removeOnlineUser(userId);
             WebSocketSessionUtil.removeSceneUser(sceneId, userId);
             session.close(new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "客户端发起"));
+            return;
         } else {
             logger.warn("无效消息, {}", message);
         }

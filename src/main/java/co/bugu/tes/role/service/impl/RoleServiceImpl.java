@@ -34,7 +34,7 @@ public class RoleServiceImpl implements IRoleService {
 
     private Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(Role role) {
@@ -129,5 +129,4 @@ public class RoleServiceImpl implements IRoleService {
         xDao.batchAdd(xList);
         return xList;
     }
-
 }

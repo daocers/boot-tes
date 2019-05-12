@@ -27,7 +27,7 @@ public class RolePermissionXServiceImpl implements IRolePermissionXService {
 
     private Logger logger = LoggerFactory.getLogger(RolePermissionXServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(RolePermissionX rolePermissionX) {

@@ -27,7 +27,7 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 
     private Logger logger = LoggerFactory.getLogger(QuestionBankServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(QuestionBank questionBank) {

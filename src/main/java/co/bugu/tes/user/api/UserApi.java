@@ -1,6 +1,7 @@
 package co.bugu.tes.user.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.branch.domain.Branch;
@@ -9,6 +10,11 @@ import co.bugu.tes.department.domain.Department;
 import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.loginLog.domain.LoginLog;
 import co.bugu.tes.loginLog.service.ILoginLogService;
+import co.bugu.tes.manager.domain.Manager;
+import co.bugu.tes.manager.enums.ManagerTypeEnum;
+import co.bugu.tes.manager.service.IManagerService;
+import co.bugu.tes.role.agent.RoleAgent;
+import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.station.domain.Station;
 import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
@@ -72,6 +78,13 @@ public class UserApi {
     IStationService stationService;
     @Autowired
     ILoginLogService loginLogService;
+
+    //    @Autowired
+//    IRoleService roleService;
+    @Autowired
+    RoleAgent roleAgent;
+    @Autowired
+    IManagerService managerService;
 
 
     /**
@@ -183,23 +196,63 @@ public class UserApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            PageInfo<User> pageInfo = userService.findByConditionWithPage(pageNum, pageSize, user);
+
+            User currentUser = UserUtil.getCurrentUser();
+            List<Role> roles = roleAgent.getRoleList(currentUser.getId());
+            boolean isAdmin = false;
+            for (Role role : roles) {
+                if (role.getCode().equalsIgnoreCase("root") ||
+                        role.getCode().equalsIgnoreCase("admin")) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+
+            PageInfo<User> pageInfo = null;
+
+            if(!isAdmin){
+                Manager query = new Manager();
+                query.setIsDel(DelFlagEnum.NO.getCode());
+                query.setUserId(currentUser.getId());
+                query.setStatus(BaseStatusEnum.ENABLE.getCode());
+
+                List<Manager> managers = managerService.findByCondition(query);
+                if(CollectionUtils.isNotEmpty(managers)){
+                    for(Manager manager: managers){
+                        Long targetId = manager.getTargetId();
+                        Integer type = manager.getType();
+                        if(ManagerTypeEnum.DEPARTMENT.getCode() == type){
+                            user.setDepartmentId(targetId);
+                        }else if(ManagerTypeEnum.BRANCH.getCode() == type){
+                            user.setBranchId(targetId);
+                        }else if(ManagerTypeEnum.STATION.getCode() == type){
+                            user.setStationId(targetId);
+                        }
+
+                    }
+                }
+                pageInfo = userService.findUserUnderManage(pageNum, pageSize, user);
+            }else{
+                pageInfo = userService.findByConditionWithPage(pageNum, pageSize, user);
+
+            }
+
             PageInfo<UserDto> res = new PageInfo<>();
             BeanUtils.copyProperties(pageInfo, res);
             List<UserDto> list = Lists.transform(pageInfo.getList(), new Function<User, UserDto>() {
                 @Override
-                public UserDto apply(@Nullable User user) {
+                public UserDto apply(@Nullable User item) {
                     UserDto dto = new UserDto();
-                    BeanUtils.copyProperties(user, dto);
-                    Branch branch = branchService.findById(user.getBranchId());
+                    BeanUtils.copyProperties(item, dto);
+                    Branch branch = branchService.findById(item.getBranchId());
                     if (branch != null) {
                         dto.setBranchName(branch.getName());
                     }
-                    Department department = departmentService.findById(user.getDepartmentId());
+                    Department department = departmentService.findById(item.getDepartmentId());
                     if (department != null) {
                         dto.setDepartmentName(department.getName());
                     }
-                    Station station = stationService.findById(user.getStationId());
+                    Station station = stationService.findById(item.getStationId());
                     if (station != null) {
                         dto.setStationName(station.getName());
                     }

@@ -191,6 +191,8 @@ public class SceneAgent {
         if (user == null) {
             return new PageInfo<>();
         }
+
+
         Long branchId = user.getBranchId();
         Long departmentId = user.getDepartmentId();
         Long stationId = user.getStationId();
@@ -199,7 +201,6 @@ public class SceneAgent {
         query.setBeginDate(beginDate);
         query.setEndDate(endDate);
         query.setIsDel(DelFlagEnum.NO.getCode());
-
 
 //        List<JoinInfo> infos = new ArrayList<>();
         Set<Long> sceneIds = new TreeSet<>();
@@ -233,6 +234,8 @@ public class SceneAgent {
         query = new JoinInfoQueryDto();
         query.setTargetId(-1L);
         query.setType(-1);
+        query.setBeginDate(beginDate);
+        query.setEndDate(endDate);
         List<JoinInfo> listOfAuthCode = joinInfoService.findByUserInfo(query);
         if (CollectionUtils.isNotEmpty(listOfAuthCode)) {
             sceneIds.addAll(Lists.transform(listOfAuthCode, item -> item.getSceneId()));
@@ -251,6 +254,7 @@ public class SceneAgent {
         PageInfo<Scene> pageInfo = new PageInfo<>();
         pageInfo.setPageNum(pageNum);
         pageInfo.setPageSize(pageSize);
+        pageInfo.setTotal(scenes.size());
         int index = (pageNum - 1) * pageSize;
         if (scenes.size() <= index) {
             pageInfo.setList(new ArrayList<>());

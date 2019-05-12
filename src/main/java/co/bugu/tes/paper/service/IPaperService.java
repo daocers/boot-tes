@@ -2,6 +2,7 @@ package co.bugu.tes.paper.service;
 
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.scene.dto.SceneMonitorDto;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -94,4 +95,15 @@ public interface IPaperService {
      * @date 2019/5/9 15:56
      */
     List<Paper> getSceneScoreStat(int size);
+
+
+    /**
+     * 获取场次监控信息
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/11 12:21
+     */
+    SceneMonitorDto getSceneMonitor(Long sceneId);
 }

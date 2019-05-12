@@ -82,4 +82,15 @@ public interface IReceiptAnswerService {
      * @date 2019/4/24 11:35
      */
     List<ReceiptAnswer> batchAdd(List<ReceiptAnswer> list);
+
+
+    /**
+     * 删除指定用户指定场次的凭条记录
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/10 23:08
+     */
+    int delete(ReceiptAnswer receiptAnswer);
 }

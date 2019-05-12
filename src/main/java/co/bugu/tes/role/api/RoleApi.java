@@ -3,8 +3,10 @@ package co.bugu.tes.role.api;
 import co.bugu.common.RespDto;
 import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.role.dto.RoleDto;
+import co.bugu.tes.role.enums.RoleTypeEnum;
 import co.bugu.tes.role.service.IRoleService;
 import co.bugu.tes.user.domain.User;
 import co.bugu.tes.user.service.IUserService;
@@ -62,7 +64,7 @@ public class RoleApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
-            if(role != null && StringUtils.isNotEmpty(role.getName())){
+            if (role != null && StringUtils.isNotEmpty(role.getName())) {
                 role.setName("%" + role.getName() + "%");
             }
             PageInfo<Role> pageInfo = roleService.findByConditionWithPage(pageNum, pageSize, role);
@@ -129,12 +131,15 @@ public class RoleApi {
             Long roleId = role.getId();
             role.setUpdateUserId(userId);
             if (null == roleId) {
+                role.setType(RoleTypeEnum.CUSTOM.getType());
                 role.setStatus(BaseStatusEnum.ENABLE.getCode());
                 role.setCreateUserId(userId);
                 logger.debug("保存， saveRole, 参数： {}", JSON.toJSONString(role, true));
                 roleId = roleService.add(role);
                 logger.info("新增 成功， id: {}", roleId);
             } else {
+                Role tmp = roleService.findById(roleId);
+                role.setType(tmp.getType());
                 roleService.updateById(role);
                 logger.debug("更新成功", JSON.toJSONString(role, true));
             }
@@ -175,17 +180,22 @@ public class RoleApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public RespDto<Boolean> delete(Long id, Long operatorId) {
-        try {
-            logger.debug("准备删除， 参数: {}", id);
-            Preconditions.checkArgument(id != null, "id不能为空");
-            int count = roleService.deleteById(id, operatorId);
+    public RespDto<Boolean> delete(Long id) throws UserException, Exception {
+        logger.debug("准备删除， 参数: {}", id);
+        Preconditions.checkArgument(id != null, "id不能为空");
+        Long userId = UserUtil.getCurrentUser().getId();
 
-            return RespDto.success(count == 1);
-        } catch (Exception e) {
-            logger.error("删除 失败", e);
-            return RespDto.fail();
+        UserRoleX x = new UserRoleX();
+        x.setRoleId(id);
+        x.setIsDel(DelFlagEnum.NO.getCode());
+        PageInfo<UserRoleX> xPageInfo = userRoleXService.findByConditionWithPage(1, 1, x);
+        if(xPageInfo.getSize() > 0){
+            throw new Exception("该角色已经分配给用户，不能删除");
         }
+
+        int count = roleService.deleteById(id, userId);
+
+        return RespDto.success(count == 1);
     }
 
 

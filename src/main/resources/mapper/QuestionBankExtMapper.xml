@@ -43,6 +43,9 @@
             <if test="stationId != null">
                 and station_id = #{stationId}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </select>
 </mapper>

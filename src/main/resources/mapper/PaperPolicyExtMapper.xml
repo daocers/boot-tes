@@ -46,6 +46,9 @@
         from tes_paper_policy
         <where>
             is_del = 1
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </select>
 </mapper>

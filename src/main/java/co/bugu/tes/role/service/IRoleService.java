@@ -84,4 +84,6 @@ public interface IRoleService {
      * @date 2018/11/30 15:33
      */
     List<RolePermissionX> authorize(Long roleId, List<Long> permissionIdList, Long userId);
+
+
 }

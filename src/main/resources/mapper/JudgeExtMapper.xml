@@ -60,6 +60,9 @@
             <if test="attr5 != null">
                 and attr_5 = #{attr5}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </select>
 

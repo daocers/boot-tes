@@ -418,6 +418,8 @@ public class ExamApi {
     @RequestMapping(value = "/forceCommit", method = RequestMethod.POST)
     public RespDto<Boolean> forceCommit(Long sceneId, Long userId) {
         try {
+            User user = UserUtil.getCurrentUser();
+            logger.warn("用户： {}被强制交卷，操作人 ID：{}， 姓名： {}", new Object[]{userId, user.getId(), user.getName()});
             Session session = WebSocketSessionUtil.getSession(userId);
             if (session != null) {
                 Map<String, String> res = new HashMap<>();
@@ -463,7 +465,7 @@ public class ExamApi {
         if (scene.getOpenTime().after(now)) {
             return RespDto.fail("考试未开始");
         }
-        if (scene.getOpenTime().getTime() + scene.getDuration() * 60000 < now.getTime()) {
+        if (scene.getOpenTime().getTime() + scene.getDelayMinute() * 60000 < now.getTime()) {
             return RespDto.fail("迟到太久，参加下一场吧");
         }
 

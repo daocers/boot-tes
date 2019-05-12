@@ -55,6 +55,14 @@ public class PaperApi {
     ISceneService sceneService;
 
 
+    /**
+     * 下载成绩
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/11 10:28
+     */
     @RequestMapping(value = "/downloadScore", method = RequestMethod.POST)
     public void downloadScore(Long sceneId, HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {

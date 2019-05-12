@@ -27,7 +27,7 @@ public class PropertyItemServiceImpl implements IPropertyItemService {
 
     private Logger logger = LoggerFactory.getLogger(PropertyItemServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(PropertyItem propertyItem) {

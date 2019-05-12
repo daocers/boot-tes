@@ -10,6 +10,8 @@ import co.bugu.tes.department.service.IDepartmentService;
 import co.bugu.tes.manager.domain.Manager;
 import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.manager.service.IManagerService;
+import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.service.IUserService;
 import co.bugu.util.CodeUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
@@ -45,6 +47,9 @@ public class DepartmentApi {
     IDepartmentService departmentService;
     @Autowired
     IManagerService managerService;
+
+    @Autowired
+    IUserService userService;
 
     /**
      * 设置部门管理员
@@ -215,17 +220,23 @@ public class DepartmentApi {
      * @date 2018-11-20 17:15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public RespDto<Boolean> delete(Long id, Long operatorId) {
-        try {
-            logger.debug("准备删除， 参数: {}", id);
-            Preconditions.checkArgument(id != null, "id不能为空");
-            int count = departmentService.deleteById(id, operatorId);
-
-            return RespDto.success(count == 1);
-        } catch (Exception e) {
-            logger.error("删除 失败", e);
-            return RespDto.fail();
+    public RespDto<Boolean> delete(Long id) throws UserException, Exception {
+        logger.debug("准备删除， 参数: {}", id);
+        Preconditions.checkArgument(id != null, "id不能为空");
+        Long userId = UserUtil.getCurrentUser().getId();
+        User query = new User();
+        query.setDepartmentId(id);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        PageInfo<User> pageInfo = userService.findByConditionWithPage(1, 1, query);
+        if (pageInfo.getSize() > 0) {
+            logger.error("当前部门{}有用户，不能删除", id);
+            throw new Exception("当前部门有用户，不能删除");
         }
+
+
+        int count = departmentService.deleteById(id, userId);
+
+        return RespDto.success(count == 1);
     }
 
     /**

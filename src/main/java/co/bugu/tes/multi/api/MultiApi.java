@@ -1,6 +1,8 @@
 package co.bugu.tes.multi.api;
 
 import co.bugu.common.RespDto;
+import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.multi.domain.Multi;
 import co.bugu.tes.multi.service.IMultiService;
 import co.bugu.tes.question.agent.QuestionAgent;
@@ -228,6 +230,25 @@ public class MultiApi {
             target.delete();
         }
 
+    }
+
+
+    /**
+     * 禁用试题
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/12 22:34
+     */
+    @RequestMapping(value = "disable", method = RequestMethod.POST)
+    public RespDto<Boolean> disable(Long id) throws UserException {
+        Multi query = new Multi();
+        query.setStatus(BaseStatusEnum.DISABLE.getCode());
+        query.setId(id);
+        query.setUpdateUserId(UserUtil.getCurrentUser().getId());
+        multiService.updateById(query);
+        return RespDto.success(true);
     }
 }
 

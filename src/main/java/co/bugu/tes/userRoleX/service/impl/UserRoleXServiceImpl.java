@@ -27,7 +27,7 @@ public class UserRoleXServiceImpl implements IUserRoleXService {
 
     private Logger logger = LoggerFactory.getLogger(UserRoleXServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
     @Override
     public long add(UserRoleX userRoleX) {

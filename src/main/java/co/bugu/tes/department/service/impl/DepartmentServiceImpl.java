@@ -33,7 +33,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     private Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
-    private static String ORDER_BY = "update_time DESC";
+    private static String ORDER_BY = "id desc";
 
 
     private Cache<Long, Department> departmentCache =

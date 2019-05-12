@@ -49,6 +49,9 @@ public class ReceiptAnswerAgent {
 //        2 答案入库 (ReceiptAnswer)
 //        3 考试结果入库（ReceiptRecord）
 
+
+
+
         Receipt query = new Receipt();
         query.setSceneId(sceneId);
         List<Receipt> receipts = receiptService.findByCondition(query);
@@ -56,6 +59,13 @@ public class ReceiptAnswerAgent {
             logger.warn("sceneId: {} 没有找到凭条信息", sceneId);
             return false;
         }
+
+
+        ReceiptAnswer receiptAnswer = new ReceiptAnswer();
+        receiptAnswer.setSceneId(sceneId);
+        receiptAnswer.setUserId(userId);
+        receiptAnswer.setIsDel(DelFlagEnum.NO.getCode());
+        receiptAnswerService.delete(receiptAnswer);
 
         int size = answers.size();
         int idx = 0;
@@ -80,6 +90,7 @@ public class ReceiptAnswerAgent {
                     right++;
                 }
                 list.add(item);
+                idx++;
             } else {
                 break;
             }
