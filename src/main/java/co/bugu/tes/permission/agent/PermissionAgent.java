@@ -114,6 +114,9 @@ public class PermissionAgent {
         List<PermissionTreeDto> treeDtos = new ArrayList<>();
         for (Permission permission : list) {
             PermissionTreeDto dto = new PermissionTreeDto();
+            if(permission == null){
+                continue;
+            }
             BeanUtils.copyProperties(permission, dto);
             treeDtos.add(dto);
         }
@@ -193,7 +196,7 @@ public class PermissionAgent {
         for (UserRoleX x : xList) {
             Long roleId = x.getRoleId();
             List<Long> pIds = roleIdPermIdsCache.getIfPresent(roleId);
-            if (pIds == null) {
+            if (CollectionUtils.isEmpty(pIds)) {
                 RolePermissionX rolePermissionX = new RolePermissionX();
                 rolePermissionX.setRoleId(roleId);
                 List<RolePermissionX> rolePermissionXList = rolePermissionXService.findByCondition(rolePermissionX);
@@ -238,10 +241,11 @@ public class PermissionAgent {
             Permission permission = permissionCache.getIfPresent(permissionId);
             if (null == permission) {
                 permission = permissionService.findById(permissionId);
-                permissionCache.put(permissionId, permission);
             }
             if (null != permission) {
                 res.add(permission);
+                permissionCache.put(permissionId, permission);
+
             }
         });
         return res;

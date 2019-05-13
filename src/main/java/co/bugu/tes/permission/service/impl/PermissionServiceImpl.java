@@ -40,7 +40,7 @@ public class PermissionServiceImpl implements IPermissionService {
 
     private Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
-    private static String ORDER_BY = "update_time";
+    private static String ORDER_BY = "no";
 
 
 //    存放权限信息
