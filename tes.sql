@@ -65,6 +65,7 @@ CREATE TABLE tes_permission (
   code VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '权限编码',
   name VARCHAR(200) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '权限名称',
   url VARCHAR(200) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '权限对应的url',
+  icon VARCHAR(200) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '权限对应的图标信息',
   controller VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '对应的controller名称',
   action VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '对应的action名称',
   http_method VARCHAR(100) COLLATE utf8mb4_unicode_ci not NULL DEFAULT '' COMMENT '接受的http请求方式',

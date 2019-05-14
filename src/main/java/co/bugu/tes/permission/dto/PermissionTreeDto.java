@@ -19,6 +19,7 @@ public class PermissionTreeDto {
     private Integer no;
     private Integer type;
     private String url;
+    private String icon;
     private Long superiorId;
     private Integer status;
     private List<PermissionTreeDto> children;

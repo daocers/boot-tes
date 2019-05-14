@@ -7,6 +7,7 @@
         <result column="code" jdbcType="VARCHAR" property="code"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon"/>
         <result column="controller" jdbcType="VARCHAR" property="controller"/>
         <result column="action" jdbcType="VARCHAR" property="action"/>
         <result column="http_method" jdbcType="VARCHAR" property="httpMethod"/>
@@ -21,7 +22,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, superior_id, code, name, url, controller, action, http_method, status, no, memo, 
+    id, superior_id, code, name, url, icon, controller, action, http_method, status, no, memo,
     type, is_del, create_user_id, create_time, update_user_id, update_time
   </sql>
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">

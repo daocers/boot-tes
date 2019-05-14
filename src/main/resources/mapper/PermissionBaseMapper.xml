@@ -16,6 +16,9 @@
       <if test="url != null">
         url = #{url,jdbcType=VARCHAR},
       </if>
+      <if test="icon != null">
+        icon = #{icon},
+      </if>
       <if test="controller != null">
         controller = #{controller,jdbcType=VARCHAR},
       </if>
@@ -74,6 +77,9 @@
       <if test="url != null">
         url,
       </if>
+      <if test="icon != null">
+        icon,
+      </if>
       <if test="controller != null">
         controller,
       </if>
@@ -123,6 +129,9 @@
       </if>
       <if test="url != null">
         #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        #{icon},
       </if>
       <if test="controller != null">
         #{controller,jdbcType=VARCHAR},
