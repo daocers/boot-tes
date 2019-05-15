@@ -23,6 +23,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,9 @@ public class QuestionBankApi {
             }
             if (null == pageSize) {
                 pageSize = 10;
+            }
+            if(StringUtils.isNotEmpty(questionBank.getName())){
+                questionBank.setName("%" + questionBank.getName() + "%");
             }
             PageInfo<QuestionBank> pageInfo = questionBankService.findByConditionWithPage(pageNum, pageSize, questionBank);
             PageInfo<QuestionBankDto> res = new PageInfo<>();

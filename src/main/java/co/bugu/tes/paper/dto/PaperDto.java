@@ -36,4 +36,12 @@ public class PaperDto {
 
     private Integer status;
 
+    private Integer receiptCount;
+
+    private Double receiptScore;
+
+    private Double receiptRate;
+
+    private Double commonScore;
+
 }

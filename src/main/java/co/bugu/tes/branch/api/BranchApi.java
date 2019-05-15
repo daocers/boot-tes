@@ -23,6 +23,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +97,7 @@ public class BranchApi {
             query.setTargetId(branchId);
             query.setType(ManagerTypeEnum.BRANCH.getCode());
             List<Manager> managers = managerService.findByCondition(query);
+
             Long currentUserId = UserUtil.getCurrentUser().getId();
             Manager manager = new Manager();
             manager.setId(managers.get(0).getId());
@@ -168,6 +170,9 @@ public class BranchApi {
             }
             if (null == pageSize) {
                 pageSize = 10;
+            }
+            if(StringUtils.isNotEmpty(branch.getName())){
+                branch.setName("%" + branch.getName() + "%");
             }
             PageInfo<Branch> pageInfo = branchService.findByConditionWithPage(pageNum, pageSize, branch);
             PageInfo<BranchDto> res = new PageInfo<>();

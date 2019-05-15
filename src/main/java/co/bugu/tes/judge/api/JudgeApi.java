@@ -70,6 +70,9 @@ public class JudgeApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
+            if(StringUtils.isNotEmpty(judge.getTitle())){
+                judge.setTitle("%" + judge.getTitle() + "%");
+            }
             PageInfo<Judge> pageInfo = judgeService.findByConditionWithPage(pageNum, pageSize, judge);
             PageInfo<QuestionListDto> res = new PageInfo<>();
             BeanUtils.copyProperties(pageInfo, res);

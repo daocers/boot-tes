@@ -30,6 +30,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class SceneApi {
 
 
     @RequestMapping("/myOpen")
-    public RespDto<PageInfo<MyOpenDto>> findMyOpen(Integer pageNum, Integer pageSize, Integer status) {
+    public RespDto<PageInfo<MyOpenDto>> findMyOpen(Integer pageNum, Integer pageSize, Integer status, String name) {
         try {
             User user = UserUtil.getCurrentUser();
             Long userId = user.getId();
@@ -90,6 +91,9 @@ public class SceneApi {
             query.setStatus(status);
             query.setCreateUserId(userId);
             query.setIsDel(DelFlagEnum.NO.getCode());
+            if(StringUtils.isNotEmpty(name)){
+                query.setName("%" + name + "%");
+            }
             PageInfo<Scene> pageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
             PageInfo<MyOpenDto> res = new PageInfo<>();
             BeanUtils.copyProperties(pageInfo, res);

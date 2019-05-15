@@ -63,7 +63,7 @@ public class PaperApi {
      * @auther daocers
      * @date 2019/5/11 10:28
      */
-    @RequestMapping(value = "/downloadScore", method = RequestMethod.POST)
+    @RequestMapping(value = "/downloadScore")
     public void downloadScore(Long sceneId, HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             Scene scene = sceneService.findById(sceneId);
@@ -74,7 +74,7 @@ public class PaperApi {
             List<Paper> paperList = paperService.findByCondition(query);
             List<List<String>> data = new ArrayList<>();
             List<String> title = Arrays.asList(new String[]{"用户名", "姓名",
-                    "场次编号", "场次名称", "试卷编号", "百分制成绩", "原始成绩",
+                    "场次编号", "场次名称", "试卷编号", "百分制成绩", "原始成绩", "知识类得分", "凭条得分", "凭条数量", "凭条正确率",
                     "作答标志", "入场时间", "交卷时间"});
             List<List<String>> contents = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(paperList)) {
@@ -96,6 +96,10 @@ public class PaperApi {
                         line.add(paper.getCode());
                         line.add(paper.getScore().toString());
                         line.add(paper.getOriginalScore().toString());
+                        line.add(paper.getCommonScore().toString());
+                        line.add(paper.getReceiptScore().toString());
+                        line.add(scene.getReceiptCount().toString());
+                        line.add(paper.getReceiptRate().toString());
                         int answerFlag = paper.getAnswerFlag();
                         if (AnswerFlagEnum.NO.getCode() == answerFlag) {
                             line.add("未作答");
@@ -116,7 +120,6 @@ public class PaperApi {
             data.addAll(contents);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             response.setHeader("Content-Disposition", "attachment;filename=" + new String(("成绩.xlsx").getBytes(), "iso-8859-1"));
-
             OutputStream outputStream = response.getOutputStream();
             ExcelUtil.writeToOutputStream("xlsx", title, contents, null, outputStream);
 
@@ -148,25 +151,25 @@ public class PaperApi {
 
             Long userId = null;
             String username = paperDto.getUserName();
-            if(StringUtils.isNotEmpty(username)){
+            if (StringUtils.isNotEmpty(username)) {
                 User user = new User();
                 user.setUsername(username);
                 user.setName(paperDto.getName());
                 List<User> users = userService.findByCondition(user);
-                if(CollectionUtils.isEmpty(users)){
+                if (CollectionUtils.isEmpty(users)) {
                     return RespDto.fail("没有找到用户");
-                }else{
+                } else {
                     userId = users.get(0).getId();
                 }
             }
             String sceneCode = paperDto.getSceneCode();
             Long sceneId = paperDto.getSceneId();
-            if(null == sceneId){
-                if(StringUtils.isNotEmpty(sceneCode)){
+            if (null == sceneId) {
+                if (StringUtils.isNotEmpty(sceneCode)) {
                     Scene scene = new Scene();
                     scene.setCode(sceneCode);
                     List<Scene> scenes = sceneService.findByCondition(scene);
-                    if(CollectionUtils.isEmpty(scenes)){
+                    if (CollectionUtils.isEmpty(scenes)) {
                         return RespDto.fail("没有该场次信息");
                     }
                     sceneId = scenes.get(0).getId();
@@ -194,6 +197,7 @@ public class PaperApi {
                         }
                         if (null != scene) {
                             dto.setSceneName(scene.getName());
+                            dto.setReceiptCount(scene.getReceiptCount());
                         }
                         return dto;
                     }

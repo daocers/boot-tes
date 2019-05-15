@@ -70,6 +70,9 @@ public class MultiApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
+            if(StringUtils.isNotEmpty(multi.getTitle())){
+                multi.setTitle("%" + multi.getTitle() + "%");
+            }
             PageInfo<Multi> pageInfo = multiService.findByConditionWithPage(pageNum, pageSize, multi);
             PageInfo<QuestionListDto> res = new PageInfo<>();
             BeanUtils.copyProperties(pageInfo, res);

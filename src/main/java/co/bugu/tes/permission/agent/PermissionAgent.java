@@ -1,5 +1,7 @@
 package co.bugu.tes.permission.agent;
 
+import co.bugu.common.enums.BaseStatusEnum;
+import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.dto.PermissionTreeDto;
 import co.bugu.tes.permission.service.IPermissionService;
@@ -160,14 +162,23 @@ public class PermissionAgent {
      * @date 2018/11/30 10:37
      */
     public List<PermissionTreeDto> getMenuTree(Long userId) {
-        List<Long> permissionIds = findPermissionIdsByUserId(userId);
-        List<Permission> permissionList = Lists.transform(permissionIds, new Function<Long, Permission>() {
-            @Override
-            public Permission apply(@org.checkerframework.checker.nullness.qual.Nullable Long permissionId) {
-                Permission permission = permissionService.findById(permissionId);
-                return permission;
-            }
-        });
+        List<Permission> permissionList = null;
+        if(userId == null || userId < 0){
+            Permission query = new Permission();
+            query.setIsDel(DelFlagEnum.NO.getCode());
+            query.setStatus(BaseStatusEnum.ENABLE.getCode());
+            permissionList = permissionService.findByCondition(query);
+        }else{
+            List<Long> permissionIds = findPermissionIdsByUserId(userId);
+            permissionList = Lists.transform(permissionIds, new Function<Long, Permission>() {
+                @Override
+                public Permission apply(@org.checkerframework.checker.nullness.qual.Nullable Long permissionId) {
+                    Permission permission = permissionService.findById(permissionId);
+                    return permission;
+                }
+            });
+        }
+
         List<PermissionTreeDto> res = transformListToTree(permissionList);
         return res;
     }

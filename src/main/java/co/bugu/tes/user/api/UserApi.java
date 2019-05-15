@@ -197,6 +197,10 @@ public class UserApi {
                 pageSize = 10;
             }
 
+            if(StringUtils.isNotEmpty(user.getName())){
+                user.setName("%" + user.getName() + "%");
+            }
+
             User currentUser = UserUtil.getCurrentUser();
             List<Role> roles = roleAgent.getRoleList(currentUser.getId());
             boolean isAdmin = false;

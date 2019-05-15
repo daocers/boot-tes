@@ -7,6 +7,8 @@ import co.bugu.tes.permission.agent.PermissionAgent;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.dto.PermissionTreeDto;
 import co.bugu.tes.permission.service.IPermissionService;
+import co.bugu.tes.role.agent.RoleAgent;
+import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.user.domain.User;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
@@ -41,6 +43,9 @@ public class PermissionApi {
 
     @Autowired
     PermissionAgent permissionAgent;
+
+    @Autowired
+    RoleAgent roleAgent;
 
     /**
      * 条件查询
@@ -171,7 +176,24 @@ public class PermissionApi {
     @RequestMapping(value = "/getMenuTree")
     public RespDto<List<PermissionTreeDto>> getMenuTree() throws Exception {
         User user = UserUtil.getCurrentUser();
-        List<PermissionTreeDto> list = permissionAgent.getMenuTree(user.getId());
+        List<Role> roles = roleAgent.getRoleList(user.getId());
+        if(CollectionUtils.isEmpty(roles)){
+            return RespDto.fail("您还没有被分配角色，请联系管理员！");
+        }
+        boolean isRoot = false;
+        for(Role role: roles){
+            if("root".equals(role.getCode())){
+                isRoot = true;
+                break;
+            }
+        }
+        List<PermissionTreeDto> list = null;
+        if(isRoot){
+            list = permissionAgent.getMenuTree(-1L);
+        }else{
+            list = permissionAgent.getMenuTree(user.getId());
+
+        }
         return RespDto.success(list);
     }
 
@@ -209,7 +231,26 @@ public class PermissionApi {
     @RequestMapping(value = "/findMenuUrlList")
     public RespDto<List<String>> findMenuUrlList() throws UserException {
         Long userId = UserUtil.getCurrentUser().getId();
-        List<Permission> list = permissionAgent.findPermissionListByUserId(userId);
+        List<Role> roleList = roleAgent.getRoleList(userId);
+
+        if(CollectionUtils.isEmpty(roleList)){
+            return RespDto.fail("您还没有被分配角色，请联系管理员！");
+        }
+
+        boolean isRoot = false;
+        for(Role role: roleList){
+            if("root".equals(role.getCode())){
+                isRoot = true;
+                break;
+            }
+        }
+        List<Permission> list = null;
+        if(isRoot){
+            list = permissionService.findByCondition(new Permission());
+        }else{
+            list = permissionAgent.findPermissionListByUserId(userId);
+        }
+
         if (CollectionUtils.isEmpty(list)) {
             return RespDto.success(new ArrayList<>());
         }

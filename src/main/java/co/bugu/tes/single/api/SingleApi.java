@@ -153,6 +153,9 @@ public class SingleApi {
             if (null == pageSize) {
                 pageSize = 10;
             }
+            if(StringUtils.isNotEmpty(single.getTitle())){
+                single.setTitle("%" + single.getTitle() + "%");
+            }
             PageInfo<Single> pageInfo = singleService.findByConditionWithPage(pageNum, pageSize, single);
             PageInfo<QuestionListDto> res = new PageInfo<>();
             BeanUtils.copyProperties(pageInfo, res);

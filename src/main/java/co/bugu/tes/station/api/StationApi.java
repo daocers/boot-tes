@@ -20,6 +20,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,6 +140,10 @@ public class StationApi {
             }
             if (null == pageSize) {
                 pageSize = 10;
+            }
+
+            if(StringUtils.isNotEmpty(station.getName())){
+                station.setName("%" + station.getName() + "%");
             }
             PageInfo<Station> pageInfo = stationService.findByConditionWithPage(pageNum, pageSize, station);
             PageInfo<StationDto> res = new PageInfo<>();

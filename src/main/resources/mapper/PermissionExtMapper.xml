@@ -40,6 +40,9 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
         </where>
     </select>
 </mapper>

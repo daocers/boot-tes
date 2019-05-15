@@ -38,7 +38,7 @@
                 and username = #{username}
             </if>
             <if test="name != null and name != ''">
-                and name = #{name}
+                and name like #{name}
             </if>
             <if test="status != null">
                 and status = #{status}
