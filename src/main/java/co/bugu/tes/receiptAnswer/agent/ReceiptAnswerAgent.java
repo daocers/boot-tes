@@ -43,7 +43,7 @@ public class ReceiptAnswerAgent {
      * @auther daocers
      * @date 2019/4/25 18:41
      */
-    public boolean commitReceiptPaper(Long sceneId, Integer receiptCount, Long userId, Integer seconds, List<Integer> answers) {
+    public boolean commitReceiptPaper(Long sceneId, Integer receiptCount, Long userId, Integer seconds, List<Long> answers) {
 //        1获取本场的凭条信息
 
 //        2 答案入库 (ReceiptAnswer)
@@ -74,7 +74,7 @@ public class ReceiptAnswerAgent {
         int right = 0;
         for (Receipt receipt : receipts) {
             Long id = receipt.getId();
-            Integer number = receipt.getNumber();
+            Long number = receipt.getNumber();
             Integer no = receipt.getNo();
             if (size > idx) {
                 ReceiptAnswer item = new ReceiptAnswer();

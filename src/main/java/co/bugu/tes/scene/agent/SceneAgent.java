@@ -10,6 +10,7 @@ import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.manager.service.IManagerService;
 import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.dto.PaperDto;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.receipt.service.IReceiptService;
@@ -129,7 +130,7 @@ public class SceneAgent {
         Long sceneId = scene.getId();
 
 //        获取已经提交 状态的试卷信息
-        Paper query = new Paper();
+        PaperDto query = new PaperDto();
         query.setSceneId(sceneId);
         query.setIsDel(DelFlagEnum.NO.getCode());
         query.setStatus(PaperStatusEnum.COMMITED.getCode());

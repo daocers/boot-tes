@@ -10,7 +10,7 @@ public class Receipt {
 
     private Integer no;
 
-    private Integer number;
+    private Long number;
 
     private Long sceneId;
 

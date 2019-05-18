@@ -387,8 +387,8 @@ public class PaperAgent {
             }
             Integer right = 0;
             for (ReceiptAnswer item : receiptAnswers) {
-                Integer number = item.getNumber();
-                Integer answer = item.getAnswer();
+                Long number = item.getNumber();
+                Long answer = item.getAnswer();
                 if (Objects.equals(number, answer)) {
                     right++;
                 }

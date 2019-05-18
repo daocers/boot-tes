@@ -2,6 +2,7 @@ package co.bugu.tes.paper.service;
 
 import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.dto.PaperDto;
 import co.bugu.tes.scene.dto.SceneMonitorDto;
 import com.github.pagehelper.PageInfo;
 
@@ -37,7 +38,7 @@ public interface IPaperService {
      * @param paper
      * @return
      */
-    List<Paper> findByCondition(Paper paper);
+    List<Paper> findByCondition(PaperDto paper);
 
     /**
      * 条件查询 分页
@@ -47,7 +48,7 @@ public interface IPaperService {
      * @param paper     查询条件
      * @return
      */
-    List<Paper> findByCondition(Integer pageNum, Integer pageSize, Paper paper);
+    List<Paper> findByCondition(Integer pageNum, Integer pageSize, PaperDto paper);
 
     /**
      * 条件查询 分页
@@ -57,7 +58,7 @@ public interface IPaperService {
      * @param paper     查询条件
      * @return
      */
-    PageInfo<Paper> findByConditionWithPage(Integer pageNum, Integer pageSize, Paper paper);
+    PageInfo<Paper> findByConditionWithPage(Integer pageNum, Integer pageSize, PaperDto paper);
 
     /**
      * 通过id查询

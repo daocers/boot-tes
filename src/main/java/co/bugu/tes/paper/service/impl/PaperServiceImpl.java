@@ -7,6 +7,7 @@ import co.bugu.tes.answer.dto.AnswerDto4GenPaper;
 import co.bugu.tes.paper.dao.PaperDao;
 import co.bugu.tes.paper.dao.vo.SceneMonitorVo;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.dto.PaperDto;
 import co.bugu.tes.paper.enums.AnswerFlagEnum;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.enums.QuestionTypeEnum;
@@ -44,7 +45,7 @@ public class PaperServiceImpl implements IPaperService {
 
     private Logger logger = LoggerFactory.getLogger(PaperServiceImpl.class);
 
-    private static String ORDER_BY = "id desc";
+    private static String ORDER_BY = "score desc";
 
     @Override
     public long add(Paper paper) {
@@ -67,30 +68,30 @@ public class PaperServiceImpl implements IPaperService {
     }
 
     @Override
-    public List<Paper> findByCondition(Paper paper) {
+    public List<Paper> findByCondition(PaperDto paper) {
         logger.debug("paper findByCondition, 参数： {}", JSON.toJSONString(paper, true));
         PageHelper.orderBy(ORDER_BY);
-        List<Paper> papers = paperDao.findByObject(paper);
+        List<Paper> papers = paperDao.find(paper);
 
         logger.debug("查询结果， {}", JSON.toJSONString(papers, true));
         return papers;
     }
 
     @Override
-    public List<Paper> findByCondition(Integer pageNum, Integer pageSize, Paper paper) {
+    public List<Paper> findByCondition(Integer pageNum, Integer pageSize, PaperDto paper) {
         logger.debug("paper findByCondition, 参数 pageNum: {}, pageSize: {}, condition: {}", new Object[]{pageNum, pageSize, JSON.toJSONString(paper, true)});
         PageHelper.startPage(pageNum, pageSize, ORDER_BY);
-        List<Paper> papers = paperDao.findByObject(paper);
+        List<Paper> papers = paperDao.find(paper);
 
         logger.debug("查询结果， {}", JSON.toJSONString(papers, true));
         return papers;
     }
 
     @Override
-    public PageInfo<Paper> findByConditionWithPage(Integer pageNum, Integer pageSize, Paper paper) {
+    public PageInfo<Paper> findByConditionWithPage(Integer pageNum, Integer pageSize, PaperDto paper) {
         logger.debug("paper findByCondition, 参数 pageNum: {}, pageSize: {}, condition: {}", new Object[]{pageNum, pageSize, JSON.toJSONString(paper, true)});
         PageHelper.startPage(pageNum, pageSize, ORDER_BY);
-        List<Paper> papers = paperDao.findByObject(paper);
+        List<Paper> papers = paperDao.find(paper);
 
         logger.debug("查询结果， {}", JSON.toJSONString(papers, true));
         return new PageInfo<>(papers);

@@ -4,6 +4,7 @@ import co.bugu.common.RespDto;
 import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.exception.UserException;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.dto.PaperDto;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.paperPolicy.agent.PaperPolicyAgent;
 import co.bugu.tes.paperPolicy.domain.PaperPolicy;
@@ -91,7 +92,7 @@ public class SceneApi {
             query.setStatus(status);
             query.setCreateUserId(userId);
             query.setIsDel(DelFlagEnum.NO.getCode());
-            if(StringUtils.isNotEmpty(name)){
+            if (StringUtils.isNotEmpty(name)) {
                 query.setName("%" + name + "%");
             }
             PageInfo<Scene> pageInfo = sceneService.findByConditionWithPage(pageNum, pageSize, query);
@@ -134,7 +135,7 @@ public class SceneApi {
     @RequestMapping("/myJoin")
     public RespDto<PageInfo<MyJoinDto>> findMyJoin(Integer pageNum, Integer pageSize) throws UserException {
         Long userId = UserUtil.getCurrentUser().getId();
-        Paper query = new Paper();
+        PaperDto query = new PaperDto();
         query.setUserId(userId);
         PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, query);
         PageInfo<MyJoinDto> res = new PageInfo<>();
@@ -341,7 +342,7 @@ public class SceneApi {
      * @date 2019/4/26 14:19
      */
     @RequestMapping(value = "/getReceiptNumberList", method = RequestMethod.GET)
-    public RespDto<List<Integer>> getReceiptNumberList(Long sceneId) {
+    public RespDto<List<Long>> getReceiptNumberList(Long sceneId) {
         logger.info("getReceiptNumber, sceneId: {}", sceneId);
         Receipt query = new Receipt();
         query.setIsDel(DelFlagEnum.NO.getCode());
@@ -351,7 +352,7 @@ public class SceneApi {
             logger.info("sceneId： {}没有找到凭条信息", sceneId);
             return RespDto.success(new ArrayList<>());
         }
-        List<Integer> numbers = Lists.transform(receipts, item -> item.getNumber());
+        List<Long> numbers = Lists.transform(receipts, item -> item.getNumber());
         return RespDto.success(numbers);
     }
 

@@ -44,4 +44,9 @@ public class PaperDto {
 
     private Double commonScore;
 
+
+    private Double minScore;
+    private Double maxScore;
+    private Integer isDel;
+
 }

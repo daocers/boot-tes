@@ -5,8 +5,8 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="receipt_id" jdbcType="BIGINT" property="receiptId"/>
         <result column="no" jdbcType="INTEGER" property="no"/>
-        <result column="number" jdbcType="INTEGER" property="number"/>
-        <result column="answer" jdbcType="INTEGER" property="answer"/>
+        <result column="number" jdbcType="BIGINT" property="number"/>
+        <result column="answer" jdbcType="BIGINT" property="answer"/>
         <result column="scene_id" jdbcType="BIGINT" property="sceneId"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="status" jdbcType="INTEGER" property="status"/>

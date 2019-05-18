@@ -11,10 +11,10 @@
         no = #{no,jdbcType=INTEGER},
       </if>
       <if test="number != null">
-        number = #{number,jdbcType=INTEGER},
+        number = #{number,jdbcType=BIGINT},
       </if>
       <if test="answer != null">
-        answer = #{answer,jdbcType=INTEGER},
+        answer = #{answer,jdbcType=BIGINT},
       </if>
       <if test="sceneId != null">
         scene_id = #{sceneId,jdbcType=BIGINT},
@@ -95,10 +95,10 @@
         #{no,jdbcType=INTEGER},
       </if>
       <if test="number != null">
-        #{number,jdbcType=INTEGER},
+        #{number,jdbcType=BIGINT},
       </if>
       <if test="answer != null">
-        #{answer,jdbcType=INTEGER},
+        #{answer,jdbcType=BIGINT},
       </if>
       <if test="sceneId != null">
         #{sceneId,jdbcType=BIGINT},

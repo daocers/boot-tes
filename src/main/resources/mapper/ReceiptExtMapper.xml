@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="co.bugu.tes.receipt.domain.Receipt">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="no" jdbcType="INTEGER" property="no"/>
-        <result column="number" jdbcType="INTEGER" property="number"/>
+        <result column="number" jdbcType="BIGINT" property="number"/>
         <result column="scene_id" jdbcType="BIGINT" property="sceneId"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="is_del" jdbcType="INTEGER" property="isDel"/>

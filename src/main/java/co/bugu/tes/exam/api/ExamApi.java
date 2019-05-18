@@ -10,6 +10,7 @@ import co.bugu.tes.exam.dto.LiveDto;
 import co.bugu.tes.exam.dto.QuestionDto;
 import co.bugu.tes.paper.agent.PaperAgent;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.dto.PaperDto;
 import co.bugu.tes.paper.enums.PaperStatusEnum;
 import co.bugu.tes.paper.service.IPaperService;
 import co.bugu.tes.receiptAnswer.agent.ReceiptAnswerAgent;
@@ -143,7 +144,7 @@ public class ExamApi {
         User user = UserUtil.getCurrentUser();
         Long userId = user.getId();
 
-        Paper query = new Paper();
+        PaperDto query = new PaperDto();
         query.setUserId(userId);
         query.setStatus(PaperStatusEnum.OK.getCode());
         query.setIsDel(DelFlagEnum.NO.getCode());
@@ -151,8 +152,8 @@ public class ExamApi {
         List<Paper> papers = paperService.findByCondition(query);
 
         if (CollectionUtils.isNotEmpty(papers) && papers.size() == 1) {
-            query = papers.get(0);
-            Long paperId = query.getId();
+            Paper paper = papers.get(0);
+            Long paperId = paper.getId();
             Answer answer = new Answer();
             answer.setPaperId(paperId);
             answer.setIsDel(DelFlagEnum.NO.getCode());
@@ -185,7 +186,7 @@ public class ExamApi {
             User user = UserUtil.getCurrentUser();
             Long userId = user.getId();
 
-            Paper query = new Paper();
+            PaperDto query = new PaperDto();
             query.setIsDel(DelFlagEnum.NO.getCode());
             query.setSceneId(sceneId);
             query.setUserId(userId);
@@ -235,9 +236,8 @@ public class ExamApi {
         if (scene.getStatus() == SceneStatusEnum.ON.getCode()) {
             User user = UserUtil.getCurrentUser();
             Long userId = user.getId();
-            Paper query = new Paper();
+            PaperDto query = new PaperDto();
             query.setStatus(PaperStatusEnum.OK.getCode());
-            query.setIsDel(DelFlagEnum.NO.getCode());
             query.setSceneId(sceneId);
             query.setUserId(userId);
 
@@ -336,7 +336,7 @@ public class ExamApi {
      * @date 2019/4/24 11:52
      */
     @RequestMapping(value = "/commitReceiptPaper")
-    public RespDto<Boolean> commitReceiptPaper(Long sceneId, Integer receiptCount, Integer seconds, @RequestBody List<Integer> answers) throws UserException {
+    public RespDto<Boolean> commitReceiptPaper(Long sceneId, Integer receiptCount, Integer seconds, @RequestBody List<Long> answers) throws UserException {
         Long userId = UserUtil.getCurrentUser().getId();
         Preconditions.checkArgument(null != seconds, "耗时不能为空");
         Preconditions.checkArgument(null != userId);
@@ -374,7 +374,7 @@ public class ExamApi {
      */
     @RequestMapping(value = "/live")
     public RespDto<PageInfo<LiveDto>> getSceneLive(Long sceneId, Integer pageNum, Integer pageSize) {
-        Paper paper = new Paper();
+        PaperDto paper = new PaperDto();
         paper.setSceneId(sceneId);
         paper.setIsDel(DelFlagEnum.NO.getCode());
         PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, paper);
@@ -469,7 +469,7 @@ public class ExamApi {
             return RespDto.fail("迟到太久，参加下一场吧");
         }
 
-        Paper query = new Paper();
+        PaperDto query = new PaperDto();
         query.setSceneId(sceneId);
         query.setIsDel(DelFlagEnum.NO.getCode());
         query.setUserId(UserUtil.getCurrentUser().getId());

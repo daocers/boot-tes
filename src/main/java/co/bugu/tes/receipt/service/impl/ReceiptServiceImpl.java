@@ -124,7 +124,7 @@ public class ReceiptServiceImpl implements IReceiptService {
             Receipt item = new Receipt();
             item.setSceneId(sceneId);
             item.setNo(i);
-            item.setNumber(num);
+            item.setNumber((long) num);
             item.setIsDel(1);
             item.setStatus(1);
             receipts.add(item);

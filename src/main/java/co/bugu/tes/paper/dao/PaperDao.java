@@ -3,6 +3,7 @@ package co.bugu.tes.paper.dao;
 import co.bugu.common.dao.BaseDao;
 import co.bugu.tes.paper.dao.vo.SceneMonitorVo;
 import co.bugu.tes.paper.domain.Paper;
+import co.bugu.tes.paper.dto.PaperDto;
 
 import java.util.List;
 
@@ -27,4 +28,7 @@ public interface PaperDao extends BaseDao<Paper>{
      * @date 2019/5/11 12:19
      */
     List<SceneMonitorVo> getSceneMonitor(Long sceneId);
+
+
+    List<Paper> find(PaperDto paperDto);
 }

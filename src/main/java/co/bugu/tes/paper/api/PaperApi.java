@@ -1,7 +1,6 @@
 package co.bugu.tes.paper.api;
 
 import co.bugu.common.RespDto;
-import co.bugu.common.enums.DelFlagEnum;
 import co.bugu.tes.paper.domain.Paper;
 import co.bugu.tes.paper.dto.PaperDto;
 import co.bugu.tes.paper.enums.AnswerFlagEnum;
@@ -68,9 +67,8 @@ public class PaperApi {
         try {
             Scene scene = sceneService.findById(sceneId);
 
-            Paper query = new Paper();
+            PaperDto query = new PaperDto();
             query.setSceneId(sceneId);
-            query.setIsDel(DelFlagEnum.NO.getCode());
             List<Paper> paperList = paperService.findByCondition(query);
             List<List<String>> data = new ArrayList<>();
             List<String> title = Arrays.asList(new String[]{"用户名", "姓名",
@@ -177,9 +175,11 @@ public class PaperApi {
             }
 
 
-            Paper paper = new Paper();
+            PaperDto paper = new PaperDto();
             paper.setUserId(userId);
             paper.setSceneId(sceneId);
+            paper.setMinScore(paperDto.getMinScore());
+            paper.setMaxScore(paperDto.getMaxScore());
 
             PageInfo<Paper> pageInfo = paperService.findByConditionWithPage(pageNum, pageSize, paper);
             PageInfo<PaperDto> res = new PageInfo<>();

@@ -32,7 +32,7 @@
         from tes_paper
         where id = #{id,jdbcType=BIGINT}
     </select>
-    <select id="findByObject" parameterType="co.bugu.tes.paper.domain.Paper" resultMap="BaseResultMap">
+    <select id="findByObject" parameterType="co.bugu.tes.paper.dto.PaperDto" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from tes_paper
@@ -46,6 +46,39 @@
             </if>
             <if test="status != null">
                 and status = #{status}
+            </if>
+
+            <if test="minScore != null">
+                and score <![CDATA[ >= ]]> #{minScore}
+            </if>
+            <if test="maxScore != null">
+                and score <![CDATA[ < ]]> #{maxScore}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="find" parameterType="co.bugu.tes.paper.dto.PaperDto" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tes_paper
+        <where>
+            is_del = 1
+            <if test="sceneId != null">
+                and scene_id = #{sceneId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+
+            <if test="minScore != null">
+                and score <![CDATA[ >= ]]> #{minScore}
+            </if>
+            <if test="maxScore != null">
+                and score <![CDATA[ < ]]> #{maxScore}
             </if>
         </where>
     </select>
