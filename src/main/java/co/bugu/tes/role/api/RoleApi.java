@@ -18,6 +18,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -189,7 +191,7 @@ public class RoleApi {
         x.setRoleId(id);
         x.setIsDel(DelFlagEnum.NO.getCode());
         PageInfo<UserRoleX> xPageInfo = userRoleXService.findByConditionWithPage(1, 1, x);
-        if(xPageInfo.getSize() > 0){
+        if (xPageInfo.getSize() > 0) {
             throw new Exception("该角色已经分配给用户，不能删除");
         }
 
@@ -238,6 +240,31 @@ public class RoleApi {
             return RespDto.fail();
         }
 
+    }
+
+    /**
+     * 获取我的角色列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/19 11:25
+     */
+    @RequestMapping(value = "/findMyRoleList")
+    public RespDto<List<String>> findRoleListOfCurrentUser() throws UserException {
+        Long userId = UserUtil.getCurrentUser().getId();
+        UserRoleX query = new UserRoleX();
+        query.setUserId(userId);
+        query.setIsDel(DelFlagEnum.NO.getCode());
+        List<UserRoleX> list = userRoleXService.findByCondition(query);
+        if (CollectionUtils.isEmpty(list)) {
+            return RespDto.success(new ArrayList<>());
+        }
+        List<String> roles = Lists.transform(list, item -> {
+            Role role = roleService.findById(item.getRoleId());
+            return role.getCode();
+        });
+        return RespDto.success(roles);
     }
 
 }

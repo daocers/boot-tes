@@ -14,7 +14,6 @@ import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -230,31 +228,7 @@ public class PermissionApi {
      */
     @RequestMapping(value = "/findMenuUrlList")
     public RespDto<List<String>> findMenuUrlList() throws UserException {
-        Long userId = UserUtil.getCurrentUser().getId();
-        List<Role> roleList = roleAgent.getRoleList(userId);
-
-        if(CollectionUtils.isEmpty(roleList)){
-            return RespDto.fail("您还没有被分配角色，请联系管理员！");
-        }
-
-        boolean isRoot = false;
-        for(Role role: roleList){
-            if("root".equals(role.getCode())){
-                isRoot = true;
-                break;
-            }
-        }
-        List<Permission> list = null;
-        if(isRoot){
-            list = permissionService.findByCondition(new Permission());
-        }else{
-            list = permissionAgent.findPermissionListByUserId(userId);
-        }
-
-        if (CollectionUtils.isEmpty(list)) {
-            return RespDto.success(new ArrayList<>());
-        }
-        List<String> urlList = Lists.transform(list, item -> item.getUrl());
+        List<String> urlList = permissionAgent.findMenuUrlList();
         return RespDto.success(urlList);
     }
 }

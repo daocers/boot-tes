@@ -66,6 +66,7 @@ public class UserServiceImpl implements IUserService {
         Date now = new Date();
         user.setCreateTime(now);
         user.setUpdateTime(now);
+        user.setPassword(initPassword);
         userDao.insert(user);
         return user.getId();
     }
@@ -113,11 +114,11 @@ public class UserServiceImpl implements IUserService {
     public User findById(Long userId) {
         logger.debug("user findById, 参数 userId: {}", userId);
         User user = userCache.getIfPresent(userId);
-        if(user != null){
+        if (user != null) {
             return user;
         }
         user = userDao.selectById(userId);
-        if(user == null){
+        if (user == null) {
             user = new User();
         }
         userCache.put(userId, user);
@@ -221,7 +222,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public PageInfo<User> findUserUnderManage(Integer pageNum, Integer pageSize, User user) {
         logger.debug("user findUserUnderManage, 参数 pageNum: {}, pageSize: {}, condition: {}", new Object[]{pageNum, pageSize, JSON.toJSONString(user, true)});
-        if(user.getBranchId() == null && user.getStationId() == null && user.getDepartmentId() == null){
+        if (user.getBranchId() == null && user.getStationId() == null && user.getDepartmentId() == null) {
             logger.warn("不是管理员，请求非法：condition:{}", JSON.toJSONString(user, true));
             return new PageInfo<>(new ArrayList<>());
         }

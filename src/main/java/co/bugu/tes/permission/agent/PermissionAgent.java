@@ -2,14 +2,18 @@ package co.bugu.tes.permission.agent;
 
 import co.bugu.common.enums.BaseStatusEnum;
 import co.bugu.common.enums.DelFlagEnum;
+import co.bugu.exception.UserException;
 import co.bugu.tes.permission.domain.Permission;
 import co.bugu.tes.permission.dto.PermissionTreeDto;
 import co.bugu.tes.permission.service.IPermissionService;
+import co.bugu.tes.role.agent.RoleAgent;
+import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.rolePermissionX.domain.RolePermissionX;
 import co.bugu.tes.rolePermissionX.service.IRolePermissionXService;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
+import co.bugu.util.UserUtil;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -44,6 +48,8 @@ public class PermissionAgent {
     IRolePermissionXService rolePermissionXService;
     @Autowired
     IUserRoleXService userRoleXService;
+    @Autowired
+    RoleAgent roleAgent;
 
     /**
      * 指定id的角色和对应的权限id列表的缓存
@@ -116,7 +122,7 @@ public class PermissionAgent {
         List<PermissionTreeDto> treeDtos = new ArrayList<>();
         for (Permission permission : list) {
             PermissionTreeDto dto = new PermissionTreeDto();
-            if(permission == null){
+            if (permission == null) {
                 continue;
             }
             BeanUtils.copyProperties(permission, dto);
@@ -163,12 +169,12 @@ public class PermissionAgent {
      */
     public List<PermissionTreeDto> getMenuTree(Long userId) {
         List<Permission> permissionList = null;
-        if(userId == null || userId < 0){
+        if (userId == null || userId < 0) {
             Permission query = new Permission();
             query.setIsDel(DelFlagEnum.NO.getCode());
             query.setStatus(BaseStatusEnum.ENABLE.getCode());
             permissionList = permissionService.findByCondition(query);
-        }else{
+        } else {
             List<Long> permissionIds = findPermissionIdsByUserId(userId);
             permissionList = Lists.transform(permissionIds, new Function<Long, Permission>() {
                 @Override
@@ -295,5 +301,42 @@ public class PermissionAgent {
         return false;
     }
 
+    /**
+     * 获取用户的权限列表
+     *
+     * @param
+     * @return
+     * @auther daocers
+     * @date 2019/5/19 17:58
+     */
+    public List<String> findMenuUrlList() throws UserException {
+        Long userId = UserUtil.getCurrentUser().getId();
+        List<Role> roleList = roleAgent.getRoleList(userId);
+
+        if (CollectionUtils.isEmpty(roleList)) {
+            logger.warn("用户：{}还没有被分配角色", userId);
+            return new ArrayList<>();
+        }
+
+        boolean isRoot = false;
+        for (Role role : roleList) {
+            if ("root".equals(role.getCode())) {
+                isRoot = true;
+                break;
+            }
+        }
+        List<Permission> list = null;
+        if (isRoot) {
+            list = permissionService.findByCondition(new Permission());
+        } else {
+            list = findPermissionListByUserId(userId);
+        }
+
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        List<String> urlList = Lists.transform(list, item -> item.getUrl());
+        return urlList;
+    }
 
 }

@@ -13,16 +13,19 @@ import co.bugu.tes.loginLog.service.ILoginLogService;
 import co.bugu.tes.manager.domain.Manager;
 import co.bugu.tes.manager.enums.ManagerTypeEnum;
 import co.bugu.tes.manager.service.IManagerService;
+import co.bugu.tes.permission.agent.PermissionAgent;
 import co.bugu.tes.role.agent.RoleAgent;
 import co.bugu.tes.role.domain.Role;
 import co.bugu.tes.station.domain.Station;
 import co.bugu.tes.station.service.IStationService;
 import co.bugu.tes.user.domain.User;
+import co.bugu.tes.user.dto.DtoAfterLogin;
 import co.bugu.tes.user.dto.UserDto;
 import co.bugu.tes.user.service.IUserService;
 import co.bugu.tes.userRoleX.domain.UserRoleX;
 import co.bugu.tes.userRoleX.service.IUserRoleXService;
 import co.bugu.util.ExcelUtil;
+import co.bugu.util.ThreadLocalUtil;
 import co.bugu.util.TokenUtil;
 import co.bugu.util.UserUtil;
 import com.alibaba.fastjson.JSON;
@@ -86,6 +89,9 @@ public class UserApi {
     @Autowired
     IManagerService managerService;
 
+    @Autowired
+    PermissionAgent permissionAgent;
+
 
     /**
      * 登录，成功后返回用户token
@@ -96,7 +102,7 @@ public class UserApi {
      * @date 2018/11/19 17:54
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public RespDto<String> login(String username, String password, HttpServletRequest request) throws Exception {
+    public RespDto<DtoAfterLogin> login(String username, String password, HttpServletRequest request) throws Exception {
         Preconditions.checkArgument(StringUtils.isNotEmpty(username), "用户名不能为空");
         Preconditions.checkArgument(StringUtils.isNotEmpty(password), "密码不能为空");
 
@@ -130,7 +136,12 @@ public class UserApi {
 //            用户名密码匹配，设置token传给服务端
             String token = TokenUtil.getToken(user);
             UserUtil.saveUserToken(user.getId(), token);
-            return RespDto.success(token);
+            ThreadLocalUtil.setUserToken(token);
+            List<String> urlList = permissionAgent.findMenuUrlList();
+            DtoAfterLogin res = new DtoAfterLogin();
+            res.setToken(token);
+            res.setMenuUrlList(urlList);
+            return RespDto.success(res);
         } else {
             return RespDto.fail(-1, "用户名/密码错误");
         }
@@ -197,7 +208,7 @@ public class UserApi {
                 pageSize = 10;
             }
 
-            if(StringUtils.isNotEmpty(user.getName())){
+            if (StringUtils.isNotEmpty(user.getName())) {
                 user.setName("%" + user.getName() + "%");
             }
 
@@ -214,29 +225,29 @@ public class UserApi {
 
             PageInfo<User> pageInfo = null;
 
-            if(!isAdmin){
+            if (!isAdmin) {
                 Manager query = new Manager();
                 query.setIsDel(DelFlagEnum.NO.getCode());
                 query.setUserId(currentUser.getId());
                 query.setStatus(BaseStatusEnum.ENABLE.getCode());
 
                 List<Manager> managers = managerService.findByCondition(query);
-                if(CollectionUtils.isNotEmpty(managers)){
-                    for(Manager manager: managers){
+                if (CollectionUtils.isNotEmpty(managers)) {
+                    for (Manager manager : managers) {
                         Long targetId = manager.getTargetId();
                         Integer type = manager.getType();
-                        if(ManagerTypeEnum.DEPARTMENT.getCode() == type){
+                        if (ManagerTypeEnum.DEPARTMENT.getCode() == type) {
                             user.setDepartmentId(targetId);
-                        }else if(ManagerTypeEnum.BRANCH.getCode() == type){
+                        } else if (ManagerTypeEnum.BRANCH.getCode() == type) {
                             user.setBranchId(targetId);
-                        }else if(ManagerTypeEnum.STATION.getCode() == type){
+                        } else if (ManagerTypeEnum.STATION.getCode() == type) {
                             user.setStationId(targetId);
                         }
 
                     }
                 }
                 pageInfo = userService.findUserUnderManage(pageNum, pageSize, user);
-            }else{
+            } else {
                 pageInfo = userService.findByConditionWithPage(pageNum, pageSize, user);
 
             }
@@ -295,8 +306,6 @@ public class UserApi {
                 if (CollectionUtils.isNotEmpty(users)) {
                     return RespDto.fail("该用户名已经存在，请确认");
                 }
-
-                user.setPassword("888888");
                 logger.debug("保存， saveUser, 参数： {}", JSON.toJSONString(user, true));
                 userId = userService.add(user);
                 logger.info("新增 成功， id: {}", userId);

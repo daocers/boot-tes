@@ -28,7 +28,7 @@ mybatis:
 server:
   servlet:
     context-path: /hn
-  port: 9999
+  port: 80
 
 bugu:
   init:
