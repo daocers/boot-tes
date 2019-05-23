@@ -253,7 +253,7 @@ public class ExamApi {
                     answer.setPaperId(paperId);
                     List<Answer> answers = answerService.findByCondition(1, 10, answer);
 //                    还未作答
-                    if (CollectionUtils.isNotEmpty(answers)) {
+                    if (CollectionUtils.isEmpty(answers)) {
                         Date now = new Date();
                         long secondsPassed = (now.getTime() - paper.getBeginTime().getTime()) / 1000;
                         Long left = scene.getDuration() * 60 - secondsPassed;
@@ -265,6 +265,10 @@ public class ExamApi {
                     } else {
                         answer = answers.get(0);
                         String info = answer.getTimeLeft();
+//                        如果没有答题记录，直接返回空，用考试状态处理
+                        if(StringUtils.isEmpty(info)){
+                            return RespDto.success();
+                        }
                         String[] arr = info.split(":");
                         int hours = 0;
                         int minutes = 0;
