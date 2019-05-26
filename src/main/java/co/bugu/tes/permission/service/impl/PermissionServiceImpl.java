@@ -10,13 +10,11 @@ import co.bugu.tes.rolePermissionX.service.IRolePermissionXService;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,7 @@ public class PermissionServiceImpl implements IPermissionService {
     private static String ORDER_BY = "no";
 
 
-//    存放权限信息
+    //    存放权限信息
     Cache<Long, Permission> permissionCache = CacheBuilder.newBuilder()
             .concurrencyLevel(5).maximumSize(200)
             .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -125,19 +123,25 @@ public class PermissionServiceImpl implements IPermissionService {
     @Override
     public List<Long> findIdsByRoleId(Long roleId) {
         logger.debug("findIdsByRoleId， roleId: {}", roleId);
+
+        List<Long> res = new ArrayList<>();
+
         RolePermissionX rolePermissionX = new RolePermissionX();
         rolePermissionX.setRoleId(roleId);
         rolePermissionX.setIsDel(DelFlagEnum.NO.getCode());
         List<RolePermissionX> xList = rolePermissionXService.findByCondition(rolePermissionX);
         if (CollectionUtils.isEmpty(xList)) {
-            return new ArrayList<>();
+            return res;
         } else {
-            List<Long> res = Lists.transform(xList, new Function<RolePermissionX, Long>() {
-                @Override
-                public Long apply(@Nullable RolePermissionX rolePermissionX) {
-                    return rolePermissionX.getPermissionId();
-                }
-            });
+
+//            for(RolePermissionX x: xList){
+//                Long permissionId = x.getPermissionId();
+//                Permission permission = findById(permissionId);
+//                if(permission.getType().equals(PermissionTypeEnum.ACTION.getCode())){
+//                    res.add(permissionId);
+//                }
+//            }
+            res = Lists.transform(xList, item -> item.getPermissionId());
             return res;
         }
 
@@ -147,12 +151,12 @@ public class PermissionServiceImpl implements IPermissionService {
     public List<Permission> findByRoleId(Long roleId) {
         List<Long> permissionIds = findIdsByRoleId(roleId);
         List<Permission> res = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(permissionIds)){
-            for(Long id: permissionIds){
+        if (CollectionUtils.isNotEmpty(permissionIds)) {
+            for (Long id : permissionIds) {
                 Permission permission = permissionCache.getIfPresent(id);
-                if(null == permission){
+                if (null == permission) {
                     permission = permissionDao.selectById(id);
-                    if(null == permission){
+                    if (null == permission) {
                         logger.warn("无效的查询条件，有可能导致缓存穿透，permissionId: {}", id);
                     }
                     permissionCache.put(id, permission);
@@ -169,9 +173,9 @@ public class PermissionServiceImpl implements IPermissionService {
 
     }
 
-    private void saveInRecursion(Long userId, List<PermissionTreeDto> dtos){
+    private void saveInRecursion(Long userId, List<PermissionTreeDto> dtos) {
         int idx = 1;
-        for(PermissionTreeDto dto: dtos){
+        for (PermissionTreeDto dto : dtos) {
             Permission permission = new Permission();
             permission.setId(dto.getId());
             permission.setUpdateUserId(userId);
@@ -179,7 +183,7 @@ public class PermissionServiceImpl implements IPermissionService {
             permission.setNo(idx);
             permissionDao.updateById(permission);
             idx++;
-            if(CollectionUtils.isNotEmpty(dto.getChildren())){
+            if (CollectionUtils.isNotEmpty(dto.getChildren())) {
                 saveInRecursion(userId, dto.getChildren());
             }
         }

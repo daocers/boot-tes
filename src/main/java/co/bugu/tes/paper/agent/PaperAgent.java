@@ -310,6 +310,7 @@ public class PaperAgent {
         answer.setTimeLeft(dto.getLeftTimeInfo());
         answer.setUpdateTime(new Date());
         answer.setUserId(dto.getUserId());
+        answer.setTimeUsed(dto.getTimeUsed());
         int num = answerService.updateById(answer);
         return num;
     }

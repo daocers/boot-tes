@@ -75,7 +75,7 @@ public interface IPermissionService {
     int deleteById(Long permissionId, Long operatorId);
 
     /**
-     * 查找指定角色拥有的权限id列表
+     * 查找指定角色拥有的权限id列表,只要菜单权限
      *
      * @param
      * @return

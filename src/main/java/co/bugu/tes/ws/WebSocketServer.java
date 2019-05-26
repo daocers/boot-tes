@@ -109,6 +109,7 @@ public class WebSocketServer {
             QuestionDto dto = jsonObject.getObject("content", QuestionDto.class);
             logger.debug("提交的试题信息", JSON.toJSONString(dto, true));
             dto.setUserId(userId);
+            dto.setTimeUsed(jsonObject.getInteger("timeUsed"));
             int num = paperAgent.commitQuestion(dto);
             res.put("count", num + "");
 

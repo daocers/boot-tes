@@ -19,6 +19,7 @@ public class QuestionDto {
     //    实际答案
     private String realAnswer;
     private String leftTimeInfo;
+    private Integer timeUsed;
 
 
     //    正确答案
