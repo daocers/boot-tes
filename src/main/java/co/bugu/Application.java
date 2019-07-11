@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 //}
 
 
+@ServletComponentScan("co.bugu.log.filter")
 public class Application extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -84,5 +86,13 @@ public class Application extends SpringBootServletInitializer {
         return bean;
     }
 
+//    @Bean
+//    public FilterRegistrationBean logFilter(){
+//        FilterRegistrationBean bean = new FilterRegistrationBean();
+//        bean.setFilter(new LogFilter());
+//        bean.setName("logFilter");
+//        bean.addUrlPatterns("/*");
+//        return bean;
+//    }
 
 }

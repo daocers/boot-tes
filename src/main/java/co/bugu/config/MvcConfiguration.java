@@ -27,6 +27,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
     //    跨域访问配置
     public void addCorsMappings(CorsRegistry registry) {
 
+
     }
 
     //    格式化
@@ -39,4 +40,6 @@ public class MvcConfiguration implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
 
     }
+
+
 }
