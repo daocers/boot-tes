@@ -24,13 +24,17 @@ import static io.netty.handler.codec.http.HttpHeaderNames.*;
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     private Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
 
-    private String oriHost = "";
+    private String oriHost = "http://47.93.189.30";
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
+//            todo  读取请求channel中的数据，转发
             DefaultHttpRequest request = (DefaultHttpRequest) msg;
             String uri = request.uri();
+
+            String contentType = getResponseContentType(uri);
+            String method = request.getMethod().name();
             if ("/favicon.ico".equals(uri)) {
                 return;
             }
@@ -41,7 +45,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 URL url = new URL(oriHost + uri);
                 URLConnection urlConnection = url.openConnection();
                 HttpURLConnection connection = (HttpURLConnection) urlConnection;
-                connection.setRequestMethod("GET");
+                connection.setRequestMethod(method);
 
                 connection.connect();
 
@@ -54,17 +58,20 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                         builder.append(line).append("\n");
                     }
                     res = builder.toString();
-                    logger.info("获取到的网页信息为：{}", res);
+                    logger.info("获取到的网页url: {}信息为：{}", new String[]{uri, res});
                 }
                 connection.disconnect();
             } catch (Exception e) {
                 logger.error("代理服务器报错", e);
             }
+            if (res.contains("<html>")) {
+                contentType = "text/html";
+            }
 
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
                     HttpResponseStatus.OK, Unpooled.wrappedBuffer(res != null ? res.getBytes() : new byte[0]));
             response.headers()
-                    .set(CONTENT_TYPE, "text/html")
+                    .set(CONTENT_TYPE, contentType)
                     .set(CONTENT_LENGTH, response.content().readableBytes())
                     .set(CONNECTION, HttpHeaderValues.KEEP_ALIVE);
             ctx.writeAndFlush(response);
@@ -73,6 +80,20 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
         } else {
 //            抛出异常，防止请求卡住
             throw new Exception();
+        }
+    }
+
+    private String getResponseContentType(String uri) {
+        if (uri.endsWith(".css")) {
+            return "text/css";
+        } else if (uri.endsWith(".js")) {
+            return "application/x-javascript";
+        } else if (uri.equals(".jpg")) {
+            return "application/x-jpg";
+        } else if (uri.equals(".png")) {
+            return "application/x-png";
+        } else {
+            return "application/octet-stream";
         }
     }
 
